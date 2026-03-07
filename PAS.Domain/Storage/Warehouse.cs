@@ -1,0 +1,18 @@
+﻿
+using Domain.Common;
+
+namespace Domain.Storage
+{
+    public class Warehouse : BaseEntity
+    {
+        public string WarehouseName { get; private set; }
+
+        public string LocationCode { get; private set; }
+
+        public Warehouse(string name, string code)
+        {
+            WarehouseName = name;
+            LocationCode = code;
+        }
+    }
+}
