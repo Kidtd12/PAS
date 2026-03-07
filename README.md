@@ -1,4 +1,3 @@
-# ARMS
 
 # Property Management System (PMS)
 
