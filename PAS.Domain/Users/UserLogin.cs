@@ -1,0 +1,27 @@
+﻿using System;
+using Domain.Common;
+
+namespace Domain.Users
+{
+    public class UserLogin : BaseEntity
+    {
+        public Guid EmployeeId { get; private set; }
+
+        public string Username { get; private set; }
+
+        public string PasswordHash { get; private set; }
+
+        public Guid RoleId { get; private set; }
+
+        public bool IsActive { get; private set; }
+
+        public UserLogin(Guid employeeId, string username, string password, Guid roleId)
+        {
+            EmployeeId = employeeId;
+            Username = username;
+            PasswordHash = password;
+            RoleId = roleId;
+            IsActive = true;
+        }
+    }
+}
