@@ -1,5 +1,7 @@
 ﻿using System;
 using Domain.Common;
+using Domain.Catalog;
+using Domain.Storage;
 
 namespace Domain.Requisition
 {
@@ -14,6 +16,11 @@ namespace Domain.Requisition
         public int RequestedQty { get; private set; }
 
         public int IssuedQty { get; private set; }
+
+        // Navigation properties
+        public ItemMaster? Item { get; private set; }
+
+        public ShelfLocation? ShelfLocation { get; private set; }
 
         public SR_Detail(Guid srId, Guid itemId, int requested)
         {
