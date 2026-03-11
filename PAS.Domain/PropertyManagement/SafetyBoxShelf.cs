@@ -9,6 +9,10 @@ namespace Domain.PropertyManagement
 
         public int ShelfNumber { get; private set; }
 
+        private SafetyBoxShelf()
+        {
+        }
+
         public SafetyBoxShelf(Guid boxId, int shelf)
         {
             SafetyBoxId = boxId;

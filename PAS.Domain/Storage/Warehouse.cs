@@ -1,5 +1,4 @@
-﻿
-using Domain.Common;
+﻿using Domain.Common;
 
 namespace Domain.Storage
 {
@@ -8,6 +7,10 @@ namespace Domain.Storage
         public string WarehouseName { get; private set; }
 
         public string LocationCode { get; private set; }
+
+        private Warehouse()
+        {
+        }
 
         public Warehouse(string name, string code)
         {

@@ -12,6 +12,10 @@ namespace Domain.Common
 
         public DateTime SentDate { get; private set; }
 
+        private Notification()
+        {
+        }
+
         public Notification(Guid userId, string message)
         {
             UserId = userId;

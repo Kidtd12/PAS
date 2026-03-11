@@ -1,4 +1,5 @@
 ﻿using Domain.Catalog;
+using Domain.PropertyManagement;
 using Domain.TransferReturn;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

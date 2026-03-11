@@ -8,6 +8,10 @@ namespace Domain.PropertyManagement
 
         public string Description { get; private set; }
 
+        private PropertyCategory()
+        {
+        }
+
         public PropertyCategory(string name, string description)
         {
             Name = name;

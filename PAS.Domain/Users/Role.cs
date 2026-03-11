@@ -8,6 +8,10 @@ namespace Domain.Users
 
         public string Description { get; private set; }
 
+        private Role()
+        {
+        }
+
         public Role(string name, string description)
         {
             RoleName = name;

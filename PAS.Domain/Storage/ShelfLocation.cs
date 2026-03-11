@@ -15,6 +15,12 @@ namespace Domain.Storage
 
         public string QRCodeValue { get; private set; }
 
+        public Warehouse? Warehouse { get; private set; }
+
+        private ShelfLocation()
+        {
+        }
+
         public ShelfLocation(Guid warehouseId, string aisle, string rack, string shelf)
         {
             WarehouseId = warehouseId;

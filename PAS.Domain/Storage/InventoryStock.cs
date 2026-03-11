@@ -14,6 +14,10 @@ namespace Domain.Storage
 
         public int ReservedQuantity { get; private set; }
 
+        private InventoryStock()
+        {
+        }
+
         public InventoryStock(Guid itemId, Guid shelfId, int quantity)
         {
             ItemId = itemId;

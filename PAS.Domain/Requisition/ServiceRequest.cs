@@ -17,6 +17,11 @@ namespace Domain.Requisition
         public string Status { get; private set; }
 
         public ICollection<SR_Detail> Details { get; private set; } = new List<SR_Detail>();
+
+        private ServiceRequest()
+        {
+        }
+
         public ServiceRequest(string number, Guid requester)
         {
             SRNumber = number;

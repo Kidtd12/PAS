@@ -15,6 +15,10 @@ namespace Domain.Receiving
 
         public Guid ReceivedById { get; private set; }
 
+        private ReceivingNote()
+        {
+        }
+
         public ReceivingNote(string grn, Guid supplierId, Guid receiver)
         {
             GRNNumber = grn;

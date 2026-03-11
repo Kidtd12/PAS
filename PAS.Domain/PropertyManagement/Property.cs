@@ -30,18 +30,18 @@ namespace Domain.PropertyManagement
 
         public SafetyBox SafetyBox { get; private set; }
 
-        public Property(string tag, string name, string serial, Guid typeId,
-            decimal price, int qty, DateTime purchase, Guid locationId, Guid? boxId)
+        public Property(string tagNumber, string name, string serialNumber, Guid propertyTypeId,
+            decimal unitPrice, int quantity, DateTime purchaseDate, Guid locationId, Guid? safetyBoxId)
         {
-            TagNumber = tag;
+            TagNumber = tagNumber;
             Name = name;
-            SerialNumber = serial;
-            PropertyTypeId = typeId;
-            UnitPrice = price;
-            Quantity = qty;
-            PurchaseDate = purchase;
+            SerialNumber = serialNumber;
+            PropertyTypeId = propertyTypeId;
+            UnitPrice = unitPrice;
+            Quantity = quantity;
+            PurchaseDate = purchaseDate;
             LocationId = locationId;
-            SafetyBoxId = boxId;
+            SafetyBoxId = safetyBoxId;
         }
     }
 }

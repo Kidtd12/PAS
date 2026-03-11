@@ -10,6 +10,10 @@ namespace Domain.Receiving
 
         public string TinNumber { get; private set; }
 
+        private Supplier()
+        {
+        }
+
         public Supplier(string name, string contact, string tin)
         {
             SupplierName = name;

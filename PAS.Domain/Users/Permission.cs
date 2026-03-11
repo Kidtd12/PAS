@@ -1,5 +1,4 @@
-﻿
-using Domain.Common;
+﻿using Domain.Common;
 
 namespace Domain.Users
 {
@@ -8,6 +7,10 @@ namespace Domain.Users
         public string PermissionName { get; private set; }
 
         public string Description { get; private set; }
+
+        private Permission()
+        {
+        }
 
         public Permission(string name, string description)
         {

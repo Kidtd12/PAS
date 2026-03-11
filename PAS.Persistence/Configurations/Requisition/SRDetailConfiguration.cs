@@ -1,5 +1,6 @@
 ﻿using Domain.Catalog;
 using Domain.Requisition;
+using Domain.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -22,12 +23,12 @@ namespace Persistence.Configurations.Requisition
                 .HasForeignKey(s => s.SRId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne<ItemMaster>()
+            builder.HasOne(s => s.Item)
                 .WithMany()
                 .HasForeignKey(s => s.ItemId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<ShelfLocation>()
+            builder.HasOne(s => s.ShelfLocation)
                 .WithMany()
                 .HasForeignKey(s => s.ShelfId)
                 .OnDelete(DeleteBehavior.SetNull);
