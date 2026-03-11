@@ -17,6 +17,10 @@ namespace Domain.Catalog
 
         public int MinStockLevel { get; private set; }
 
+        private ItemMaster()
+        {
+        }
+
         public ItemMaster(string sku, string itemName, Guid categoryId, string uom, bool inspection, int minStock)
         {
             SKU = sku;

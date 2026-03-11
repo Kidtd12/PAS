@@ -6,6 +6,10 @@ namespace Domain.Workflow
     {
         public string StatusName { get; private set; }
 
+        private ApprovalStatus()
+        {
+        }
+
         public ApprovalStatus(string name)
         {
             StatusName = name;

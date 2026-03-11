@@ -14,6 +14,10 @@ namespace Domain.PropertyManagement
 
         public ICollection<SafetyBoxShelf> Shelves { get; private set; } = new List<SafetyBoxShelf>();
 
+        private SafetyBox()
+        {
+        }
+
         public SafetyBox(string boxNumber, int shelves, Guid locationId)
         {
             BoxNumber = boxNumber;

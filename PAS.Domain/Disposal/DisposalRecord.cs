@@ -17,6 +17,10 @@ namespace Domain.Disposal
 
         public DateTime UpdatedAt { get; private set; }
 
+        private DisposalRecord()
+        {
+        }
+
         public DisposalRecord(Guid itemId, int quantity, Guid disposedBy, string? reason = null)
         {
             ItemId = itemId;

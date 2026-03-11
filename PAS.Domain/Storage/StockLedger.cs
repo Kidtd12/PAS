@@ -17,6 +17,10 @@ namespace Domain.Storage
 
         public DateTime CreatedDate { get; private set; }
 
+        private StockLedger()
+        {
+        }
+
         public StockLedger(Guid itemId, Guid shelfId, int qty, string type, Guid refId)
         {
             ItemId = itemId;

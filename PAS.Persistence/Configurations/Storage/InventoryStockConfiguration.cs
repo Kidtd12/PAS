@@ -19,12 +19,12 @@ namespace Persistence.Configurations.Storage
                 .IsRequired()
                 .HasDefaultValue(0);
 
-            builder.HasOne<ItemMaster>()
+            builder.HasOne(i => i.Item)
                 .WithMany()
                 .HasForeignKey(i => i.ItemId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<ShelfLocation>()
+            builder.HasOne(i => i.ShelfLocation)
                 .WithMany()
                 .HasForeignKey(i => i.ShelfId)
                 .OnDelete(DeleteBehavior.Restrict);

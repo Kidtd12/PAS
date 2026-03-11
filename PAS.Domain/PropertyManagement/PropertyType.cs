@@ -1,5 +1,4 @@
-﻿
-using Domain.Common;
+﻿using Domain.Common;
 
 namespace Domain.PropertyManagement
 {
@@ -8,6 +7,10 @@ namespace Domain.PropertyManagement
         public string Name { get; private set; }
 
         public string Description { get; private set; }
+
+        private PropertyType()
+        {
+        }
 
         public PropertyType(string name, string description)
         {

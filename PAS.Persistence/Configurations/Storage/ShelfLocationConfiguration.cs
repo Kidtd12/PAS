@@ -25,8 +25,8 @@ namespace Persistence.Configurations.Storage
             builder.Property(s => s.QRCodeValue)
                 .HasMaxLength(200);
 
-            builder.HasOne<Warehouse>()
-                .WithMany()
+            builder.HasOne(s => s.Warehouse)
+                .WithMany(w => w.Shelves)
                 .HasForeignKey(s => s.WarehouseId)
                 .OnDelete(DeleteBehavior.Restrict);
 

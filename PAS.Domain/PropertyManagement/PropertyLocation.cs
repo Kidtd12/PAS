@@ -8,6 +8,10 @@ namespace Domain.PropertyManagement
 
         public string LocationType { get; private set; }
 
+        private PropertyLocation()
+        {
+        }
+
         public PropertyLocation(string name, string type)
         {
             Name = name;

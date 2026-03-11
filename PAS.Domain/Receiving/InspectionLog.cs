@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using Domain.Common;
 
 namespace Domain.Receiving
@@ -15,6 +14,10 @@ namespace Domain.Receiving
         public string DeviationNotes { get; private set; }
 
         public DateTime InspectionDate { get; private set; }
+
+        private InspectionLog()
+        {
+        }
 
         public InspectionLog(Guid receivingId, Guid inspector, bool passed, string notes)
         {

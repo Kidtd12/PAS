@@ -15,6 +15,10 @@ namespace Domain.TransferReturn
 
         public DateTime TransferDate { get; private set; }
 
+        private TransferRecord()
+        {
+        }
+
         public TransferRecord(Guid itemId, Guid from, Guid to, int qty)
         {
             ItemId = itemId;

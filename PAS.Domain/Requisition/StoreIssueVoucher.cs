@@ -15,6 +15,10 @@ namespace Domain.Requisition
 
         public string RecipientSignature { get; private set; }
 
+        private StoreIssueVoucher()
+        {
+        }
+
         public StoreIssueVoucher(Guid srId, Guid issuedBy, string signature)
         {
             SRId = srId;

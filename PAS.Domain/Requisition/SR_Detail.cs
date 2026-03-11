@@ -22,6 +22,10 @@ namespace Domain.Requisition
 
         public ShelfLocation? ShelfLocation { get; private set; }
 
+        private SR_Detail()
+        {
+        }
+
         public SR_Detail(Guid srId, Guid itemId, int requested)
         {
             SRId = srId;
