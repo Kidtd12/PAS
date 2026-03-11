@@ -25,6 +25,7 @@ namespace Persistence.Context
         // Storage
         public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<InventoryStock> InventoryStocks { get; set; }
+        public DbSet<StockLedger> StockLedgers { get; set; }
 
         // Property
         public DbSet<Property> Properties { get; set; }

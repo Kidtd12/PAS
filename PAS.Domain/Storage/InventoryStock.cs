@@ -1,5 +1,6 @@
 ﻿using System;
 using Domain.Common;
+using Domain.Catalog;
 
 namespace Domain.Storage
 {
@@ -19,6 +20,11 @@ namespace Domain.Storage
             ShelfId = shelfId;
             CurrentQuantity = quantity;
         }
+
+        // Navigation properties
+        public ItemMaster? Item { get; private set; }
+
+        public ShelfLocation? ShelfLocation { get; private set; }
 
         public bool CheckAvailability(int qty)
         {
