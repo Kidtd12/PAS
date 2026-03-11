@@ -23,6 +23,13 @@ namespace Domain.PropertyManagement
 
         public Guid? SafetyBoxId { get; private set; }
 
+        // Navigation properties
+        public PropertyType PropertyType { get; private set; }
+
+        public PropertyLocation Location { get; private set; }
+
+        public SafetyBox SafetyBox { get; private set; }
+
         public Property(string tag, string name, string serial, Guid typeId,
             decimal price, int qty, DateTime purchase, Guid locationId, Guid? boxId)
         {

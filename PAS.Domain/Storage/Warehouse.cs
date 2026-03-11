@@ -14,5 +14,8 @@ namespace Domain.Storage
             WarehouseName = name;
             LocationCode = code;
         }
+
+        // Navigation
+        public ICollection<ShelfLocation> Shelves { get; private set; } = new List<ShelfLocation>();
     }
 }
