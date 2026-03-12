@@ -11,6 +11,10 @@ namespace Domain.Workflow
 
         public int ApprovalLevel { get; private set; }
 
+        private Approver()
+        {
+        }
+
         public Approver(Guid workflowId, Guid userId, int level)
         {
             WorkflowId = workflowId;

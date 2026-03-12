@@ -1,4 +1,8 @@
+
 using Domain.Common;
+
+﻿using Domain.Common;
+
 
 namespace Domain.PropertyManagement
 {
@@ -10,6 +14,7 @@ namespace Domain.PropertyManagement
 
         private PropertyType()
         {
+
 
         }
 

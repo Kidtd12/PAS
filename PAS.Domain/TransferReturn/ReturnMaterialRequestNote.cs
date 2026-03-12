@@ -13,6 +13,10 @@ namespace Domain.TransferReturn
 
         public DateTime RequestDate { get; private set; }
 
+        private ReturnMaterialRequestNote()
+        {
+        }
+
         public ReturnMaterialRequestNote(Guid itemId, int qty, string reason)
         {
             ItemId = itemId;

@@ -16,11 +16,11 @@ namespace Domain.Catalog
 
         public ICollection<Category> SubCategories { get; private set; } = new List<Category>();
 
-        public Category(string name, string description, Guid? parentId = null)
+        public Category(string name, string description, Guid? parentCategoryId = null)
         {
             Name = name;
             Description = description;
-            ParentCategoryId = parentId;
+            ParentCategoryId = parentCategoryId;
         }
     }
 }

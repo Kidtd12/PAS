@@ -1,6 +1,7 @@
-﻿using Domain.Common;
+﻿using System;
+using Domain.Common;
 
-namespace ARMS.Domain.Disposal
+namespace Domain.Disposal
 {
     public class DisposalRecord : BaseEntity
     {
@@ -13,7 +14,12 @@ namespace ARMS.Domain.Disposal
         public Guid DisposedBy { get; private set; }
 
         public string Reason { get; private set; } = string.Empty;
+
         public DateTime UpdatedAt { get; private set; }
+
+        private DisposalRecord()
+        {
+        }
 
         public DisposalRecord(Guid itemId, int quantity, Guid disposedBy, string? reason = null)
         {

@@ -15,6 +15,10 @@ namespace Domain.Users
 
         public bool IsActive { get; private set; }
 
+        private UserLogin()
+        {
+        }
+
         public UserLogin(Guid employeeId, string username, string password, Guid roleId)
         {
             EmployeeId = employeeId;

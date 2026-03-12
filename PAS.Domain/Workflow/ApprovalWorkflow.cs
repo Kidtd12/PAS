@@ -8,6 +8,10 @@ namespace Domain.Workflow
 
         public string Description { get; private set; }
 
+        private ApprovalWorkflow()
+        {
+        }
+
         public ApprovalWorkflow(string name, string description)
         {
             WorkflowName = name;
