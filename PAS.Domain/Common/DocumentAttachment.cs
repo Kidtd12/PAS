@@ -14,13 +14,13 @@ namespace Domain.Common
 
         public string RelatedEntityName { get; private set; }
 
-        public DocumentAttachment(string fileName, string filePath, string type, Guid entityId, string entityName)
+        public DocumentAttachment(string fileName, string filePath, string contentType, Guid relatedEntityId, string relatedEntityName)
         {
             FileName = fileName;
             FilePath = filePath;
-            ContentType = type;
-            RelatedEntityId = entityId;
-            RelatedEntityName = entityName;
+            ContentType = contentType;
+            RelatedEntityId = relatedEntityId;
+            RelatedEntityName = relatedEntityName;
         }
     }
 }
