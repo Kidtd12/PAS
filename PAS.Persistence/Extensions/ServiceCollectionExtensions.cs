@@ -17,9 +17,7 @@ namespace Persistence.Extensions
                     configuration.GetConnectionString("DefaultConnection"),
                     b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-            // Repository and UnitOfWork registrations removed because implementations are not
-            // present in the workspace. Add them back when repository interfaces and classes
-            // are available under Persistence.Repositories.* namespaces.
+            
 
             return services;
         }

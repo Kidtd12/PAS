@@ -22,7 +22,7 @@ namespace Persistence.Configurations.Common
             builder.Property(a => a.ActionDate)
                 .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.HasOne<UserLogin>()
+            builder.HasOne(a => a.UserLogin)
                 .WithMany()
                 .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.Restrict);

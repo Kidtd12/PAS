@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Domain.Users;
+using Persistence.Identity;
 
 namespace Persistence.Configurations.Users
 {
@@ -18,6 +19,9 @@ namespace Persistence.Configurations.Users
                 .IsRequired()
                 .HasMaxLength(500);
 
+            builder.Property(u => u.AspNetUserId)
+                .HasMaxLength(450);
+
             builder.Property(u => u.IsActive)
                 .HasDefaultValue(true);
 
@@ -31,8 +35,14 @@ namespace Persistence.Configurations.Users
                 .HasForeignKey(u => u.RoleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(u => u.AspNetUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasIndex(u => u.Username).IsUnique();
             builder.HasIndex(u => u.EmployeeId).IsUnique();
+            builder.HasIndex(u => u.AspNetUserId).IsUnique().HasFilter("[AspNetUserId] IS NOT NULL");
         }
     }
 }
