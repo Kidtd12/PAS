@@ -23,11 +23,6 @@ namespace Persistence.Configurations.Requisition
                 .HasForeignKey(s => s.SRId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<UserLogin>()
-                .WithMany()
-                .HasForeignKey(s => s.IssuedById)
-                .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasIndex(s => s.SIVNumber).IsUnique();
         }
     }
