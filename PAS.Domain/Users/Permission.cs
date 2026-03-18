@@ -1,4 +1,5 @@
-﻿using Domain.Common;
+﻿using System;
+using Domain.Common;
 
 namespace Domain.Users
 {
@@ -8,14 +9,19 @@ namespace Domain.Users
 
         public string Description { get; private set; }
 
+        public Guid? RoleId { get; private set; }
+
+        public Role Role { get; private set; }
+
         private Permission()
         {
         }
 
-        public Permission(string name, string description)
+        public Permission(string name, string description, Guid? roleId = null)
         {
             PermissionName = name;
             Description = description;
+            RoleId = roleId;
         }
     }
 }

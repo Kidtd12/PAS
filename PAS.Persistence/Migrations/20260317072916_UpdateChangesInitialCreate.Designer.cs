@@ -12,8 +12,13 @@ using Persistence.Context;
 namespace PAS.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
+<<<<<<<< HEAD:PAS.Persistence/Migrations/20260317072916_UpdateChangesInitialCreate.Designer.cs
     [Migration("20260317072916_UpdateChangesInitialCreate")]
     partial class UpdateChangesInitialCreate
+========
+    [Migration("20260318082237_InitialCreate")]
+    partial class InitialCreate
+>>>>>>>> db3c9b6 (Add application feature folders and update EF Core migration/model changes):PAS.Persistence/Migrations/20260318082237_InitialCreate.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -202,12 +207,17 @@ namespace PAS.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<Guid?>("ServiceRequestId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FileName");
+
+                    b.HasIndex("ServiceRequestId");
 
                     b.HasIndex("RelatedEntityId", "RelatedEntityName");
 
@@ -454,6 +464,9 @@ namespace PAS.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<Guid?>("PropertyCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -461,6 +474,8 @@ namespace PAS.Persistence.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique();
+
+                    b.HasIndex("PropertyCategoryId");
 
                     b.ToTable("PropertyTypes", (string)null);
                 });
@@ -711,6 +726,9 @@ namespace PAS.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ApprovalStatusId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("ApprovedById")
                         .HasColumnType("uniqueidentifier");
 
@@ -740,6 +758,8 @@ namespace PAS.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApprovalStatusId");
 
                     b.HasIndex("ApprovedById");
 
@@ -1111,6 +1131,9 @@ namespace PAS.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<Guid?>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -1118,6 +1141,8 @@ namespace PAS.Persistence.Migrations
 
                     b.HasIndex("PermissionName")
                         .IsUnique();
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("Permissions", (string)null);
                 });
@@ -1546,6 +1571,16 @@ namespace PAS.Persistence.Migrations
                     b.Navigation("UserLogin");
                 });
 
+            modelBuilder.Entity("Domain.Common.DocumentAttachment", b =>
+                {
+                    b.HasOne("Domain.Requisition.ServiceRequest", "ServiceRequest")
+                        .WithMany()
+                        .HasForeignKey("ServiceRequestId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ServiceRequest");
+                });
+
             modelBuilder.Entity("Domain.Common.Notification", b =>
                 {
                     b.HasOne("Domain.Users.UserLogin", null)
@@ -1588,6 +1623,16 @@ namespace PAS.Persistence.Migrations
                     b.Navigation("PropertyType");
 
                     b.Navigation("SafetyBox");
+                });
+
+            modelBuilder.Entity("Domain.PropertyManagement.PropertyType", b =>
+                {
+                    b.HasOne("Domain.PropertyManagement.PropertyCategory", "PropertyCategory")
+                        .WithMany()
+                        .HasForeignKey("PropertyCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("PropertyCategory");
                 });
 
             modelBuilder.Entity("Domain.PropertyManagement.SafetyBox", b =>
@@ -1664,6 +1709,11 @@ namespace PAS.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Requisition.ServiceRequest", b =>
                 {
+                    b.HasOne("Domain.Workflow.ApprovalStatus", "ApprovalStatus")
+                        .WithMany()
+                        .HasForeignKey("ApprovalStatusId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Domain.Users.UserLogin", null)
                         .WithMany()
                         .HasForeignKey("ApprovedById")
@@ -1674,6 +1724,8 @@ namespace PAS.Persistence.Migrations
                         .HasForeignKey("RequesterId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("ApprovalStatus");
                 });
 
             modelBuilder.Entity("Domain.Requisition.StoreIssueVoucher", b =>
@@ -1758,6 +1810,16 @@ namespace PAS.Persistence.Migrations
                         .HasForeignKey("ToLocationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Users.Permission", b =>
+                {
+                    b.HasOne("Domain.Users.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("Domain.Users.UserLogin", b =>

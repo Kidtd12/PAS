@@ -1,9 +1,7 @@
-
 using System;
-
-﻿using System;
 using System.Collections.Generic;
 using Domain.Common;
+using Domain.Workflow;
 
 namespace Domain.Requisition
 {
@@ -15,9 +13,13 @@ namespace Domain.Requisition
 
         public Guid? ApprovedById { get; private set; }
 
+        public Guid? ApprovalStatusId { get; private set; }
+
         public DateTime RequestDate { get; private set; }
 
         public string Status { get; private set; }
+
+        public ApprovalStatus ApprovalStatus { get; private set; }
 
         public ICollection<SR_Detail> Details { get; private set; } = new List<SR_Detail>();
 

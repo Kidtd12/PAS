@@ -1,9 +1,6 @@
-
-using Microsoft.EntityFrameworkCore;
-
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Domain.Common;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Persistence.Configurations.Common
 {
@@ -29,8 +26,14 @@ namespace Persistence.Configurations.Common
                 .IsRequired()
                 .HasMaxLength(100);
 
+            builder.HasOne(d => d.ServiceRequest)
+                .WithMany()
+                .HasForeignKey(d => d.ServiceRequestId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasIndex(d => new { d.RelatedEntityId, d.RelatedEntityName });
             builder.HasIndex(d => d.FileName);
+            builder.HasIndex(d => d.ServiceRequestId);
         }
     }
 }
