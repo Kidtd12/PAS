@@ -296,8 +296,6 @@ namespace PAS.Persistence.Migrations
 
                     b.HasIndex("DisposalDate");
 
-                    b.HasIndex("DisposedBy");
-
                     b.HasIndex("ItemId");
 
                     b.ToTable("DisposalRecords", (string)null);
@@ -802,8 +800,6 @@ namespace PAS.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IssuedById");
 
                     b.HasIndex("SIVNumber")
                         .IsUnique();
@@ -1588,12 +1584,6 @@ namespace PAS.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Disposal.DisposalRecord", b =>
                 {
-                    b.HasOne("Domain.Users.UserLogin", null)
-                        .WithMany()
-                        .HasForeignKey("DisposedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Domain.Catalog.ItemMaster", null)
                         .WithMany()
                         .HasForeignKey("ItemId")
@@ -1732,12 +1722,6 @@ namespace PAS.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Requisition.StoreIssueVoucher", b =>
                 {
-                    b.HasOne("Domain.Users.UserLogin", null)
-                        .WithMany()
-                        .HasForeignKey("IssuedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Domain.Requisition.ServiceRequest", null)
                         .WithMany()
                         .HasForeignKey("SRId")

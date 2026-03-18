@@ -20,10 +20,10 @@ namespace Persistence.Configurations.Disposal
                 .HasForeignKey(d => d.ItemId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<UserLogin>()
-                .WithMany()
-                .HasForeignKey(d => d.DisposedBy)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.HasOne<UserLogin>()
+            //    .WithMany()
+            //    .HasForeignKey(d => d.DisposedBy)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(d => d.DisposalDate);
         }
