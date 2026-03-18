@@ -1,8 +1,6 @@
-
-using Microsoft.EntityFrameworkCore;
-
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Domain.PropertyManagement;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Persistence.Configurations.PropertyManagement
 {
@@ -19,7 +17,13 @@ namespace Persistence.Configurations.PropertyManagement
             builder.Property(p => p.Description)
                 .HasMaxLength(500);
 
+            builder.HasOne(p => p.PropertyCategory)
+                .WithMany()
+                .HasForeignKey(p => p.PropertyCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasIndex(p => p.Name).IsUnique();
+            builder.HasIndex(p => p.PropertyCategoryId);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Domain.Requisition;
 
 namespace Domain.Common
 {
@@ -14,13 +15,18 @@ namespace Domain.Common
 
         public string RelatedEntityName { get; private set; }
 
-        public DocumentAttachment(string fileName, string filePath, string contentType, Guid relatedEntityId, string relatedEntityName)
+        public Guid? ServiceRequestId { get; private set; }
+
+        public ServiceRequest ServiceRequest { get; private set; }
+
+        public DocumentAttachment(string fileName, string filePath, string contentType, Guid relatedEntityId, string relatedEntityName, Guid? serviceRequestId = null)
         {
             FileName = fileName;
             FilePath = filePath;
             ContentType = contentType;
             RelatedEntityId = relatedEntityId;
             RelatedEntityName = relatedEntityName;
+            ServiceRequestId = serviceRequestId;
         }
     }
 }

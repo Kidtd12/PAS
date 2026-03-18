@@ -1,8 +1,5 @@
-
+using System;
 using Domain.Common;
-
-﻿using Domain.Common;
-
 
 namespace Domain.PropertyManagement
 {
@@ -12,16 +9,19 @@ namespace Domain.PropertyManagement
 
         public string Description { get; private set; }
 
+        public Guid? PropertyCategoryId { get; private set; }
+
+        public PropertyCategory PropertyCategory { get; private set; }
+
         private PropertyType()
         {
-
-
         }
 
-        public PropertyType(string name, string description)
+        public PropertyType(string name, string description, Guid? propertyCategoryId = null)
         {
             Name = name;
             Description = description;
+            PropertyCategoryId = propertyCategoryId;
         }
     }
 }
