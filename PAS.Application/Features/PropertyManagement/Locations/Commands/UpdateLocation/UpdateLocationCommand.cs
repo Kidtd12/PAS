@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.PropertyManagement.Locations.Commands.UpdateLocation
+namespace Application.Features.PropertyManagement.Locations.Commands.UpdateLocation;
+
+[Authorize(Permissions = Permissions.Locations.Edit)]
+public record UpdateLocationCommand : IRequest<Result>
 {
-    internal class UpdateLocationCommand
-    {
-    }
+    public Guid Id { get; init; }
+    public string Name { get; init; } = string.Empty;
+    public string LocationType { get; init; } = string.Empty;
 }

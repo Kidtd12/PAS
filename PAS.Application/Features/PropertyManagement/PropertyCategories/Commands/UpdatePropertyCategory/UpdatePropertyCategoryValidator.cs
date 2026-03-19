@@ -1,12 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace PAS.Application.Features.PropertyManagement.PropertyCategories.Commands.UpdatePropertyCategory
+namespace Application.Features.PropertyManagement.PropertyCategories.Commands.UpdatePropertyCategory;
+
+public class UpdatePropertyCategoryCommandValidator : AbstractValidator<UpdatePropertyCategoryCommand>
 {
-    internal class UpdatePropertyCategoryValidator
+    public UpdatePropertyCategoryCommandValidator()
     {
+        RuleFor(v => v.Id)
+            .NotEmpty().WithMessage("Id is required.");
+
+        RuleFor(v => v.Name)
+            .NotEmpty().WithMessage("Name is required.")
+            .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
+
+        RuleFor(v => v.Description)
+            .MaximumLength(500).WithMessage("Description must not exceed 500 characters.");
     }
 }

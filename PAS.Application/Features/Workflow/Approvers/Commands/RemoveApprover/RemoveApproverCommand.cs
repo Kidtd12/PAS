@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.Workflow.Approvers.Commands.RemoveApprover
-{
-    internal class RemoveApproverCommand
-    {
-    }
-}
+namespace Application.Features.Workflow.Approvers.Commands.RemoveApprover;
+
+[Authorize(Permissions = Permissions.Workflow.Assign)]
+public record RemoveApproverCommand(Guid Id) : IRequest<Result>;

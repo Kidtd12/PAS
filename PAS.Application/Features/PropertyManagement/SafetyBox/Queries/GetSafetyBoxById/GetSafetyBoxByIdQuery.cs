@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.PropertyManagement.SafetyBoxes.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.PropertyManagement.SafetyBox.Queries.GetSafetyBoxById
-{
-    internal class GetSafetyBoxByIdQuery
-    {
-    }
-}
+namespace Application.Features.PropertyManagement.SafetyBoxes.Queries.GetSafetyBoxById;
+
+[Authorize(Permissions = Permissions.SafetyBoxes.View)]
+public record GetSafetyBoxByIdQuery(Guid Id) : IRequest<Result<SafetyBoxDetailDto>>;

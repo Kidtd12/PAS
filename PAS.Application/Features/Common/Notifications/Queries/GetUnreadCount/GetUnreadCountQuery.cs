@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.Common.Notifications.Queries.GetUnreadCount
-{
-    internal class GetUnreadCountQuery
-    {
-    }
-}
+namespace Application.Features.Common.Notifications.Queries.GetUnreadCount;
+
+[Authorize(Permissions = Permissions.Notifications.View)]
+public record GetUnreadCountQuery : IRequest<Result<int>>;

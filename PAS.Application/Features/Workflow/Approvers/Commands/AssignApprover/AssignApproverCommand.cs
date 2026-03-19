@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.Workflow.Approvers.Commands.AssignApprover
+namespace Application.Features.Workflow.Approvers.Commands.AssignApprover;
+
+[Authorize(Permissions = Permissions.Workflow.Assign)]
+public record AssignApproverCommand : IRequest<Result<Guid>>
 {
-    internal class AssignApproverCommand
-    {
-    }
+    public Guid WorkflowId { get; init; }
+    public Guid UserId { get; init; }
+    public int ApprovalLevel { get; init; }
 }

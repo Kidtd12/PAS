@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.Catalog.Categories.Commands.CreateCategory
+namespace Application.Features.Catalog.Categories.Commands.CreateCategory;
+
+[Authorize(Permissions = Permissions.Categories.Create)]
+public record CreateCategoryCommand : IRequest<Result<Guid>>
 {
-    internal class CreateCategoryCommand
-    {
-    }
+    public string Name { get; init; } = string.Empty;
+    public string Description { get; init; } = string.Empty;
+    public Guid? ParentCategoryId { get; init; }
 }

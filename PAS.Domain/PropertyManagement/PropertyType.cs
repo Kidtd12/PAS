@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Domain.Common;
 
 namespace Domain.PropertyManagement
@@ -12,6 +13,8 @@ namespace Domain.PropertyManagement
         public Guid? PropertyCategoryId { get; private set; }
 
         public PropertyCategory PropertyCategory { get; private set; }
+
+        public ICollection<Property> Properties { get; private set; } = new List<Property>();
 
         private PropertyType()
         {

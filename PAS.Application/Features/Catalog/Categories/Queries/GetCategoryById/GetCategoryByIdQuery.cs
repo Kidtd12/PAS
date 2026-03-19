@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Catalog.Categories.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Catalog.Categories.Queries.GetCategoryById
-{
-    internal class GetCategoryByIdQuery
-    {
-    }
-}
+namespace Application.Features.Catalog.Categories.Queries.GetCategoryById;
+
+[Authorize(Permissions = Permissions.Categories.View)]
+public record GetCategoryByIdQuery(Guid Id) : IRequest<Result<CategoryDetailDto>>;

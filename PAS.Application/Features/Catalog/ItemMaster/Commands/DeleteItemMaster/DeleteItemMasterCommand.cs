@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.Catalog.ItemMaster.Commands.DeleteItemMaster
-{
-    internal class DeleteItemMasterCommand
-    {
-    }
-}
+namespace Application.Features.Catalog.ItemMasters.Commands.DeleteItemMaster;
+
+[Authorize(Permissions = Permissions.Items.Delete)]
+public record DeleteItemMasterCommand(Guid Id) : IRequest<Result>;
