@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Features.Users.Authentication.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Users.Authentication.Commands.LoginUser
+namespace Application.Features.Users.Authentication.Commands;
+
+public record LoginUserCommand : IRequest<Result<AuthResultDto>>
 {
-    internal class LoginUserCommand
-    {
-    }
+    public string Username { get; init; } = string.Empty;
+    public string Password { get; init; } = string.Empty;
+    public bool RememberMe { get; init; }
 }

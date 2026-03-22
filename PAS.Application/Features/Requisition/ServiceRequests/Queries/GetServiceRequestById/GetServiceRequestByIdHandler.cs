@@ -1,12 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Features.Requisition.ServiceRequests.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Requisition.ServiceRequests.Queries.GetServiceRequestById
+namespace Application.Features.Requisition.ServiceRequests.Queries;
+
+public class GetServiceRequestByIdQueryHandler : IRequestHandler<GetServiceRequestByIdQuery, Result<ServiceRequestDetailDto>>
 {
-    internal class GetServiceRequestByIdHandler
+    private readonly IApplicationDbContext _context;
+    private readonly IMapper _mapper;
+
+    public GetServiceRequestByIdQueryHandler(IApplicationDbContext context, IMapper mapper)
     {
+        _context = context;
+        _mapper = mapper;
+    }
+
+    public async Task<Result<ServiceRequestDetailDto>> Handle(GetServiceRequestByIdQuery request, CancellationToken cancellationToken)
+    {
+        var serviceRequest = await _context.ServiceRequests
+            .Include(s => s.Requester)
+                .ThenInclude(r => r.Employee)
+            .Include(s => s.ApprovedBy)
+            .Include(s => s.Details)
+                .ThenInclude(d => d.Item)
+            .Include(s => s.Details)
+                .ThenInclude(d => d.Shelf)
+            .Include(s => s.StoreIssueVoucher)
+                .ThenInclude(siv => siv.IssuedBy)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == request.Id && !s.IsDeleted, cancellationToken);
+
+        if (serviceRequest == null)
+        {
+            throw new NotFoundException(nameof(Domain.Requisition.ServiceRequest), request.Id);
+        }
+
+        var requestDto = _mapper.Map<ServiceRequestDetailDto>(serviceRequest);
+
+        // Get available stock for each item
+        foreach (var item in requestDto.Items)
+        {
+            var availableStock = await _context.InventoryStocks
+                .Where(i => i.ItemId == item.ItemId && !i.IsDeleted)
+                .SumAsync(i => i.CurrentQuantity - i.ReservedQuantity, cancellationToken);
+
+            item.AvailableStock = availableStock;
+        }
+
+        return Result<ServiceRequestDetailDto>.Success(requestDto);
     }
 }

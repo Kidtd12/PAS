@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Events;
+using MediatR;
 
-namespace PAS.Application.Features.Users.Employees.Commands.DeleteEmployee
-{
-    internal class DeleteEmployeeCommand
-    {
-    }
-}
+namespace Application.Features.Users.Employees.Commands;
+
+[Authorize(Permissions = Permissions.Employees.Delete)]
+public record DeleteEmployeeCommand(Guid Id) : IRequest<Result>;

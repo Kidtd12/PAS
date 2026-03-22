@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Users.Employees.Dtos;
+using MediatR;
+using PAS.Application.Features.Users.Employees.DTOs;
 
-namespace PAS.Application.Features.Users.Employees.Queries.GetEmployeeByUserId
-{
-    internal class GetEmployeeByUserIdQuery
-    {
-    }
-}
+namespace Application.Features.Users.Employees.Queries;
+
+[Authorize(Permissions = Permissions.Employees.View)]
+public record GetEmployeeByUserIdQuery(Guid UserId) : IRequest<Result<EmployeeDetailDto>>;

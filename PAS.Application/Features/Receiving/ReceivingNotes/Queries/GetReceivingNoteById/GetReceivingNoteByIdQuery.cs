@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Receiving.ReceivingNotes.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Receiving.ReceivingNotes.Queries.GetReceivingNoteById
-{
-    internal class GetReceivingNoteByIdQuery
-    {
-    }
-}
+namespace Application.Features.Receiving.ReceivingNotes.Queries;
+
+[Authorize(Permissions = Permissions.Receiving.View)]
+public record GetReceivingNoteByIdQuery(Guid Id) : IRequest<Result<ReceivingNoteDetailDto>>;

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Storage.ShelfLocations.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Storage.ShelfLocations.Queries.GetShelfLocationById
-{
-    internal class GetShelfLocationByIdQuery
-    {
-    }
-}
+namespace Application.Features.Storage.ShelfLocations.Queries;
+
+[Authorize(Permissions = Permissions.ShelfLocations.View)]
+public record GetShelfLocationByIdQuery(Guid Id) : IRequest<Result<ShelfLocationDetailDto>>;

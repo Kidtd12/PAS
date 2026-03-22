@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Users.Employees.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Users.Employees.Queries.GetEmployees
+namespace Application.Features.Users.Employees.Queries;
+
+[Authorize(Permissions = Permissions.Employees.View)]
+public record GetEmployeesQuery : IRequest<Result<PaginatedList<EmployeeListDto>>>
 {
-    internal class GetEmployeesQuery
-    {
-    }
+    public string? SearchTerm { get; init; }
+    public string? Department { get; init; }
+    public bool? IsActive { get; init; }
+    public bool? HasUserAccount { get; init; }
+    public int PageNumber { get; init; } = 1;
+    public int PageSize { get; init; } = 10;
 }

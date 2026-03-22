@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Events;
+using Application.Features.Requisition.ServiceRequests.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Requisition.ServiceRequests.Commands.CreateServiceRequest
+namespace Application.Features.Requisition.ServiceRequests.Commands;
+
+[Authorize(Permissions = Permissions.Requisitions.Create)]
+public record CreateServiceRequestCommand : IRequest<Result<Guid>>
 {
-    internal class CreateServiceRequestCommand
-    {
-    }
+    public List<ServiceRequestItemDto> Items { get; init; } = new();
+    public string? Remarks { get; init; }
 }

@@ -1,12 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Events;
+using MediatR;
 
-namespace PAS.Application.Features.Receiving.ReceivingNotes.Commands.CreateReceivingNote
+namespace Application.Features.Receiving.ReceivingNotes.Commands;
+
+[Authorize(Permissions = Permissions.Receiving.Create)]
+public record CreateReceivingNoteCommand : IRequest<Result<Guid>>
 {
-    internal class CreateReceivingNoteCommand
-    {
-    }
+    public string GRNNumber { get; init; } = string.Empty;
+    public Guid SupplierId { get; init; }
+    public string PONumber { get; init; } = string.Empty;
+    public string InvoiceNumber { get; init; } = string.Empty;
+    public DateTime? InvoiceDate { get; init; }
+    public string DeliveryNoteNumber { get; init; } = string.Empty;
+    public string VehicleNumber { get; init; } = string.Empty;
+    public string DriverName { get; init; } = string.Empty;
+    public string Remarks { get; init; } = string.Empty;
+    public List<ReceivingNoteItemDto> Items { get; init; } = new();
 }

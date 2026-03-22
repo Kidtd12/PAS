@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Events;
+using MediatR;
 
-namespace PAS.Application.Features.TransferReturn.TransferRecords.Commands
+namespace Application.Features.TransferReturn.TransferRecords.Commands;
+
+[Authorize(Permissions = Permissions.TransferReturn.Approve)]
+public record ApproveTransferCommand : IRequest<Result>
 {
-    internal class ApproveTransferCommand
-    {
-    }
+    public Guid Id { get; init; }
+    public bool IsApproved { get; init; }
+    public string? Remarks { get; init; }
 }

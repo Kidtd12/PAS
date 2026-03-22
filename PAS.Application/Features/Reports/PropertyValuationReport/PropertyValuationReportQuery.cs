@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
+using Application.Features.Reports.PropertyValuationReport.Dtos;
 
-namespace PAS.Application.Features.Reports.PropertyValuationReport
+namespace Application.Features.Reports.PropertyValuationReport;
+
+[Authorize(Permissions = Permissions.Reports.View)]
+public record PropertyValuationReportQuery : IRequest<Result<PropertyValuationReportDto>>
 {
-    internal class PropertyValuationReportQuery
-    {
-    }
+    public DateTime? AsOfDate { get; init; }
+    public Guid? LocationId { get; init; }
+    public Guid? PropertyTypeId { get; init; }
+    public Guid? PropertyCategoryId { get; init; }
+    public decimal? MinValue { get; init; }
+    public decimal? MaxValue { get; init; }
+    public string? SearchTerm { get; init; }
 }

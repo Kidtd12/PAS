@@ -1,12 +1,69 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
-namespace PAS.Application.Features.Users.Employees.Commands.DeleteEmployee
+namespace Application.Features.Users.Employees.Commands;
+
+public class DeleteEmployeeCommandHandler : IRequestHandler<DeleteEmployeeCommand, Result>
 {
-    internal class DeleteEmployeeHandler
+    private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
+    private readonly IMediator _mediator;
+
+    public DeleteEmployeeCommandHandler(
+        IApplicationDbContext context,
+        ICurrentUserService currentUser,
+        IMediator mediator)
     {
+        _context = context;
+        _currentUser = currentUser;
+        _mediator = mediator;
+    }
+
+    public async Task<Result> Handle(DeleteEmployeeCommand request, CancellationToken cancellationToken)
+    {
+        if (!_currentUser.UserGuid.HasValue)
+        {
+            return Result.Failure("User not authenticated.");
+        }
+
+        var employee = await _context.Employees
+            .Include(e => e.UserLogin)
+            .FirstOrDefaultAsync(e => e.Id == request.Id && !e.IsDeleted, cancellationToken);
+
+        if (employee == null)
+        {
+            throw new NotFoundException(nameof(Domain.Users.Employee), request.Id);
+        }
+
+        // Check if employee has associated records
+        var userLoginId = employee.UserLogin?.Id;
+        var hasActivity = userLoginId.HasValue && await _context.AuditTrails
+            .AnyAsync(a => a.UserId == userLoginId.Value, cancellationToken);
+
+        if (hasActivity)
+        {
+            return Result.Failure("Cannot delete employee with system activity. Consider deactivating instead.");
+        }
+
+        employee.SoftDelete();
+
+        // Also soft delete user account if exists
+        if (employee.UserLogin != null && !employee.UserLogin.IsDeleted)
+        {
+            employee.UserLogin.SoftDelete();
+        }
+
+        // Create audit trail
+        var auditTrail = new AuditTrail(
+            _currentUser.UserGuid.Value,
+            "DELETE",
+            nameof(Domain.Users.Employee),
+            employee.Id);
+        _context.AuditTrails.Add(auditTrail);
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        await _mediator.Publish(new EntityDeletedEvent<Domain.Users.Employee>(employee, _currentUser.UserGuid), cancellationToken);
+
+        return Result.Success();
     }
 }

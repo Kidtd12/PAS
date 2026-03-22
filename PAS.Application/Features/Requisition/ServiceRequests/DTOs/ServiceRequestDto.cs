@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PAS.Application.Features.Requisition.ServiceRequests.DTOs
+namespace Application.Features.Requisition.ServiceRequests.Dtos
 {
-    internal class ServiceRequestDto
+    public class ServiceRequestDto
     {
+        public Guid Id { get; set; }
+        public string SRNumber { get; set; } = string.Empty;
+        public DateTime RequestDate { get; set; }
+        public string Status { get; set; } = string.Empty;
     }
 }

@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Reports.StockMovementReport.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Reports.StockMovementReport
+namespace Application.Features.Reports.StockMovementReport;
+
+[Authorize(Permissions = Permissions.Reports.View)]
+public record StockMovementReportQuery : IRequest<Result<StockMovementReportDto>>
 {
-    internal class StockMovementReportQuery
-    {
-    }
+    public DateTime FromDate { get; init; }
+    public DateTime ToDate { get; init; }
+    public Guid? ItemId { get; init; }
+    public Guid? WarehouseId { get; init; }
+    public string? TransactionType { get; init; }
 }

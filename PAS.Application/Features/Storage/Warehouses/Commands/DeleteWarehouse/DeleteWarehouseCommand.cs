@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Events;
+using MediatR;
 
-namespace PAS.Application.Features.Storage.Warehouses.Commands.DeleteWarehouse
-{
-    internal class DeleteWarehouseCommand
-    {
-    }
-}
+namespace Application.Features.Storage.Warehouses.Commands;
+
+[Authorize(Permissions = Permissions.Warehouses.Delete)]
+public record DeleteWarehouseCommand(Guid Id) : IRequest<Result>;

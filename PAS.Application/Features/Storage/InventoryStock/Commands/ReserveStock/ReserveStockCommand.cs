@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Events;
+using MediatR;
 
-namespace PAS.Application.Features.Storage.InventoryStock.Commands.ReserveStock
+namespace Application.Features.Storage.InventoryStock.Commands;
+
+[Authorize(Permissions = Permissions.Inventory.Reserve)]
+public record ReserveStockCommand : IRequest<Result>
 {
-    internal class ReserveStockCommand
-    {
-    }
+    public Guid ItemId { get; init; }
+    public int Quantity { get; init; }
+    public Guid? ShelfId { get; init; }
+    public Guid ReferenceId { get; init; }
+    public string ReferenceType { get; init; } = string.Empty;
 }
