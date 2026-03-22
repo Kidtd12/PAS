@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.Common.DocumentAttachments.Commands.DeleteDocument
-{
-    internal class DeleteDocumentCommand
-    {
-    }
-}
+namespace Application.Features.Common.DocumentAttachments.Commands.DeleteDocument;
+
+[Authorize(Permissions = Permissions.Documents.Delete)]
+public record DeleteDocumentCommand(Guid Id) : IRequest<Result>;

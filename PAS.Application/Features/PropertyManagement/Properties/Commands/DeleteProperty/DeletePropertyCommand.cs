@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.PropertyManagement.Properties.Commands.DeleteProperty
-{
-    internal class DeletePropertyCommand
-    {
-    }
-}
+namespace Application.Features.PropertyManagement.Properties.Commands.DeleteProperty;
+
+[Authorize(Permissions = Permissions.Properties.Edit)]
+public record DeletePropertyCommand(Guid Id) : IRequest<Result>;

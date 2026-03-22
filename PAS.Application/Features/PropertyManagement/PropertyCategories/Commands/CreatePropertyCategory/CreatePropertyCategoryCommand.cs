@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.PropertyManagement.PropertyCategories.Commands.CreatePropertyCategory
+namespace Application.Features.PropertyManagement.PropertyCategories.Commands.CreatePropertyCategory;
+
+[Authorize(Permissions = Permissions.PropertyCategories.Create)]
+public record CreatePropertyCategoryCommand : IRequest<Result<Guid>>
 {
-    internal class CreatePropertyCategoryCommand
-    {
-    }
+    public string Name { get; init; } = string.Empty;
+    public string Description { get; init; } = string.Empty;
 }

@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.PropertyManagement.Locations.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.PropertyManagement.Locations.Queries.GetLocations
+namespace Application.Features.PropertyManagement.Locations.Queries.GetLocations;
+
+[Authorize(Permissions = Permissions.Locations.View)]
+public record GetLocationsQuery : IRequest<Result<List<LocationDto>>>
 {
-    internal class GetLocationsQuery
-    {
-    }
+    public string? LocationType { get; init; }
+    public string? SearchTerm { get; init; }
 }

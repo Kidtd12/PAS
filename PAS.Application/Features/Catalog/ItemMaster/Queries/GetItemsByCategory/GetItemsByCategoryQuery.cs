@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Catalog.ItemMasters.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Catalog.ItemMaster.Queries.GetItemsByCategory
-{
-    internal class GetItemsByCategoryQuery
-    {
-    }
-}
+namespace Application.Features.Catalog.ItemMasters.Queries.GetItemsByCategory;
+
+[Authorize(Permissions = Permissions.Items.View)]
+public record GetItemsByCategoryQuery(Guid CategoryId) : IRequest<Result<List<ItemMasterListDto>>>;

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Common.DocumentAttachments.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Common.DocumentAttachments.Queries.GetDocumentById
-{
-    internal class GetDocumentByIdQuery
-    {
-    }
-}
+namespace Application.Features.Common.DocumentAttachments.Queries.GetDocumentById;
+
+[Authorize(Permissions = Permissions.Documents.View)]
+public record GetDocumentByIdQuery(Guid Id) : IRequest<Result<DocumentAttachmentDto>>;

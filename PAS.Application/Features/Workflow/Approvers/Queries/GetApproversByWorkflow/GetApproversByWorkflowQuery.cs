@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Workflow.Approvers.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Workflow.Approvers.Queries.GetApproversByWorkflow
-{
-    internal class GetApproversByWorkflowQuery
-    {
-    }
-}
+namespace Application.Features.Workflow.Approvers.Queries.GetApproversByWorkflow;
+
+[Authorize(Permissions = Permissions.Workflow.View)]
+public record GetApproversByWorkflowQuery(Guid WorkflowId) : IRequest<Result<List<ApproverDto>>>;

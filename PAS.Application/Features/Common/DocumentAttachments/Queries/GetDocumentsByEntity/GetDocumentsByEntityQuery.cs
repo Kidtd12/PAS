@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Common.DocumentAttachments.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Common.DocumentAttachments.Queries.GetDocumentsByEntity
+namespace Application.Features.Common.DocumentAttachments.Queries.GetDocumentsByEntity;
+
+[Authorize(Permissions = Permissions.Documents.View)]
+public record GetDocumentsByEntityQuery : IRequest<Result<List<DocumentAttachmentDto>>>
 {
-    internal class GetDocumentsByEntityQuery
-    {
-    }
+    public string EntityName { get; init; } = string.Empty;
+    public Guid EntityId { get; init; }
 }

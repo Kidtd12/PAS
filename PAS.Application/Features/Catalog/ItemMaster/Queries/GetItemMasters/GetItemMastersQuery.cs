@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Catalog.ItemMasters.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Catalog.ItemMaster.Queries.GetItemMasters
+namespace Application.Features.Catalog.ItemMasters.Queries.GetItemMasters;
+
+[Authorize(Permissions = Permissions.Items.View)]
+public record GetItemMastersQuery : IRequest<Result<PaginatedList<ItemMasterListDto>>>
 {
-    internal class GetItemMastersQuery
-    {
-    }
+    public string? SearchTerm { get; init; }
+    public Guid? CategoryId { get; init; }
+    public bool? LowStockOnly { get; init; }
+    public bool? RequiresInspection { get; init; }
+    public int PageNumber { get; init; } = 1;
+    public int PageSize { get; init; } = 10;
 }

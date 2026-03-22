@@ -17,6 +17,10 @@ namespace Domain.Users
 
         public bool IsActive { get; private set; }
 
+        public Employee Employee { get; private set; }
+
+        public Role Role { get; private set; }
+
         private UserLogin()
         {
         }

@@ -18,6 +18,8 @@ namespace Domain.Common
         // Navigation property
         public UserLogin UserLogin { get; private set; }
 
+        public UserLogin User => UserLogin;
+
         public AuditTrail(Guid userId, string action, string entityName, Guid entityId)
         {
             UserId = userId;

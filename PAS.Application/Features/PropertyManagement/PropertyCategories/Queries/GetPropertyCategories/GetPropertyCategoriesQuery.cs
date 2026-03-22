@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.PropertyManagement.PropertyCategories.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.PropertyManagement.PropertyCategories.Queries.GetPropertyCategories
+namespace Application.Features.PropertyManagement.PropertyCategories.Queries.GetPropertyCategories;
+
+[Authorize(Permissions = Permissions.PropertyCategories.View)]
+public record GetPropertyCategoriesQuery : IRequest<Result<List<PropertyCategoryDto>>>
 {
-    internal class GetPropertyCategoriesQuery
-    {
-    }
+    public string? SearchTerm { get; init; }
 }

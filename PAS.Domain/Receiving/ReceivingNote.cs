@@ -1,5 +1,6 @@
 ﻿using System;
 using Domain.Common;
+using Domain.Users;
 
 namespace Domain.Receiving
 {
@@ -14,6 +15,10 @@ namespace Domain.Receiving
         public string Status { get; private set; }
 
         public Guid ReceivedById { get; private set; }
+
+        public Supplier Supplier { get; private set; }
+
+        public UserLogin ReceivedBy { get; private set; }
 
         private ReceivingNote()
         {

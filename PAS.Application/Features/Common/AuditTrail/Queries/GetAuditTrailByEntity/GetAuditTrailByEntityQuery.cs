@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Common.AuditTrail.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Common.AuditTrail.Queries.GetAuditTrailByEntity
+namespace Application.Features.Common.AuditTrail.Queries.GetAuditTrailByEntity;
+
+[Authorize(Permissions = Permissions.AuditTrail.View)]
+public record GetAuditTrailByEntityQuery : IRequest<Result<List<AuditTrailDto>>>
 {
-    internal class GetAuditTrailByEntityQuery
-    {
-    }
+    public string EntityName { get; init; } = string.Empty;
+    public Guid EntityId { get; init; }
 }

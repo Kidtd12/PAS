@@ -1,5 +1,6 @@
 ﻿using System;
 using Domain.Common;
+using Domain.Users;
 
 namespace Domain.Workflow
 {
@@ -10,6 +11,10 @@ namespace Domain.Workflow
         public Guid UserId { get; private set; }
 
         public int ApprovalLevel { get; private set; }
+
+        public ApprovalWorkflow Workflow { get; private set; }
+
+        public UserLogin User { get; private set; }
 
         private Approver()
         {

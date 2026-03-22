@@ -1,12 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Features.Common.AuditTrail.Dtos;
+using AutoMapper;
+using MediatR;
 
-namespace PAS.Application.Features.Common.AuditTrail.Queries.GetAuditTrailByEntity
+namespace Application.Features.Common.AuditTrail.Queries.GetAuditTrailByEntity;
+
+public class GetAuditTrailByEntityHandler : IRequestHandler<GetAuditTrailByEntityQuery, Result<List<AuditTrailDto>>>
 {
-    internal class GetAuditTrailByEntityHandler
+    private readonly IApplicationDbContext _context;
+    private readonly IMapper _mapper;
+
+    public GetAuditTrailByEntityHandler(IApplicationDbContext context, IMapper mapper)
     {
+        _context = context;
+        _mapper = mapper;
+    }
+
+    public async Task<Result<List<AuditTrailDto>>> Handle(GetAuditTrailByEntityQuery request, CancellationToken cancellationToken)
+    {
+        var trails = await _context.AuditTrails
+            .Include(a => a.User)
+            .Where(a => a.EntityName == request.EntityName &&
+                       a.EntityId == request.EntityId &&
+                       !a.IsDeleted)
+            .OrderByDescending(a => a.ActionDate)
+            .ProjectTo<AuditTrailDto>(_mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
+
+        return Result<List<AuditTrailDto>>.Success(trails);
     }
 }

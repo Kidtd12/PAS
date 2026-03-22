@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Catalog.Categories.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Catalog.Categories.Queries.GetCategories
+namespace Application.Features.Catalog.Categories.Queries.GetCategories;
+
+[Authorize(Permissions = Permissions.Categories.View)]
+public record GetCategoriesQuery : IRequest<Result<List<CategoryDto>>>
 {
-    internal class GetCategoriesQuery
-    {
-    }
+    public bool IncludeInactive { get; init; }
+    public Guid? ParentCategoryId { get; init; }
+    public string? SearchTerm { get; init; }
 }

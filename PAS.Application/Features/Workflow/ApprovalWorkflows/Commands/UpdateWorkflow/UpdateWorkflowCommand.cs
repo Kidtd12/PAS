@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.Workflow.ApprovalWorkflows.Commands.UpdateWorkflow
+namespace Application.Features.Workflow.ApprovalWorkflows.Commands.UpdateWorkflow;
+
+[Authorize(Permissions = Permissions.Workflow.Edit)]
+public record UpdateWorkflowCommand : IRequest<Result>
 {
-    internal class UpdateWorkflowCommand
-    {
-    }
+    public Guid Id { get; init; }
+    public string WorkflowName { get; init; } = string.Empty;
+    public string Description { get; init; } = string.Empty;
 }

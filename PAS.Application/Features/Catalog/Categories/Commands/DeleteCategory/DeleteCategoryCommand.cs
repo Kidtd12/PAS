@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.Catalog.Categories.Commands.DeleteCategory
-{
-    internal class DeleteCategoryCommand
-    {
-    }
-}
+namespace Application.Features.Catalog.Categories.Commands.DeleteCategory;
+
+[Authorize(Permissions = Permissions.Categories.Delete)]
+public record DeleteCategoryCommand(Guid Id) : IRequest<Result>;

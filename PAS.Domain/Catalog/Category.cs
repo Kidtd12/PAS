@@ -16,6 +16,8 @@ namespace Domain.Catalog
 
         public ICollection<Category> SubCategories { get; private set; } = new List<Category>();
 
+        public ICollection<ItemMaster> Items { get; private set; } = new List<ItemMaster>();
+
         public Category(string name, string description, Guid? parentCategoryId = null)
         {
             Name = name;

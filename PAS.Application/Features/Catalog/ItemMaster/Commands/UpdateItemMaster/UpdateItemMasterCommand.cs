@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.Catalog.ItemMaster.Commands.UpdateItemMaster
+namespace Application.Features.Catalog.ItemMasters.Commands.UpdateItemMaster;
+
+[Authorize(Permissions = Permissions.Items.Edit)]
+public record UpdateItemMasterCommand : IRequest<Result>
 {
-    internal class UpdateItemMasterCommand
-    {
-    }
+    public Guid Id { get; init; }
+    public string SKU { get; init; } = string.Empty;
+    public string ItemName { get; init; } = string.Empty;
+    public Guid CategoryId { get; init; }
+    public string UnitOfMeasure { get; init; } = string.Empty;
+    public bool RequiresInspection { get; init; }
+    public int MinStockLevel { get; init; }
 }

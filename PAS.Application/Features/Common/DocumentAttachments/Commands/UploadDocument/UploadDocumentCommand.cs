@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
+using Microsoft.AspNetCore.Http;
 
-namespace PAS.Application.Features.Common.DocumentAttachments.Commands.UploadDocument
+namespace Application.Features.Common.DocumentAttachments.Commands.UploadDocument;
+
+[Authorize(Permissions = Permissions.Documents.Upload)]
+public record UploadDocumentCommand : IRequest<Result<Guid>>
 {
-    internal class UploadDocumentCommand
-    {
-    }
+    public IFormFile File { get; init; } = null!;
+    public Guid RelatedEntityId { get; init; }
+    public string RelatedEntityName { get; init; } = string.Empty;
 }

@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace PAS.Application.Features.Catalog.Categories.Commands.CreateCategory
+namespace Application.Features.Catalog.Categories.Commands.CreateCategory;
+
+public class CreateCategoryCommandValidator : AbstractValidator<CreateCategoryCommand>
 {
-    internal class CreateCategoryValidator
+    public CreateCategoryCommandValidator()
     {
+        RuleFor(v => v.Name)
+            .NotEmpty().WithMessage("Name is required.")
+            .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
+
+        RuleFor(v => v.Description)
+            .MaximumLength(500).WithMessage("Description must not exceed 500 characters.");
     }
 }

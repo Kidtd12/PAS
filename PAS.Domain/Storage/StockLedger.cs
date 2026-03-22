@@ -1,5 +1,6 @@
 ﻿using System;
 using Domain.Common;
+using Domain.Catalog;
 
 namespace Domain.Storage
 {
@@ -16,6 +17,12 @@ namespace Domain.Storage
         public Guid ReferenceId { get; private set; }
 
         public DateTime CreatedDate { get; private set; }
+
+        public ItemMaster Item { get; private set; }
+
+        public ShelfLocation ShelfLocation { get; private set; }
+
+        public ShelfLocation Shelf => ShelfLocation;
 
         private StockLedger()
         {

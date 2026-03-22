@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Dashboard.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Dashboard.Queries
-{
-    internal class GetDashboardStatisticsQuery
-    {
-    }
-}
+namespace Application.Features.Dashboard.Queries;
+
+[Authorize(Permissions = Permissions.Dashboard.View)]
+public record GetDashboardStatisticsQuery : IRequest<Result<DashboardDto>>;

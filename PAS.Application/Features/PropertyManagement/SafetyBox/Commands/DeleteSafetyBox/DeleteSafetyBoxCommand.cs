@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.PropertyManagement.SafetyBox.Commands.DeleteSafetyBox
-{
-    internal class DeleteSafetyBoxCommand
-    {
-    }
-}
+namespace Application.Features.PropertyManagement.SafetyBoxes.Commands.DeleteSafetyBox;
+
+[Authorize(Permissions = Permissions.SafetyBoxes.Delete)]
+public record DeleteSafetyBoxCommand(Guid Id) : IRequest<Result>;
