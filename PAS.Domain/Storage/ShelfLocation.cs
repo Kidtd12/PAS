@@ -17,6 +17,8 @@ namespace Domain.Storage
 
         public Warehouse? Warehouse { get; private set; }
 
+        public ICollection<InventoryStock> InventoryStocks { get; private set; } = new List<InventoryStock>();
+
         private ShelfLocation()
         {
         }

@@ -10,6 +10,8 @@ namespace Domain.Receiving
 
         public string TinNumber { get; private set; }
 
+        public string? Email { get; private set; }
+
         private Supplier()
         {
         }

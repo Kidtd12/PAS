@@ -13,9 +13,15 @@ namespace Domain.Users
 
         public Guid RoleId { get; private set; }
 
+        public string? Email { get; private set; }
+
         public string? AspNetUserId { get; private set; }
 
         public bool IsActive { get; private set; }
+
+        public Employee? Employee { get; private set; }
+
+        public Role? Role { get; private set; }
 
         private UserLogin()
         {
