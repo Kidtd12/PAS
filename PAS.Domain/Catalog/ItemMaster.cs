@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Domain.Common;
+using Domain.Requisition;
+using Domain.Storage;
 
 namespace Domain.Catalog
 {
@@ -17,6 +20,14 @@ namespace Domain.Catalog
 
         public int MinStockLevel { get; private set; }
 
+        public decimal UnitPrice { get; private set; }
+
+        public Category Category { get; private set; }
+
+        public ICollection<InventoryStock> InventoryStocks { get; private set; } = new List<InventoryStock>();
+
+        public ICollection<SR_Detail> ServiceRequestDetails { get; private set; } = new List<SR_Detail>();
+
         private ItemMaster()
         {
         }
@@ -29,6 +40,7 @@ namespace Domain.Catalog
             UnitOfMeasure = uom;
             RequiresInspection = inspection;
             MinStockLevel = minStock;
+            UnitPrice = 0m;
         }
     }
 }

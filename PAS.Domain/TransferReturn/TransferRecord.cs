@@ -1,5 +1,7 @@
 ﻿using System;
+using Domain.Catalog;
 using Domain.Common;
+using Domain.PropertyManagement;
 
 namespace Domain.TransferReturn
 {
@@ -14,6 +16,12 @@ namespace Domain.TransferReturn
         public int Quantity { get; private set; }
 
         public DateTime TransferDate { get; private set; }
+
+        public ItemMaster Item { get; private set; }
+
+        public PropertyLocation FromLocation { get; private set; }
+
+        public PropertyLocation ToLocation { get; private set; }
 
         private TransferRecord()
         {

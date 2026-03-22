@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Domain.Common;
 
 namespace Domain.PropertyManagement
@@ -13,6 +14,8 @@ namespace Domain.PropertyManagement
 
         public Guid PropertyTypeId { get; private set; }
 
+        public Guid? PropertyCategoryId { get; private set; }
+
         public decimal UnitPrice { get; private set; }
 
         public int Quantity { get; private set; }
@@ -26,17 +29,22 @@ namespace Domain.PropertyManagement
         // Navigation properties
         public PropertyType PropertyType { get; private set; }
 
+        public PropertyCategory PropertyCategory { get; private set; }
+
         public PropertyLocation Location { get; private set; }
 
         public SafetyBox SafetyBox { get; private set; }
 
+        public ICollection<DocumentAttachment> Attachments { get; private set; } = new List<DocumentAttachment>();
+
         public Property(string tagNumber, string name, string serialNumber, Guid propertyTypeId,
-            decimal unitPrice, int quantity, DateTime purchaseDate, Guid locationId, Guid? safetyBoxId)
+            decimal unitPrice, int quantity, DateTime purchaseDate, Guid locationId, Guid? safetyBoxId, Guid? propertyCategoryId = null)
         {
             TagNumber = tagNumber;
             Name = name;
             SerialNumber = serialNumber;
             PropertyTypeId = propertyTypeId;
+            PropertyCategoryId = propertyCategoryId;
             UnitPrice = unitPrice;
             Quantity = quantity;
             PurchaseDate = purchaseDate;

@@ -20,11 +20,17 @@ namespace Domain.Receiving
 
         public Guid ReceivedById { get; private set; }
 
+<<<<<<< HEAD
         public Supplier? Supplier { get; private set; }
 
         public UserLogin? ReceivedBy { get; private set; }
 
         public InspectionLog? InspectionLog { get; private set; }
+=======
+        public Supplier Supplier { get; private set; }
+
+        public UserLogin ReceivedBy { get; private set; }
+>>>>>>> origin/kid-application
 
         private ReceivingNote()
         {

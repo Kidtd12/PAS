@@ -1,4 +1,5 @@
-﻿using Domain.Common;
+﻿using System.Collections.Generic;
+using Domain.Common;
 
 namespace Domain.Workflow
 {
@@ -7,6 +8,8 @@ namespace Domain.Workflow
         public string WorkflowName { get; private set; }
 
         public string Description { get; private set; }
+
+        public ICollection<Approver> Approvers { get; private set; } = new List<Approver>();
 
         private ApprovalWorkflow()
         {

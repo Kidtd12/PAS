@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Domain.Common;
+<<<<<<< HEAD
+=======
+using Domain.Users;
+>>>>>>> origin/kid-application
 using Domain.Workflow;
 
 namespace Domain.Requisition
@@ -19,6 +23,13 @@ namespace Domain.Requisition
 
         public string Status { get; private set; }
 
+<<<<<<< HEAD
+=======
+        public UserLogin Requester { get; private set; }
+
+        public UserLogin ApprovedBy { get; private set; }
+
+>>>>>>> origin/kid-application
         public ApprovalStatus ApprovalStatus { get; private set; }
 
         public ICollection<SR_Detail> Details { get; private set; } = new List<SR_Detail>();

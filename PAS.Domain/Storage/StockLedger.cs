@@ -1,5 +1,6 @@
 ﻿using System;
 using Domain.Common;
+using Domain.Catalog;
 
 namespace Domain.Storage
 {
@@ -19,9 +20,17 @@ namespace Domain.Storage
 
         public DateTime CreatedDate { get; private set; }
 
+<<<<<<< HEAD
         public Catalog.ItemMaster? Item { get; private set; }
 
         public ShelfLocation? Shelf { get; private set; }
+=======
+        public ItemMaster Item { get; private set; }
+
+        public ShelfLocation ShelfLocation { get; private set; }
+
+        public ShelfLocation Shelf => ShelfLocation;
+>>>>>>> origin/kid-application
 
         private StockLedger()
         {

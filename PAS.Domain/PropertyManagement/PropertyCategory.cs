@@ -1,4 +1,5 @@
-﻿using Domain.Common;
+﻿using System.Collections.Generic;
+using Domain.Common;
 
 namespace Domain.PropertyManagement
 {
@@ -7,6 +8,8 @@ namespace Domain.PropertyManagement
         public string Name { get; private set; }
 
         public string Description { get; private set; }
+
+        public ICollection<Property> Properties { get; private set; } = new List<Property>();
 
         private PropertyCategory()
         {

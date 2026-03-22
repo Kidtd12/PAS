@@ -19,9 +19,15 @@ namespace Domain.Users
 
         public bool IsActive { get; private set; }
 
+<<<<<<< HEAD
         public Employee? Employee { get; private set; }
 
         public Role? Role { get; private set; }
+=======
+        public Employee Employee { get; private set; }
+
+        public Role Role { get; private set; }
+>>>>>>> origin/kid-application
 
         private UserLogin()
         {

@@ -36,6 +36,8 @@ namespace Domain.Storage
 
         public ShelfLocation? ShelfLocation { get; private set; }
 
+        public ShelfLocation? Shelf => ShelfLocation;
+
         public bool CheckAvailability(int qty)
         {
             return (CurrentQuantity - ReservedQuantity) >= qty;
