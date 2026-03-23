@@ -1,7 +1,6 @@
-﻿using AutoMapper;
+using AutoMapper;
 using MediatR;
-using PAS.Application.Features.Requisition.StoreIssueVouchers.DTOs;
-using PAS.Application.Features.Requisition.StoreIssueVouchers.Queries.GetStoreIssueVouchers;
+using Application.Features.Requisition.StoreIssueVouchers.Dtos;
 
 namespace Application.Features.Requisition.StoreIssueVouchers.Queries;
 

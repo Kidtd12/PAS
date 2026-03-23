@@ -18,3 +18,10 @@ public record CreateReceivingNoteCommand : IRequest<Result<Guid>>
     public string Remarks { get; init; } = string.Empty;
     public List<ReceivingNoteItemDto> Items { get; init; } = new();
 }
+
+public record ReceivingNoteItemDto
+{
+    public Guid ItemId { get; init; }
+    public int Quantity { get; init; }
+    public decimal UnitPrice { get; init; }
+}

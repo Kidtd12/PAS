@@ -8,6 +8,10 @@ namespace Domain.Storage
 
         public string LocationCode { get; private set; }
 
+        public string? City { get; private set; }
+
+        public bool IsActive { get; private set; } = true;
+
         private Warehouse()
         {
         }

@@ -1,9 +1,10 @@
 ﻿using Application.Features.Common.DocumentAttachments.Dtos;
 using MediatR;
+using DocFileDto = Application.Features.Common.DocumentAttachments.Dtos.FileDto;
 
 namespace Application.Features.Common.DocumentAttachments.Commands.DownloadDocument;
 
-public class DownloadDocumentCommandHandler : IRequestHandler<DownloadDocumentCommand, Result<FileDto>>
+public class DownloadDocumentCommandHandler : IRequestHandler<DownloadDocumentCommand, Result<DocFileDto>>
 {
     private readonly IApplicationDbContext _context;
     private readonly IFileStorageService _fileStorage;
@@ -19,7 +20,7 @@ public class DownloadDocumentCommandHandler : IRequestHandler<DownloadDocumentCo
         _currentUser = currentUser;
     }
 
-    public async Task<Result<FileDto>> Handle(DownloadDocumentCommand request, CancellationToken cancellationToken)
+    public async Task<Result<DocFileDto>> Handle(DownloadDocumentCommand request, CancellationToken cancellationToken)
     {
         var attachment = await _context.DocumentAttachments
             .FirstOrDefaultAsync(a => a.Id == request.Id && !a.IsDeleted, cancellationToken);
@@ -39,7 +40,7 @@ public class DownloadDocumentCommandHandler : IRequestHandler<DownloadDocumentCo
         _context.AuditTrails.Add(auditTrail);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return Result<FileDto>.Success(new FileDto
+        return Result<DocFileDto>.Success(new DocFileDto
         {
             FileName = attachment.FileName,
             Content = fileContent,

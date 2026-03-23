@@ -1,7 +1,7 @@
-﻿using Application.Common.Security;
+using Application.Common.Security;
 using Application.Features.Storage.InventoryStock.Dtos;
 using MediatR;
-using PAS.Application.Features.Storage.InventoryStock.DTOs;
+using Application.Features.Storage.InventoryStock.DTOs;
 
 namespace Application.Features.Storage.InventoryStock.Queries;
 

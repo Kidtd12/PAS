@@ -1,6 +1,5 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.Extensions.Logging;
-using PAS.Application.Features.Users.Authentication.Commands.LogoutUser;
 
 namespace Application.Features.Users.Authentication.Commands;
 

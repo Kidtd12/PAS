@@ -1,7 +1,5 @@
 ﻿using Application.Features.Reports.RequisitionHistoryReport.Dtos;
 using MediatR;
-using PAS.Application.Features.Reports.RequisitionHistoryReport;
-using PAS.Application.Features.Reports.RequisitionHistoryReport.DTOs;
 
 namespace Application.Features.Reports.RequisitionHistoryReport;
 
@@ -29,7 +27,6 @@ public class RequisitionHistoryReportQueryHandler : IRequestHandler<RequisitionH
             .Include(s => s.ApprovedBy)
             .Include(s => s.Details)
                 .ThenInclude(d => d.Item)
-            .Include(s => s.StoreIssueVoucher)
             .Where(s => !s.IsDeleted && s.RequestDate >= request.FromDate && s.RequestDate <= request.ToDate)
             .AsNoTracking();
 
@@ -101,7 +98,7 @@ public class RequisitionHistoryReportQueryHandler : IRequestHandler<RequisitionH
             .Select(g => new RequisitionByMonthDto
             {
                 Year = g.Key.Year,
-                Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM"),
+                Month = $"{g.Key.Year}-{g.Key.Month:00}",
                 Count = g.Count(),
                 Quantity = g.Sum(r => r.Details?.Sum(d => d.RequestedQty) ?? 0),
                 IssuedQuantity = g.Sum(r => r.Details?.Sum(d => d.IssuedQty) ?? 0)
@@ -124,8 +121,8 @@ public class RequisitionHistoryReportQueryHandler : IRequestHandler<RequisitionH
             IssuedQuantity = r.Details?.Sum(d => d.IssuedQty) ?? 0,
             ApproverName = r.ApprovedBy?.Username,
             ApprovedDate = null, // Would need to track approval date
-            SIVNumber = r.StoreIssueVoucher?.SIVNumber,
-            IssueDate = r.StoreIssueVoucher?.IssueDate,
+            SIVNumber = null,
+            IssueDate = null,
             Items = r.Details?.Select(d => new RequisitionItemDto
             {
                 ItemName = d.Item?.ItemName ?? "Unknown",

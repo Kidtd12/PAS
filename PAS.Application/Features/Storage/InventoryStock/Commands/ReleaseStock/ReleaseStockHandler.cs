@@ -1,5 +1,4 @@
-﻿using MediatR;
-using PAS.Application.Features.Storage.InventoryStock.Commands.ReleaseStock;
+using MediatR;
 
 namespace Application.Features.Storage.InventoryStock.Commands;
 
@@ -61,14 +60,14 @@ public class ReleaseStockCommandHandler : IRequestHandler<ReleaseStockCommand, R
                     ?.SetValue(stock, stock.ReservedQuantity - toRelease);
 
                 // Create stock ledger entry for release
-                var ledger = new StockLedger(
+                var ledger = new Domain.Storage.StockLedger(
                     request.ItemId,
                     stock.ShelfId,
                     toRelease,
                     "RELEASED",
                     request.ReferenceId);
 
-                typeof(StockLedger).GetProperty("ReferenceType")?.SetValue(ledger, request.ReferenceType);
+                typeof(Domain.Storage.StockLedger).GetProperty("ReferenceType")?.SetValue(ledger, request.ReferenceType);
                 _context.StockLedgers.Add(ledger);
 
                 remainingToRelease -= toRelease;

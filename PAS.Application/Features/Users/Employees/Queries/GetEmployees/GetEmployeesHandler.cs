@@ -1,4 +1,6 @@
-﻿namespace Application.Features.Users.Employees.Queries;
+﻿using Application.Features.Users.Employees.Dtos;
+
+namespace Application.Features.Users.Employees.Queries;
 
 public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, Result<PaginatedList<EmployeeListDto>>>
 {
@@ -23,18 +25,12 @@ public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, Resul
         {
             query = query.Where(e =>
                 e.EmployeeCode.Contains(request.SearchTerm) ||
-                e.FullName.Contains(request.SearchTerm) ||
-                (e.Email != null && e.Email.Contains(request.SearchTerm)));
+                e.FullName.Contains(request.SearchTerm));
         }
 
         if (!string.IsNullOrWhiteSpace(request.Department))
         {
             query = query.Where(e => e.Department == request.Department);
-        }
-
-        if (request.IsActive.HasValue)
-        {
-            query = query.Where(e => e.IsActive == request.IsActive);
         }
 
         if (request.HasUserAccount.HasValue)
@@ -52,9 +48,9 @@ public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, Resul
             EmployeeCode = e.EmployeeCode,
             FullName = e.FullName,
             Department = e.Department,
-            Position = e.Position ?? string.Empty,
-            Email = e.Email ?? string.Empty,
-            IsActive = e.IsActive,
+            Position = string.Empty,
+            Email = string.Empty,
+            IsActive = e.UserLogin != null && e.UserLogin.IsActive,
             HasUserAccount = e.UserLogin != null && !e.UserLogin.IsDeleted
         });
 

@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+using Application.Features.Storage.StockLedger.Dtos;
+using AutoMapper;
 using MediatR;
-using PAS.Application.Features.Storage.StockLedger.Queries.GetStockMovementsByItem;
 
 namespace Application.Features.Storage.StockLedger.Queries;
 

@@ -15,6 +15,22 @@ namespace Domain.Storage
 
         public string QRCodeValue { get; private set; }
 
+        public string? Zone { get; private set; }
+
+        public string? BinType { get; private set; }
+
+        public bool IsActive { get; private set; } = true;
+
+        public int Capacity { get; private set; }
+
+        public decimal? Length { get; private set; }
+
+        public decimal? Width { get; private set; }
+
+        public decimal? Height { get; private set; }
+
+        public decimal? MaxWeight { get; private set; }
+
         public Warehouse? Warehouse { get; private set; }
 
         public ICollection<InventoryStock> InventoryStocks { get; private set; } = new List<InventoryStock>();

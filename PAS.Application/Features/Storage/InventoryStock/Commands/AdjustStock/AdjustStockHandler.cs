@@ -55,15 +55,15 @@ public class AdjustStockCommandHandler : IRequestHandler<AdjustStockCommand, Res
         inventory.MarkUpdated();
 
         // Create stock ledger entry for adjustment
-        var ledger = new StockLedger(
+        var ledger = new Domain.Storage.StockLedger(
             inventory.ItemId,
             inventory.ShelfId,
             quantityChange,
             "ADJUSTMENT",
             inventory.Id);
 
-        typeof(StockLedger).GetProperty("Reason")?.SetValue(ledger, request.Reason);
-        typeof(StockLedger).GetProperty("Remarks")?.SetValue(ledger, request.Remarks);
+        typeof(Domain.Storage.StockLedger).GetProperty("Reason")?.SetValue(ledger, request.Reason);
+        typeof(Domain.Storage.StockLedger).GetProperty("Remarks")?.SetValue(ledger, request.Remarks);
         _context.StockLedgers.Add(ledger);
 
         // Create audit trail
@@ -80,4 +80,4 @@ public class AdjustStockCommandHandler : IRequestHandler<AdjustStockCommand, Res
 
         return Result.Success();
     }
-}}
+}

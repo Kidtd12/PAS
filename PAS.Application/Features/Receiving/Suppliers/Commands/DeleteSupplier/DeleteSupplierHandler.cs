@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PAS.Application.Features.Receiving.Suppliers.Commands.DeleteSupplier
+namespace Application.Features.Receiving.Suppliers.Commands.DeleteSupplier
 {
     internal class DeleteSupplierHandler
     {

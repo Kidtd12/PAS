@@ -1,8 +1,5 @@
 using System;
-<<<<<<< HEAD
-=======
 using System.Collections.Generic;
->>>>>>> origin/kid-application
 using Domain.Common;
 
 namespace Domain.PropertyManagement
@@ -17,11 +14,7 @@ namespace Domain.PropertyManagement
 
         public PropertyCategory PropertyCategory { get; private set; }
 
-<<<<<<< HEAD
-=======
         public ICollection<Property> Properties { get; private set; } = new List<Property>();
-
->>>>>>> origin/kid-application
         private PropertyType()
         {
         }

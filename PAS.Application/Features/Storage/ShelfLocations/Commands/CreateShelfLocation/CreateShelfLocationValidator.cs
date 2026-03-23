@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using PAS.Application.Features.Storage.ShelfLocations.Commands.CreateShelfLocation;
 
 namespace Application.Features.Storage.ShelfLocations.Commands;
 

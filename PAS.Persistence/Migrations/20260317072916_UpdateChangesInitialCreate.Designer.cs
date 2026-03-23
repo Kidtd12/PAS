@@ -12,13 +12,8 @@ using Persistence.Context;
 namespace PAS.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<<< HEAD:PAS.Persistence/Migrations/20260317072916_UpdateChangesInitialCreate.Designer.cs
     [Migration("20260317072916_UpdateChangesInitialCreate")]
     partial class UpdateChangesInitialCreate
-========
-    [Migration("20260318082237_InitialCreate")]
-    partial class InitialCreate
->>>>>>>> db3c9b6 (Add application feature folders and update EF Core migration/model changes):PAS.Persistence/Migrations/20260318082237_InitialCreate.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

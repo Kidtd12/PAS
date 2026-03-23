@@ -10,6 +10,10 @@ namespace Domain.Users
 
         public string Department { get; private set; }
 
+        public string? Position { get; private set; }
+
+        public string? Email { get; private set; }
+
         public UserLogin? UserLogin { get; private set; }
 
         private Employee()

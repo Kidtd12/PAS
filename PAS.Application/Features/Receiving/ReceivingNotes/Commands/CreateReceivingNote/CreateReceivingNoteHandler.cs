@@ -1,5 +1,4 @@
-﻿using MediatR;
-using PAS.Application.Features.Receiving.ReceivingNotes.Commands.CreateReceivingNote;
+using MediatR;
 
 namespace Application.Features.Receiving.ReceivingNotes.Commands;
 

@@ -1,7 +1,5 @@
-﻿using Application.Features.Reports.PropertyValuationReport.Dtos;
+using Application.Features.Reports.PropertyValuationReport.Dtos;
 using MediatR;
-using PAS.Application.Features.Reports.PropertyValuationReport;
-using PAS.Application.Features.Reports.PropertyValuationReport.DTOs;
 
 namespace Application.Features.Reports.PropertyValuationReport;
 

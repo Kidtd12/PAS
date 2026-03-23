@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
-using PAS.Application.Features.Receiving.ReceivingNotes.Queries.GetReceivingNoteById;
+using Application.Features.Receiving.ReceivingNotes.Dtos;
 
 namespace Application.Features.Receiving.ReceivingNotes.Queries;
 
@@ -39,14 +39,14 @@ public class GetReceivingNoteByIdQueryHandler : IRequestHandler<GetReceivingNote
             .Where(l => l.ReferenceId == request.Id &&
                        (l.TransactionType == "RECEIVED_PENDING_INSPECTION" ||
                         l.TransactionType == "RECEIVED"))
-            .Select(l => new ReceivingNoteItemDto
+            .Select(l => new ReceivingItemDetailDto
             {
-                Id = Guid.NewGuid(), // Would use actual item ID from a proper ReceivingNoteItem entity
                 ItemId = l.ItemId,
                 ItemName = l.Item != null ? l.Item.ItemName : string.Empty,
                 SKU = l.Item != null ? l.Item.SKU : string.Empty,
-                Quantity = l.QuantityChange,
-                UnitPrice = 0, // Would need to store price in receiving note items
+                ReceivedQuantity = l.QuantityChange,
+                AcceptedQuantity = 0,
+                RejectedQuantity = 0,
                 UnitOfMeasure = l.Item != null ? l.Item.UnitOfMeasure : string.Empty
             })
             .ToListAsync(cancellationToken);
@@ -63,8 +63,8 @@ public class GetReceivingNoteByIdQueryHandler : IRequestHandler<GetReceivingNote
                 InspectorName = receivingNote.InspectionLog.Inspector?.Username ?? "Unknown",
                 IsPassed = receivingNote.InspectionLog.IsPassed,
                 DeviationNotes = receivingNote.InspectionLog.DeviationNotes,
-                AcceptedItems = items.Count, // Simplified
-                RejectedItems = 0 // Would need to calculate from return requests
+                AcceptedQuantity = items.Sum(i => i.ReceivedQuantity),
+                RejectedQuantity = 0
             };
         }
 

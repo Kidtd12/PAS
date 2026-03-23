@@ -34,4 +34,4 @@ public class CreateEmployeeCommandValidator : AbstractValidator<CreateEmployeeCo
             .LessThanOrEqualTo(DateTime.Now).WithMessage("Hire date cannot be in the future.")
             .When(v => v.HireDate.HasValue);
     }
-}}
+}

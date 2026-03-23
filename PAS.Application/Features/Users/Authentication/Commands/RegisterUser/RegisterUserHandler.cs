@@ -1,5 +1,4 @@
-﻿using MediatR;
-using PAS.Application.Features.Users.Authentication.Commands.RegisterUser;
+using MediatR;
 using System.Security.Cryptography;
 using System.Text;
 
