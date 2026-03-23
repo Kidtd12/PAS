@@ -1,12 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Events;
+using MediatR;
 
-namespace PAS.Application.Features.Storage.Warehouses.Commands.UpdateWarehouses
+namespace Application.Features.Storage.Warehouses.Commands;
+
+[Authorize(Permissions = Permissions.Warehouses.Edit)]
+public record UpdateWarehouseCommand : IRequest<Result>
 {
-    internal class UpdateWarehouseCommand
-    {
-    }
+    public Guid Id { get; init; }
+    public string WarehouseName { get; init; } = string.Empty;
+    public string LocationCode { get; init; } = string.Empty;
+    public string Address { get; init; } = string.Empty;
+    public string City { get; init; } = string.Empty;
+    public string Country { get; init; } = string.Empty;
+    public string ContactPerson { get; init; } = string.Empty;
+    public string ContactPhone { get; init; } = string.Empty;
+    public string ContactEmail { get; init; } = string.Empty;
+    public bool IsActive { get; init; }
 }

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Requisition.StoreIssueVouchers.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Requisition.StoreIssueVouchers.Queries.GetStoreIssueVoucherById
-{
-    internal class GetStoreIssueVoucherByIdQuery
-    {
-    }
-}
+namespace Application.Features.Requisition.StoreIssueVouchers.Queries;
+
+[Authorize(Permissions = Permissions.Requisitions.View)]
+public record GetStoreIssueVoucherByIdQuery(Guid Id) : IRequest<Result<StoreIssueVoucherDetailDto>>;

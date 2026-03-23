@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Storage.StockLedger.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Storage.StockLedger.Queries.GetStockMovementsByItem
+namespace Application.Features.Storage.StockLedger.Queries;
+
+[Authorize(Permissions = Permissions.StockLedger.View)]
+public record GetStockMovementsByItemQuery : IRequest<Result<StockMovementSummaryDto>>
 {
-    internal class GetStockMovementsByItemQuery
-    {
-    }
+    public Guid ItemId { get; init; }
+    public DateTime? FromDate { get; init; }
+    public DateTime? ToDate { get; init; }
 }

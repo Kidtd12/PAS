@@ -1,5 +1,6 @@
 ﻿using System;
 using Domain.Common;
+using Domain.Users;
 
 namespace Domain.Disposal
 {
@@ -11,9 +12,23 @@ namespace Domain.Disposal
 
         public DateTime DisposalDate { get; private set; }
 
-        public Guid DisposedBy { get; private set; }
+        public Guid DisposedById { get; private set; }
 
         public string Reason { get; private set; } = string.Empty;
+
+        public string? Status { get; private set; }
+
+        public string? DisposalMethod { get; private set; }
+
+        public decimal? EstimatedValue { get; private set; }
+
+        public Catalog.ItemMaster? Item { get; private set; }
+
+        public Users.UserLogin? DisposedBy { get; private set; }
+
+        public Users.UserLogin? ApprovedBy { get; private set; }
+
+        public DateTime? ApprovedDate { get; private set; }
 
         public DateTime UpdatedAt { get; private set; }
 
@@ -25,7 +40,7 @@ namespace Domain.Disposal
         {
             ItemId = itemId;
             Quantity = quantity;
-            DisposedBy = disposedBy;
+            DisposedById = disposedBy;
             Reason = reason ?? string.Empty;
             DisposalDate = DateTime.UtcNow;
         }

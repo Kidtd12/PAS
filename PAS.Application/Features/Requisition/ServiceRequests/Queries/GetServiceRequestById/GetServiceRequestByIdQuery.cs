@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Requisition.ServiceRequests.Dtos;
+using MediatR;
+using PAS.Application.Features.Requisition.ServiceRequests.DTOs;
 
-namespace PAS.Application.Features.Requisition.ServiceRequests.Queries.GetServiceRequestById
-{
-    internal class GetServiceRequestByIdQuery
-    {
-    }
-}
+namespace Application.Features.Requisition.ServiceRequests.Queries;
+
+[Authorize(Permissions = Permissions.Requisitions.View)]
+public record GetServiceRequestByIdQuery(Guid Id) : IRequest<Result<ServiceRequestDetailDto>>;

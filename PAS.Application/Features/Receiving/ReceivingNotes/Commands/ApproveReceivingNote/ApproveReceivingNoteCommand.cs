@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Events;
+using MediatR;
 
-namespace PAS.Application.Features.Receiving.ReceivingNotes.Commands.ApproveReceivingNote
+namespace Application.Features.Receiving.ReceivingNotes.Commands;
+
+[Authorize(Permissions = Permissions.Receiving.Inspect)]
+public record ApproveReceivingNoteCommand : IRequest<Result>
 {
-    internal class ApproveReceivingNoteCommand
-    {
-    }
+    public Guid Id { get; init; }
+    public bool IsApproved { get; init; }
+    public string Remarks { get; init; } = string.Empty;
 }

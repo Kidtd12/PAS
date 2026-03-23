@@ -20,5 +20,7 @@ namespace Domain.Storage
 
         // Navigation
         public ICollection<ShelfLocation> Shelves { get; private set; } = new List<ShelfLocation>();
+
+        public ICollection<ShelfLocation> ShelfLocations { get; private set; } = new List<ShelfLocation>();
     }
 }

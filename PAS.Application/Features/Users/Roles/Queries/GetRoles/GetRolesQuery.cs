@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Users.Roles.Dtos;
+using MediatR;
+using PAS.Application.Features.Users.Roles.DTOs;
 
-namespace PAS.Application.Features.Users.Roles.Queries.GetRoles
+namespace Application.Features.Users.Roles.Queries;
+
+[Authorize(Permissions = Permissions.Roles.View)]
+public record GetRolesQuery : IRequest<Result<List<RoleDto>>>
 {
-    internal class GetRolesQuery
-    {
-    }
+    public bool IncludeUserCount { get; init; } = true;
 }

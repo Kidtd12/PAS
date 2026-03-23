@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Users.Roles.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Users.Roles.Queries.GetUserRoles
-{
-    internal class GetUserRolesQuery
-    {
-    }
-}
+namespace Application.Features.Users.Roles.Queries;
+
+[Authorize(Permissions = Permissions.Users.View)]
+public record GetUserRolesQuery(Guid UserId) : IRequest<Result<UserRoleDto>>;

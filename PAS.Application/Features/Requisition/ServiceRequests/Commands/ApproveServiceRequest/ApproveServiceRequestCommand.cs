@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Events;
+using MediatR;
 
-namespace PAS.Application.Features.Requisition.ServiceRequests.Commands.ApproveServiceRequest
+namespace Application.Features.Requisition.ServiceRequests.Commands;
+
+[Authorize(Permissions = Permissions.Requisitions.Approve)]
+public record ApproveServiceRequestCommand : IRequest<Result>
 {
-    internal class ApproveServiceRequestCommand
-    {
-    }
+    public Guid Id { get; init; }
+    public bool IsApproved { get; init; }
+    public string? Remarks { get; init; }
 }

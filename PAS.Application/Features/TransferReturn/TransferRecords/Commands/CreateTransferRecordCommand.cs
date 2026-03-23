@@ -1,12 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Events;
+using Application.Features.TransferReturn.TransferRecords.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.TransferReturn.TransferRecords.Commands
+namespace Application.Features.TransferReturn.TransferRecords.Commands;
+
+[Authorize(Permissions = Permissions.TransferReturn.Create)]
+public record CreateTransferRecordCommand : IRequest<Result<Guid>>
 {
-    internal class CreateTransferRecordCommand
-    {
-    }
+    public Guid ItemId { get; init; }
+    public int Quantity { get; init; }
+    public Guid ToLocationId { get; init; }
+    public Guid? ToShelfId { get; init; }
+    public string? BatchNumber { get; init; }
+    public DateTime? ExpiryDate { get; init; }
+    public string Reason { get; init; } = string.Empty;
+    public string? Remarks { get; init; }
+    public string? Reference { get; init; }
 }

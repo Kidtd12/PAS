@@ -14,6 +14,10 @@ namespace Domain.Storage
 
         public int ReservedQuantity { get; private set; }
 
+        public string? BatchNumber { get; private set; }
+
+        public DateTime? ExpiryDate { get; private set; }
+
         private InventoryStock()
         {
         }
@@ -27,6 +31,8 @@ namespace Domain.Storage
 
         // Navigation properties
         public ItemMaster? Item { get; private set; }
+
+        public ShelfLocation? Shelf { get; private set; }
 
         public ShelfLocation? ShelfLocation { get; private set; }
 

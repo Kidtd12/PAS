@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
+using Application.Features.Reports.DisposalReport.Dtos;
 
-namespace PAS.Application.Features.Reports.DisposalReport
+namespace Application.Features.Reports.DisposalReport;
+
+[Authorize(Permissions = Permissions.Reports.View)]
+public record DisposalReportQuery : IRequest<Result<DisposalReportDto>>
 {
-    internal class DisposalReportQuery
-    {
-    }
+    public DateTime FromDate { get; init; }
+    public DateTime ToDate { get; init; }
+    public string? Status { get; init; }
+    public string? Reason { get; init; }
+    public string? Method { get; init; }
+    public Guid? DisposedBy { get; init; }
 }

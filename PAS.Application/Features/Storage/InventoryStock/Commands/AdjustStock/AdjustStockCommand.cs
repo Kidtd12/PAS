@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Events;
+using MediatR;
 
-namespace PAS.Application.Features.Storage.InventoryStock.Commands.AdjustStock
+namespace Application.Features.Storage.InventoryStock.Commands;
+
+[Authorize(Permissions = Permissions.Inventory.Adjust)]
+public record AdjustStockCommand : IRequest<Result>
 {
-    internal class AdjustStockCommand
-    {
-    }
+    public Guid InventoryId { get; init; }
+    public int NewQuantity { get; init; }
+    public string Reason { get; init; } = string.Empty;
+    public string? Remarks { get; init; }
 }
