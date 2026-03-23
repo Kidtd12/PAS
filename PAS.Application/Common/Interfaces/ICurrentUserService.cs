@@ -11,5 +11,9 @@
         bool IsAuthenticated { get; }
         bool IsInRole(string role);
         IEnumerable<string> Permissions { get; }
+
+        Guid? UserGuid => UserId;
+
+        bool HasPermission(string permission) => Permissions?.Contains(permission) == true;
     }
 }

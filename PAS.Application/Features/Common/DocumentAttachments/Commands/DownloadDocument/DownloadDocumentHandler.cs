@@ -43,8 +43,7 @@ public class DownloadDocumentCommandHandler : IRequestHandler<DownloadDocumentCo
         {
             FileName = attachment.FileName,
             Content = fileContent,
-            ContentType = attachment.ContentType,
-            Size = fileContent.Length
+            ContentType = attachment.ContentType
         });
     }
 }
