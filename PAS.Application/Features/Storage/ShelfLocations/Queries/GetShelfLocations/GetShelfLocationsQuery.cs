@@ -1,12 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Storage.ShelfLocations.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Storage.ShelfLocations.Queries.GetShelfLocations
+namespace Application.Features.Storage.ShelfLocations.Queries;
+
+[Authorize(Permissions = Permissions.ShelfLocations.View)]
+public record GetShelfLocationsQuery : IRequest<Result<PaginatedList<ShelfLocationListDto>>>
 {
-    internal class GetShelfLocationsQuery
-    {
-    }
+    public Guid? WarehouseId { get; init; }
+    public string? Zone { get; init; }
+    public string? BinType { get; init; }
+    public bool? IsActive { get; init; }
+    public bool? HasInventory { get; init; }
+    public string? SearchTerm { get; init; }
+    public int PageNumber { get; init; } = 1;
+    public int PageSize { get; init; } = 10;
 }

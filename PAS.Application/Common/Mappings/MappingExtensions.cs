@@ -13,7 +13,7 @@ namespace Application.Common.Mappings
             where TDestination : class
             => PaginatedList<TDestination>.CreateAsync(queryable.AsNoTracking(), pageNumber, pageSize);
 
-        public static Task<List<TDestination>> ProjectToListAsync<TDestination>(this IQueryable queryable, IConfigurationProvider configuration)
+        public static Task<List<TDestination>> ProjectToListAsync<TDestination>(this IQueryable queryable, AutoMapper.IConfigurationProvider configuration)
             where TDestination : class
             => queryable.ProjectTo<TDestination>(configuration).AsNoTracking().ToListAsync();
     }

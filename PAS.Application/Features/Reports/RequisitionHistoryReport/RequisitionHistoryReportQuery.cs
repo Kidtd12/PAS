@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
+using Application.Features.Reports.RequisitionHistoryReport.Dtos;
 
-namespace PAS.Application.Features.Reports.RequisitionHistoryReport
+namespace Application.Features.Reports.RequisitionHistoryReport;
+
+[Authorize(Permissions = Permissions.Reports.View)]
+public record RequisitionHistoryReportQuery : IRequest<Result<RequisitionHistoryReportDto>>
 {
-    internal class RequisitionHistoryReportQuery
-    {
-    }
+    public DateTime FromDate { get; init; }
+    public DateTime ToDate { get; init; }
+    public string? Status { get; init; }
+    public string? Department { get; init; }
+    public Guid? RequesterId { get; init; }
 }

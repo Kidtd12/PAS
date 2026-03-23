@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Application.Features.Requisition.ServiceRequests.Dtos;
 
-namespace PAS.Application.Features.Requisition.ServiceRequests.DTOs
+public class CreateServiceRequestDto
 {
-    internal class CreateServiceRequestDto
-    {
-    }
+    public List<ServiceRequestItemDto> Items { get; set; } = new();
+    public string? Remarks { get; set; }
+}
+
+public class ServiceRequestItemDto
+{
+    public Guid ItemId { get; set; }
+    public int RequestedQty { get; set; }
+    public Guid? PreferredShelfId { get; set; }
+    public string? Notes { get; set; }
 }

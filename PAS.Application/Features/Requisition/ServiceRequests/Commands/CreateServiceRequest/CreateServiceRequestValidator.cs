@@ -1,12 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace PAS.Application.Features.Requisition.ServiceRequests.Commands.CreateServiceRequest
+namespace Application.Features.Requisition.ServiceRequests.Commands;
+
+public class CreateServiceRequestCommandValidator : AbstractValidator<CreateServiceRequestCommand>
 {
-    internal class CreateServiceRequestValidator
+    public CreateServiceRequestCommandValidator()
     {
+        RuleFor(v => v.Items)
+            .NotEmpty().WithMessage("At least one item is required.");
+
+        RuleForEach(v => v.Items).ChildRules(item =>
+        {
+            item.RuleFor(i => i.ItemId)
+                .NotEmpty().WithMessage("Item ID is required.");
+
+            item.RuleFor(i => i.RequestedQty)
+                .GreaterThan(0).WithMessage("Requested quantity must be greater than 0.");
+        });
+
+        RuleFor(v => v.Remarks)
+            .MaximumLength(500).WithMessage("Remarks must not exceed 500 characters.");
     }
 }

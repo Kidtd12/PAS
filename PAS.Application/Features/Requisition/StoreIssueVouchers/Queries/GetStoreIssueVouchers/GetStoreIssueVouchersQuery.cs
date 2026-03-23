@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Application.Common.Security;
+using Application.Features.Requisition.StoreIssueVouchers.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Requisition.StoreIssueVouchers.Queries.GetStoreIssueVouchers
+namespace Application.Features.Requisition.StoreIssueVouchers.Queries;
+
+[Authorize(Permissions = Permissions.Requisitions.View)]
+public record GetStoreIssueVouchersQuery : IRequest<Result<PaginatedList<StoreIssueVoucherDto>>>
 {
-    internal class GetStoreIssueVouchersQuery
-    {
-    }
+    public Guid? SRId { get; init; }
+    public Guid? IssuedById { get; init; }
+    public DateTime? FromDate { get; init; }
+    public DateTime? ToDate { get; init; }
+    public string? Status { get; init; }
+    public int PageNumber { get; init; } = 1;
+    public int PageSize { get; init; } = 10;
 }

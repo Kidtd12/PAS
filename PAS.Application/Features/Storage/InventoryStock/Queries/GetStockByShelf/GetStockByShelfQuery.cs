@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Application.Common.Security;
+using Application.Features.Storage.InventoryStock.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Storage.InventoryStock.Queries.GetStockByShelf
-{
-    internal class GetStockByShelfQuery
-    {
-    }
-}
+namespace Application.Features.Storage.InventoryStock.Queries;
+
+[Authorize(Permissions = Permissions.Inventory.View)]
+public record GetStockByShelfQuery(Guid ShelfId) : IRequest<Result<List<InventoryStockDto>>>;

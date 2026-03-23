@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Events;
+using MediatR;
 
-namespace PAS.Application.Features.Requisition.StoreIssueVouchers.Commands.ApproveStoreIssueVoucher
+namespace Application.Features.Requisition.StoreIssueVouchers.Commands;
+
+[Authorize(Permissions = Permissions.Requisitions.Approve)]
+public record ApproveStoreIssueVoucherCommand : IRequest<Result>
 {
-    internal class ApproveStoreIssueVoucherCommand
-    {
-    }
+    public Guid Id { get; init; }
+    public bool IsApproved { get; init; }
+    public string? Remarks { get; init; }
 }

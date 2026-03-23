@@ -22,6 +22,8 @@ namespace Domain.Requisition
 
         public ShelfLocation? ShelfLocation { get; private set; }
 
+        public ShelfLocation? Shelf => ShelfLocation;
+
         private SR_Detail()
         {
         }

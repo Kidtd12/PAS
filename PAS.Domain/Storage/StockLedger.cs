@@ -16,13 +16,13 @@ namespace Domain.Storage
 
         public Guid ReferenceId { get; private set; }
 
+        public string? BatchNumber { get; private set; }
+
         public DateTime CreatedDate { get; private set; }
 
-        public ItemMaster Item { get; private set; }
+        public Catalog.ItemMaster? Item { get; private set; }
 
-        public ShelfLocation ShelfLocation { get; private set; }
-
-        public ShelfLocation Shelf => ShelfLocation;
+        public ShelfLocation? Shelf { get; private set; }
 
         private StockLedger()
         {

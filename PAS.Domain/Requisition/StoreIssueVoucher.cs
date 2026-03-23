@@ -1,5 +1,6 @@
 ﻿using System;
 using Domain.Common;
+using Domain.Users;
 
 namespace Domain.Requisition
 {
@@ -14,6 +15,16 @@ namespace Domain.Requisition
         public Guid IssuedById { get; private set; }
 
         public string RecipientSignature { get; private set; }
+
+        public string? RecipientName { get; private set; }
+
+        public string? Remarks { get; private set; }
+
+        public string Status { get; private set; } = "Issued";
+
+        public ServiceRequest? ServiceRequest { get; private set; }
+
+        public UserLogin? IssuedBy { get; private set; }
 
         private StoreIssueVoucher()
         {

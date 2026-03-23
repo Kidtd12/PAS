@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Events;
+using MediatR;
 
-namespace PAS.Application.Features.Requisition.ServiceRequests.Commands.DeleteServiceRequest
-{
-    internal class DeleteServiceRequestCommand
-    {
-    }
-}
+namespace Application.Features.Requisition.ServiceRequests.Commands;
+
+[Authorize(Permissions = Permissions.Requisitions.Delete)]
+public record DeleteServiceRequestCommand(Guid Id) : IRequest<Result>;

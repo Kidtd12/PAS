@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
+using Application.Features.Reports.InventoryValuationReport.Dtos;
 
-namespace PAS.Application.Features.Reports.InventoryValuationReport
+namespace Application.Features.Reports.InventoryValuationReport;
+
+[Authorize(Permissions = Permissions.Reports.View)]
+public record InventoryValuationReportQuery : IRequest<Result<InventoryValuationReportDto>>
 {
-    internal class InventoryValuationReportQuery
-    {
-    }
+    public DateTime? AsOfDate { get; init; }
+    public Guid? CategoryId { get; init; }
+    public Guid? WarehouseId { get; init; }
+    public bool IncludeZeroStock { get; init; }
+    public string? ItemSearch { get; init; }
 }

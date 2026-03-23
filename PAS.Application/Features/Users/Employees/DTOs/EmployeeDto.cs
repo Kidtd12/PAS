@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Mappings;
+using AutoMapper;
 
-namespace PAS.Application.Features.Users.Employees.DTOs
+namespace Application.Features.Users.Employees.Dtos;
+
+public class EmployeeDto : IMapFrom<Domain.Users.Employee>
 {
-    internal class EmployeeDto
+    public Guid Id { get; set; }
+    public string EmployeeCode { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
+    public string Department { get; set; } = string.Empty;
+
+    public void Mapping(Profile profile)
     {
+        profile.CreateMap<Domain.Users.Employee, EmployeeDto>();
     }
 }

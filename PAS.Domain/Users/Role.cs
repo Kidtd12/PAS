@@ -8,6 +8,8 @@ namespace Domain.Users
 
         public string Description { get; private set; }
 
+        public ICollection<UserLogin> Users { get; private set; } = new List<UserLogin>();
+
         private Role()
         {
         }

@@ -12,6 +12,8 @@
         public const string RequisitionOfficer = "Requisition Officer";
         public const string Approver = "Approver";
         public const string Auditor = "Auditor";
+        public const string Inspector = "Inspector";
+        public const string Manager = "Manager";
         public const string Staff = "Staff";
         public const string Viewer = "Viewer";
 
@@ -179,6 +181,55 @@
                     }
                 };
             }
+
+        public static class RolePermissions
+        {
+            public static readonly string[] AdminPermissions =
+            {
+                Permissions.System.ViewSystemSettings,
+                Permissions.Reports.ViewReports
+            };
+
+            public static readonly string[] StoreOfficerPermissions =
+            {
+                Permissions.Storage.ViewInventory,
+                Permissions.Requisition.ViewRequisitions
+            };
+
+            public static readonly string[] StaffPermissions =
+            {
+                Permissions.Requisition.CreateRequisition,
+                Permissions.Reports.ViewDashboard
+            };
+
+            public static readonly string[] InspectorPermissions =
+            {
+                Permissions.Receiving.PerformInspection,
+                Permissions.Receiving.ViewInspections
+            };
+
+            public static readonly string[] ApproverPermissions =
+            {
+                Permissions.Requisition.ApproveRequisition,
+                Permissions.TransferReturn.ApproveTransfer
+            };
+
+            public static readonly string[] ManagerPermissions =
+            {
+                Permissions.Reports.ViewReports,
+                Permissions.Workflow.ViewWorkflows
+            };
+        }
+        }
+
+        public static class RolePermissions
+        {
+            public static readonly string[] AdminPermissions = { Permissions.System.ViewSystemSettings, Permissions.Reports.ViewReports };
+            public static readonly string[] StoreOfficerPermissions = { Permissions.Storage.ViewInventory, Permissions.Requisition.ViewRequisitions };
+            public static readonly string[] StaffPermissions = { Permissions.Requisition.CreateRequisition, Permissions.Reports.ViewDashboard };
+            public static readonly string[] InspectorPermissions = { Permissions.Receiving.PerformInspection, Permissions.Receiving.ViewInspections };
+            public static readonly string[] ApproverPermissions = { Permissions.Requisition.ApproveRequisition, Permissions.TransferReturn.ApproveTransfer };
+            public static readonly string[] ManagerPermissions = { Permissions.Reports.ViewReports, Permissions.Workflow.ViewWorkflows };
         }
     }
 }

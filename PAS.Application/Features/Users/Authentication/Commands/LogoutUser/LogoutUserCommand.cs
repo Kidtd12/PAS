@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
-namespace PAS.Application.Features.Users.Authentication.Commands.LogoutUser
-{
-    internal class LogoutUserCommand
-    {
-    }
-}
+namespace Application.Features.Users.Authentication.Commands;
+
+public record LogoutUserCommand : IRequest<Result>;

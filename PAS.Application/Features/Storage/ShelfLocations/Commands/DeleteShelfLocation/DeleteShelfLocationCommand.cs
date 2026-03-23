@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Events;
+using MediatR;
 
-namespace PAS.Application.Features.Storage.ShelfLocations.Commands.DeleteShelfLocation
-{
-    internal class DeleteShelfLocationCommand
-    {
-    }
-}
+namespace Application.Features.Storage.ShelfLocations.Commands;
+
+[Authorize(Permissions = Permissions.ShelfLocations.Delete)]
+public record DeleteShelfLocationCommand(Guid Id) : IRequest<Result>;
