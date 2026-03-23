@@ -14,6 +14,10 @@ namespace Domain.Storage
 
         public int ReservedQuantity { get; private set; }
 
+        public string? BatchNumber { get; private set; }
+
+        public DateTime? ExpiryDate { get; private set; }
+
         private InventoryStock()
         {
         }
@@ -31,6 +35,8 @@ namespace Domain.Storage
         public ShelfLocation? ShelfLocation { get; private set; }
 
         public ShelfLocation? Shelf => ShelfLocation;
+
+        public ICollection<StockLedger> StockLedgerEntries { get; private set; } = new List<StockLedger>();
 
         public bool CheckAvailability(int qty)
         {

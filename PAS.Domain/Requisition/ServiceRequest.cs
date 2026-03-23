@@ -26,6 +26,8 @@ namespace Domain.Requisition
 
         public ApprovalStatus ApprovalStatus { get; private set; }
 
+        public StoreIssueVoucher? StoreIssueVoucher { get; private set; }
+
         public ICollection<SR_Detail> Details { get; private set; } = new List<SR_Detail>();
 
         private ServiceRequest()

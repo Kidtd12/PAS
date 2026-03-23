@@ -5,5 +5,6 @@
     {
         public string? Roles { get; set; }
         public string? Policy { get; set; }
+        public string? Permissions { get; set; }
     }
 }

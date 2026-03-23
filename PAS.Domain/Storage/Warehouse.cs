@@ -8,6 +8,10 @@ namespace Domain.Storage
 
         public string LocationCode { get; private set; }
 
+        public string? City { get; private set; }
+
+        public bool IsActive { get; private set; } = true;
+
         private Warehouse()
         {
         }
@@ -20,5 +24,7 @@ namespace Domain.Storage
 
         // Navigation
         public ICollection<ShelfLocation> Shelves { get; private set; } = new List<ShelfLocation>();
+
+        public ICollection<ShelfLocation> ShelfLocations { get; private set; } = new List<ShelfLocation>();
     }
 }

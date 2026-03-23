@@ -10,6 +10,10 @@ namespace Domain.Receiving
 
         public string TinNumber { get; private set; }
 
+        public string? Email { get; private set; }
+
+        public ICollection<ReceivingNote> ReceivingNotes { get; private set; } = new List<ReceivingNote>();
+
         private Supplier()
         {
         }

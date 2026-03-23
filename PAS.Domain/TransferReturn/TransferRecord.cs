@@ -2,6 +2,8 @@
 using Domain.Catalog;
 using Domain.Common;
 using Domain.PropertyManagement;
+using Domain.Storage;
+using Domain.Users;
 
 namespace Domain.TransferReturn
 {
@@ -17,11 +19,43 @@ namespace Domain.TransferReturn
 
         public DateTime TransferDate { get; private set; }
 
+        public string? TransferNumber { get; private set; }
+
+        public Guid? InitiatedById { get; private set; }
+
+        public Guid? ApprovedById { get; private set; }
+
+        public Guid? FromShelfId { get; private set; }
+
+        public Guid? ToShelfId { get; private set; }
+
+        public DateTime? ApprovedDate { get; private set; }
+
+        public string? Status { get; private set; }
+
+        public string? BatchNumber { get; private set; }
+
+        public DateTime? ExpiryDate { get; private set; }
+
+        public string? Reason { get; private set; }
+
+        public string? Remarks { get; private set; }
+
+        public string? Reference { get; private set; }
+
         public ItemMaster Item { get; private set; }
 
         public PropertyLocation FromLocation { get; private set; }
 
         public PropertyLocation ToLocation { get; private set; }
+
+        public ShelfLocation? FromShelf { get; private set; }
+
+        public ShelfLocation? ToShelf { get; private set; }
+
+        public UserLogin? InitiatedBy { get; private set; }
+
+        public UserLogin? ApprovedBy { get; private set; }
 
         private TransferRecord()
         {
