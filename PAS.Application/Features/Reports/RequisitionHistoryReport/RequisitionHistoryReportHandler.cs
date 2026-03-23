@@ -1,7 +1,5 @@
-﻿using Application.Features.Reports.RequisitionHistoryReport.Dtos;
+using Application.Features.Reports.RequisitionHistoryReport.Dtos;
 using MediatR;
-using PAS.Application.Features.Reports.RequisitionHistoryReport;
-using PAS.Application.Features.Reports.RequisitionHistoryReport.DTOs;
 
 namespace Application.Features.Reports.RequisitionHistoryReport;
 

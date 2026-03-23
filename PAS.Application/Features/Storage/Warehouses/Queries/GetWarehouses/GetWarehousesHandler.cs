@@ -60,4 +60,4 @@ public class GetWarehousesQueryHandler : IRequestHandler<GetWarehousesQuery, Res
 
         return Result<PaginatedList<WarehouseListDto>>.Success(paginatedWarehouses);
     }
-}}
+}

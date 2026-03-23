@@ -83,4 +83,4 @@ public class GetServiceRequestsQueryHandler : IRequestHandler<GetServiceRequests
 
         return Result<PaginatedList<ServiceRequestListDto>>.Success(paginatedRequests);
     }
-}}
+}

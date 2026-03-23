@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+using Application.Features.TransferReturn.ReturnMaterialRequests.Dtos;
+using AutoMapper;
 using MediatR;
-using PAS.Application.Features.TransferReturn.ReturnMaterialRequests.Queries;
 
 namespace Application.Features.TransferReturn.ReturnMaterialRequests.Queries;
 

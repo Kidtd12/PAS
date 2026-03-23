@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+using Application.Features.Users.Roles.Dtos;
+using AutoMapper;
 using MediatR;
-using PAS.Application.Features.Users.Roles.Queries.GetUserRoles;
 
 namespace Application.Features.Users.Roles.Queries;
 

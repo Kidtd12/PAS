@@ -1,5 +1,4 @@
-﻿using MediatR;
-using PAS.Application.Features.Storage.InventoryStock.Commands.ReserveStock;
+using MediatR;
 
 namespace Application.Features.Storage.InventoryStock.Commands;
 
@@ -63,14 +62,14 @@ public class ReserveStockCommandHandler : IRequestHandler<ReserveStockCommand, R
                     ?.SetValue(stock, stock.ReservedQuantity + toReserve);
 
                 // Create stock ledger entry for reservation
-                var ledger = new StockLedger(
+                var ledger = new Domain.Storage.StockLedger(
                     request.ItemId,
                     stock.ShelfId,
                     -toReserve,
                     "RESERVED",
                     request.ReferenceId);
 
-                typeof(StockLedger).GetProperty("ReferenceType")?.SetValue(ledger, request.ReferenceType);
+                typeof(Domain.Storage.StockLedger).GetProperty("ReferenceType")?.SetValue(ledger, request.ReferenceType);
                 _context.StockLedgers.Add(ledger);
 
                 remainingToReserve -= toReserve;

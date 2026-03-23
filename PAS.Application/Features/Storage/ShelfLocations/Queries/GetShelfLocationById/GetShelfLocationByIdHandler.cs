@@ -59,7 +59,7 @@ public class GetShelfLocationByIdQueryHandler : IRequestHandler<GetShelfLocation
 
         // Get recent movements
         shelfDto.RecentMovements = shelfLocation.InventoryStocks?
-            .SelectMany(i => i.StockLedgerEntries ?? new List<StockLedger>())
+            .SelectMany(i => i.StockLedgerEntries)
             .Where(l => !l.IsDeleted)
             .OrderByDescending(l => l.CreatedDate)
             .Take(20)
@@ -75,4 +75,4 @@ public class GetShelfLocationByIdQueryHandler : IRequestHandler<GetShelfLocation
 
         return Result<ShelfLocationDetailDto>.Success(shelfDto);
     }
-}}
+}

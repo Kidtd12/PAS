@@ -93,4 +93,4 @@ public class UpdateShelfLocationCommandHandler : IRequestHandler<UpdateShelfLoca
 
         return Result.Success();
     }
-}}
+}

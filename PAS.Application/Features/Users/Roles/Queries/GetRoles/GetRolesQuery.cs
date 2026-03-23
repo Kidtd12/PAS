@@ -1,7 +1,6 @@
-﻿using Application.Common.Security;
+using Application.Common.Security;
 using Application.Features.Users.Roles.Dtos;
 using MediatR;
-using PAS.Application.Features.Users.Roles.DTOs;
 
 namespace Application.Features.Users.Roles.Queries;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using Domain.Common;
+using Domain.Storage;
 using Domain.Users;
 
 namespace Domain.Receiving
@@ -14,6 +15,16 @@ namespace Domain.Receiving
 
         public string? InvoiceNumber { get; private set; }
 
+        public DateTime? InvoiceDate { get; private set; }
+
+        public string? DeliveryNoteNumber { get; private set; }
+
+        public string? VehicleNumber { get; private set; }
+
+        public string? DriverName { get; private set; }
+
+        public string? Remarks { get; private set; }
+
         public DateTime ReceivedDate { get; private set; }
 
         public string Status { get; private set; }
@@ -25,6 +36,12 @@ namespace Domain.Receiving
         public UserLogin? ReceivedBy { get; private set; }
 
         public InspectionLog? InspectionLog { get; private set; }
+
+        public ICollection<ReceivingNoteItem> Items { get; private set; } = new List<ReceivingNoteItem>();
+
+        public ICollection<StockLedger> StockLedgers { get; private set; } = new List<StockLedger>();
+
+        public ICollection<DocumentAttachment> Attachments { get; private set; } = new List<DocumentAttachment>();
 
         private ReceivingNote()
         {

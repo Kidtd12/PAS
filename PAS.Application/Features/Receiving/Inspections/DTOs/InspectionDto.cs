@@ -14,6 +14,7 @@ public class InspectionDto : IMapFrom<Domain.Receiving.InspectionLog>
     public string Status => IsPassed ? "Passed" : "Failed";
     public string DeviationNotes { get; set; } = string.Empty;
     public DateTime InspectionDate { get; set; }
+    public int ReceivedQuantity { get; set; }
     public List<InspectionItemDto> Items { get; set; } = new();
 
     public void Mapping(Profile profile)

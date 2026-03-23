@@ -1,5 +1,4 @@
-﻿using MediatR;
-using PAS.Application.Features.Storage.Warehouses.Commands.DeleteWarehouse;
+using MediatR;
 
 namespace Application.Features.Storage.Warehouses.Commands;
 

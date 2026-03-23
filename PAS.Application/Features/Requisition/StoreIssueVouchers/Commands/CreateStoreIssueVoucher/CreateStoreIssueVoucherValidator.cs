@@ -31,4 +31,4 @@ public class CreateStoreIssueVoucherCommandValidator : AbstractValidator<CreateS
                 .GreaterThan(0).WithMessage("Issued quantity must be greater than 0.");
         });
     }
-}}
+}

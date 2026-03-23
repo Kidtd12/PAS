@@ -90,14 +90,91 @@ namespace Application.Common.Security
 
         public static class Requisitions
         {
+            public const string View = "Requisition.View";
             public const string Create = "Requisition.Create";
             public const string Approve = "Requisition.Approve";
+            public const string Edit = "Requisition.Edit";
+            public const string Issue = "Requisition.Issue";
+            public const string Delete = "Requisition.Delete";
         }
 
         public static class Receiving
         {
+            public const string View = "Receiving.View";
             public const string Create = "Receiving.Create";
             public const string Inspect = "Receiving.Inspection.Perform";
+        }
+
+        public static class Warehouses
+        {
+            public const string View = "Storage.Warehouses.View";
+            public const string Create = "Storage.Warehouses.Create";
+            public const string Edit = "Storage.Warehouses.Edit";
+            public const string Delete = "Storage.Warehouses.Delete";
+        }
+
+        public static class ShelfLocations
+        {
+            public const string View = "Storage.Shelves.View";
+            public const string Create = "Storage.Shelves.Create";
+            public const string Edit = "Storage.Shelves.Edit";
+            public const string Delete = "Storage.Shelves.Delete";
+        }
+
+        public static class Inventory
+        {
+            public const string View = "Storage.Inventory.View";
+            public const string Adjust = "Storage.Inventory.Adjust";
+            public const string Reserve = "Storage.Inventory.Transfer";
+            public const string Release = "Storage.Inventory.Transfer";
+        }
+
+        public static class StockLedger
+        {
+            public const string View = "Storage.Inventory.ViewLedger";
+        }
+
+        public static class Disposal
+        {
+            public const string View = "Disposal.View";
+            public const string Create = "Disposal.Create";
+            public const string Approve = "Disposal.Approve";
+        }
+
+        public static class TransferReturn
+        {
+            public const string View = "Transfer.View";
+            public const string Create = "Transfer.Create";
+            public const string Approve = "Transfer.Approve";
+        }
+
+        public static class Users
+        {
+            public const string View = "Users.View";
+            public const string Create = "Users.Create";
+            public const string Edit = "Users.Edit";
+            public const string Delete = "Users.Delete";
+        }
+
+        public static class Roles
+        {
+            public const string View = "Users.Roles.View";
+        }
+
+        public static class Suppliers
+        {
+            public const string View = "Receiving.Suppliers.View";
+            public const string Create = "Receiving.Suppliers.Create";
+            public const string Edit = "Receiving.Suppliers.Edit";
+            public const string Delete = "Receiving.Suppliers.Delete";
+        }
+
+        public static class Employees
+        {
+            public const string View = "Users.Employees.View";
+            public const string Create = "Users.Employees.Manage";
+            public const string Edit = "Users.Employees.Manage";
+            public const string Delete = "Users.Employees.Manage";
         }
 
         public static class Reports

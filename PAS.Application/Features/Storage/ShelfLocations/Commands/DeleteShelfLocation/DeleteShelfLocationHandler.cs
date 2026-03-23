@@ -1,5 +1,4 @@
-﻿using MediatR;
-using PAS.Application.Features.Storage.ShelfLocations.Commands.DeleteShelfLocation;
+using MediatR;
 
 namespace Application.Features.Storage.ShelfLocations.Commands;
 

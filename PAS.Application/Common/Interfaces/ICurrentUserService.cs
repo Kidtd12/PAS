@@ -4,6 +4,7 @@
     {
         Guid? UserId { get; }
         string? Username { get; }
+        string? UserName => Username;
         string? EmployeeCode { get; }
         string? EmployeeName { get; }
         string? Role { get; }

@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+using Application.Features.Receiving.ReceivingNotes.Dtos;
+using AutoMapper;
 using MediatR;
-using PAS.Application.Features.Receiving.ReceivingNotes.Queries.GetReceivingNoteById;
 
 namespace Application.Features.Receiving.ReceivingNotes.Queries;
 
@@ -39,15 +39,16 @@ public class GetReceivingNoteByIdQueryHandler : IRequestHandler<GetReceivingNote
             .Where(l => l.ReferenceId == request.Id &&
                        (l.TransactionType == "RECEIVED_PENDING_INSPECTION" ||
                         l.TransactionType == "RECEIVED"))
-            .Select(l => new ReceivingNoteItemDto
+            .Select(l => new ReceivingItemDetailDto
             {
-                Id = Guid.NewGuid(), // Would use actual item ID from a proper ReceivingNoteItem entity
                 ItemId = l.ItemId,
                 ItemName = l.Item != null ? l.Item.ItemName : string.Empty,
                 SKU = l.Item != null ? l.Item.SKU : string.Empty,
-                Quantity = l.QuantityChange,
-                UnitPrice = 0, // Would need to store price in receiving note items
-                UnitOfMeasure = l.Item != null ? l.Item.UnitOfMeasure : string.Empty
+                ReceivedQuantity = l.QuantityChange,
+                AcceptedQuantity = l.QuantityChange,
+                RejectedQuantity = 0,
+                UnitOfMeasure = l.Item != null ? l.Item.UnitOfMeasure : string.Empty,
+                RequiresInspection = true
             })
             .ToListAsync(cancellationToken);
 
@@ -63,8 +64,8 @@ public class GetReceivingNoteByIdQueryHandler : IRequestHandler<GetReceivingNote
                 InspectorName = receivingNote.InspectionLog.Inspector?.Username ?? "Unknown",
                 IsPassed = receivingNote.InspectionLog.IsPassed,
                 DeviationNotes = receivingNote.InspectionLog.DeviationNotes,
-                AcceptedItems = items.Count, // Simplified
-                RejectedItems = 0 // Would need to calculate from return requests
+                AcceptedQuantity = items.Sum(i => i.AcceptedQuantity),
+                RejectedQuantity = items.Sum(i => i.RejectedQuantity)
             };
         }
 

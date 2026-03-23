@@ -10,6 +10,12 @@ namespace Domain.Users
 
         public string Department { get; private set; }
 
+        public string? Position { get; private set; }
+
+        public string? Email { get; private set; }
+
+        public bool IsActive { get; private set; } = true;
+
         public UserLogin? UserLogin { get; private set; }
 
         private Employee()

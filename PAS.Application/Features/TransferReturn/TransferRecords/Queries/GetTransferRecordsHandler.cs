@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+using Application.Features.TransferReturn.TransferRecords.Dtos;
+using AutoMapper;
 using MediatR;
-using PAS.Application.Features.TransferReturn.TransferRecords.Queries;
 
 namespace Application.Features.TransferReturn.TransferRecords.Queries;
 

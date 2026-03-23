@@ -1,4 +1,6 @@
-﻿namespace Application.Features.Users.Employees.Queries;
+﻿using Application.Features.Users.Employees.Dtos;
+
+namespace Application.Features.Users.Employees.Queries;
 
 public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, Result<PaginatedList<EmployeeListDto>>>
 {

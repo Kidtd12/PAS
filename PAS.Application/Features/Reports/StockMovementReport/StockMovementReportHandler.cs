@@ -1,8 +1,5 @@
-﻿using Application.Features.Reports.RequisitionHistoryReport.Dtos;
 using Application.Features.Reports.StockMovementReport.Dtos;
 using MediatR;
-using PAS.Application.Features.Reports.StockMovementReport;
-using PAS.Application.Features.Reports.StockMovementReport.DTOs;
 
 namespace Application.Features.Reports.StockMovementReport;
 

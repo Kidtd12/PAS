@@ -1,5 +1,4 @@
-﻿using MediatR;
-using PAS.Application.Features.Requisition.StoreIssueVouchers.Commands.CreateStoreIssueVoucher;
+using MediatR;
 
 namespace Application.Features.Requisition.StoreIssueVouchers.Commands;
 

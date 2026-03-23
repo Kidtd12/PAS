@@ -81,4 +81,4 @@ public class GetShelfLocationsQueryHandler : IRequestHandler<GetShelfLocationsQu
 
         return Result<PaginatedList<ShelfLocationListDto>>.Success(paginatedShelves);
     }
-}}
+}

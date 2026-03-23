@@ -26,6 +26,8 @@ namespace Domain.Disposal
 
         public Users.UserLogin? DisposedBy { get; private set; }
 
+        public Users.UserLogin? DisposedByUser => DisposedBy;
+
         public Users.UserLogin? ApprovedBy { get; private set; }
 
         public DateTime? ApprovedDate { get; private set; }

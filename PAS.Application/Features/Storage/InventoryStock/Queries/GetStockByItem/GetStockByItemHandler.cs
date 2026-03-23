@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+﻿using Application.Features.Storage.InventoryStock.Dtos;
+using AutoMapper;
 using MediatR;
-using PAS.Application.Features.Storage.InventoryStock.Queries.GetStockByItem;
 
 namespace Application.Features.Storage.InventoryStock.Queries;
 

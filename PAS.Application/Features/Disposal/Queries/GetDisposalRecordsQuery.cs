@@ -57,7 +57,7 @@ public class GetDisposalRecordsHandler : IRequestHandler<GetDisposalRecordsQuery
 
         if (request.DisposedBy.HasValue)
         {
-            query = query.Where(d => d.DisposedBy == request.DisposedBy);
+            query = query.Where(d => d.DisposedById == request.DisposedBy);
         }
 
         if (request.FromDate.HasValue)

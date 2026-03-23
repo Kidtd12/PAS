@@ -46,7 +46,7 @@ public class DisposalReportQueryHandler : IRequestHandler<DisposalReportQuery, R
 
         if (request.DisposedBy.HasValue)
         {
-            query = query.Where(d => d.DisposedBy == request.DisposedBy);
+            query = query.Where(d => d.DisposedById == request.DisposedBy);
         }
 
         var disposals = await query.ToListAsync(cancellationToken);

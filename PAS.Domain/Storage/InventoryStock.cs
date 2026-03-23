@@ -32,11 +32,11 @@ namespace Domain.Storage
         // Navigation properties
         public ItemMaster? Item { get; private set; }
 
-        public ShelfLocation? Shelf { get; private set; }
-
         public ShelfLocation? ShelfLocation { get; private set; }
 
         public ShelfLocation? Shelf => ShelfLocation;
+
+        public ICollection<StockLedger> StockLedgerEntries { get; private set; } = new List<StockLedger>();
 
         public bool CheckAvailability(int qty)
         {

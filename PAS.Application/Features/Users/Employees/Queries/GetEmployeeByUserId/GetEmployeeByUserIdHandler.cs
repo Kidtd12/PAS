@@ -1,4 +1,6 @@
-﻿namespace Application.Features.Users.Employees.Queries;
+﻿using Application.Features.Users.Employees.Dtos;
+
+namespace Application.Features.Users.Employees.Queries;
 
 public class GetEmployeeByUserIdQueryHandler : IRequestHandler<GetEmployeeByUserIdQuery, Result<EmployeeDetailDto>>
 {
@@ -32,7 +34,7 @@ public class GetEmployeeByUserIdQueryHandler : IRequestHandler<GetEmployeeByUser
             Email = user.Email ?? string.Empty,
             Role = user.Role?.RoleName ?? "Unknown",
             IsActive = user.IsActive,
-            LastLoginAt = user.LastLoginAt
+            LastLoginAt = null
         };
 
         return Result<EmployeeDetailDto>.Success(employeeDto);
