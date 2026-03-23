@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.Workflow.ApprovalStatuses.Commands.CreateapprovalStatus
+namespace Application.Features.Workflow.ApprovalStatuses.Commands.CreateApprovalStatus;
+
+[Authorize(Permissions = Permissions.Workflow.Create)]
+public record CreateApprovalStatusCommand : IRequest<Result<Guid>>
 {
-    internal class CreateApprovalStatusCommand
-    {
-    }
+    public string StatusName { get; init; } = string.Empty;
 }

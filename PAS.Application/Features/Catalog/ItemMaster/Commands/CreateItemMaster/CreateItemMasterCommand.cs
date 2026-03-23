@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.Catalog.ItemMaster.Commands.CreateItemMaster
+namespace Application.Features.Catalog.ItemMasters.Commands.CreateItemMaster;
+
+[Authorize(Permissions = Permissions.Items.Create)]
+public record CreateItemMasterCommand : IRequest<Result<Guid>>
 {
-    internal class CreateItemMasterCommand
-    {
-    }
+    public string SKU { get; init; } = string.Empty;
+    public string ItemName { get; init; } = string.Empty;
+    public Guid CategoryId { get; init; }
+    public string UnitOfMeasure { get; init; } = string.Empty;
+    public bool RequiresInspection { get; init; }
+    public int MinStockLevel { get; init; }
 }

@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.Catalog.Categories.Commands.UpdateCategory
+namespace Application.Features.Catalog.Categories.Commands.UpdateCategory;
+
+[Authorize(Permissions = Permissions.Categories.Edit)]
+public record UpdateCategoryCommand : IRequest<Result>
 {
-    internal class UpdateCategoryCommand
-    {
-    }
+    public Guid Id { get; init; }
+    public string Name { get; init; } = string.Empty;
+    public string Description { get; init; } = string.Empty;
+    public Guid? ParentCategoryId { get; init; }
 }

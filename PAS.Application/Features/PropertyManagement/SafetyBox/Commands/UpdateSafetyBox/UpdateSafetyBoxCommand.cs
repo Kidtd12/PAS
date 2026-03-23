@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.PropertyManagement.SafetyBox.Commands.UpdateSafetyBox
+namespace Application.Features.PropertyManagement.SafetyBoxes.Commands.UpdateSafetyBox;
+
+[Authorize(Permissions = Permissions.SafetyBoxes.Edit)]
+public record UpdateSafetyBoxCommand : IRequest<Result>
 {
-    internal class UpdateSafetyBoxCommand
-    {
-    }
+    public Guid Id { get; init; }
+    public string BoxNumber { get; init; } = string.Empty;
+    public int TotalShelves { get; init; }
+    public Guid LocationId { get; init; }
 }

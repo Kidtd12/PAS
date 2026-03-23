@@ -12,6 +12,10 @@ namespace Domain.PropertyManagement
 
         public Guid LocationId { get; private set; }
 
+        public PropertyLocation Location { get; private set; }
+
+        public ICollection<Property> Properties { get; private set; } = new List<Property>();
+
         public ICollection<SafetyBoxShelf> Shelves { get; private set; } = new List<SafetyBoxShelf>();
 
         private SafetyBox()

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.Common.Notifications.Commands.MarkAllAsRead
-{
-    internal class MarkAllAsReadCommand
-    {
-    }
-}
+namespace Application.Features.Common.Notifications.Commands.MarkAllAsRead;
+
+[Authorize(Permissions = Permissions.Notifications.MarkAsRead)]
+public record MarkAllAsReadCommand : IRequest<Result>;

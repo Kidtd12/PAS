@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.PropertyManagement.PropertyTypes.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.PropertyManagement.PropertyType.Queries.GetPropertyTypeById
-{
-    internal class GetPropertyTypeByIdQuery
-    {
-    }
-}
+namespace Application.Features.PropertyManagement.PropertyTypes.Queries.GetPropertyTypeById;
+
+[Authorize(Permissions = Permissions.PropertyTypes.View)]
+public record GetPropertyTypeByIdQuery(Guid Id) : IRequest<Result<PropertyTypeDto>>;

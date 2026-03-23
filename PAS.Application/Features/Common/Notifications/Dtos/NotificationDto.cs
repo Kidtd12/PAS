@@ -1,12 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Mappings;
+using AutoMapper;
 
-namespace PAS.Application.Features.Common.Notifications.Dtos
+namespace Application.Features.Common.Notifications.Dtos;
+
+public class NotificationDto : IMapFrom<Domain.Common.Notification>
 {
-    internal class NotificationDto
+    public Guid Id { get; set; }
+    public string Message { get; set; } = string.Empty;
+    public bool IsRead { get; set; }
+    public DateTime SentDate { get; set; }
+    public string TimeAgo { get; set; } = string.Empty;
+
+    public void Mapping(Profile profile)
     {
+        profile.CreateMap<Domain.Common.Notification, NotificationDto>()
+            .ForMember(d => d.TimeAgo, opt => opt.Ignore());
     }
 }

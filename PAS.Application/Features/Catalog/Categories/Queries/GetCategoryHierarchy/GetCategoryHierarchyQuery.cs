@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Catalog.Categories.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Catalog.Categories.Queries.GetCategoryHierarchy
-{
-    internal class GetCategoryHierarchyQuery
-    {
-    }
-}
+namespace Application.Features.Catalog.Categories.Queries.GetCategoryHierarchy;
+
+[Authorize(Permissions = Permissions.Categories.View)]
+public record GetCategoryHierarchyQuery : IRequest<Result<List<CategoryHierarchyDto>>>;

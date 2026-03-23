@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.Workflow.ApprovalWorkflows.Commands.DeleteWorkflow
-{
-    internal class DeleteWorkflowCommand
-    {
-    }
-}
+namespace Application.Features.Workflow.ApprovalWorkflows.Commands.DeleteWorkflow;
+
+[Authorize(Permissions = Permissions.Workflow.Delete)]
+public record DeleteWorkflowCommand(Guid Id) : IRequest<Result>;

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Common.DocumentAttachments.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Common.DocumentAttachments.Commands.DownloadDocument
-{
-    internal class DownloadDocumentCommand
-    {
-    }
-}
+namespace Application.Features.Common.DocumentAttachments.Commands.DownloadDocument;
+
+[Authorize(Permissions = Permissions.Documents.Download)]
+public record DownloadDocumentCommand(Guid Id) : IRequest<Result<FileDto>>;

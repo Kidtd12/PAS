@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.PropertyManagement.PropertyType.Commands.UpdatePropertyType
+namespace Application.Features.PropertyManagement.PropertyTypes.Commands.UpdatePropertyType;
+
+[Authorize(Permissions = Permissions.PropertyTypes.Edit)]
+public record UpdatePropertyTypeCommand : IRequest<Result>
 {
-    internal class UpdatePropertyTypeCommand
-    {
-    }
+    public Guid Id { get; init; }
+    public string Name { get; init; } = string.Empty;
+    public string Description { get; init; } = string.Empty;
 }

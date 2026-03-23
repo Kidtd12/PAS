@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using MediatR;
 
-namespace PAS.Application.Features.PropertyManagement.Properties.Commands.TransferProperty
+namespace Application.Features.PropertyManagement.Properties.Commands.TransferProperty;
+
+[Authorize(Permissions = Permissions.Properties.Transfer)]
+public record TransferPropertyCommand : IRequest<Result>
 {
-    internal class TransferPropertyCommand
-    {
-    }
+    public Guid Id { get; init; }
+    public Guid NewLocationId { get; init; }
+    public Guid? NewSafetyBoxId { get; init; }
+    public int? NewShelfNumber { get; init; }
+    public string Remarks { get; init; } = string.Empty;
 }

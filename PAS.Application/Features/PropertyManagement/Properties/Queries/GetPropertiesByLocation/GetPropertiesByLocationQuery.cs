@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.PropertyManagement.Properties.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.PropertyManagement.Properties.Queries.GetPropertiesByLocation
-{
-    internal class GetPropertiesByLocationQuery
-    {
-    }
-}
+namespace Application.Features.PropertyManagement.Properties.Queries.GetPropertiesByLocation;
+
+[Authorize(Permissions = Permissions.Properties.View)]
+public record GetPropertiesByLocationQuery(Guid LocationId) : IRequest<Result<List<PropertyDto>>>;

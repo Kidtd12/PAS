@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Common.Notifications.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Common.Notifications.Queries.GetNotifications
+namespace Application.Features.Common.Notifications.Queries.GetNotifications;
+
+[Authorize(Permissions = Permissions.Notifications.View)]
+public record GetNotificationsQuery : IRequest<Result<NotificationListDto>>
 {
-    internal class GetNotificationsQuery
-    {
-    }
+    public bool? ShowOnlyUnread { get; init; }
+    public int PageNumber { get; init; } = 1;
+    public int PageSize { get; init; } = 20;
 }

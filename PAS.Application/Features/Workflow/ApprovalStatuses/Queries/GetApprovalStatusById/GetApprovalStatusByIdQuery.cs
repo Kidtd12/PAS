@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.Workflow.ApprovalStatuses.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.Workflow.ApprovalStatuses.Queries.GetApprovalStatusById
-{
-    internal class GetApprovalStatusByIdQuery
-    {
-    }
-}
+namespace Application.Features.Workflow.ApprovalStatuses.Queries.GetApprovalStatusById;
+
+[Authorize(Permissions = Permissions.Workflow.View)]
+public record GetApprovalStatusByIdQuery(Guid Id) : IRequest<Result<ApprovalStatusDto>>;

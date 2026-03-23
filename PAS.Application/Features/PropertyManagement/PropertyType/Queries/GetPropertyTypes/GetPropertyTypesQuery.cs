@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Security;
+using Application.Features.PropertyManagement.PropertyTypes.Dtos;
+using MediatR;
 
-namespace PAS.Application.Features.PropertyManagement.PropertyType.Queries.GetPropertyTypes
+namespace Application.Features.PropertyManagement.PropertyTypes.Queries.GetPropertyTypes;
+
+[Authorize(Permissions = Permissions.PropertyTypes.View)]
+public record GetPropertyTypesQuery : IRequest<Result<List<PropertyTypeDto>>>
 {
-    internal class GetPropertyTypesQuery
-    {
-    }
+    public string? SearchTerm { get; init; }
 }

@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace PAS.Application.Features.PropertyManagement.PropertyType.Commands.CreatePropertyType
+namespace Application.Features.PropertyManagement.PropertyTypes.Commands.CreatePropertyType;
+
+public class CreatePropertyTypeCommandValidator : AbstractValidator<CreatePropertyTypeCommand>
 {
-    internal class CreatePropertyTypeValidator
+    public CreatePropertyTypeCommandValidator()
     {
+        RuleFor(v => v.Name)
+            .NotEmpty().WithMessage("Name is required.")
+            .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
+
+        RuleFor(v => v.Description)
+            .MaximumLength(500).WithMessage("Description must not exceed 500 characters.");
     }
 }

@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Mappings;
+using AutoMapper;
 
-namespace PAS.Application.Features.Workflow.ApprovalStatuses.Dtos
+namespace Application.Features.Workflow.ApprovalStatuses.Dtos;
+
+public class ApprovalStatusDto : IMapFrom<ApprovalStatus>
 {
-    internal class ApprovalStatusDto
+    public Guid Id { get; set; }
+    public string StatusName { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+
+    public void Mapping(Profile profile)
     {
+        profile.CreateMap<ApprovalStatus, ApprovalStatusDto>();
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Domain.Common;
+using Domain.Users;
 using Domain.Workflow;
 
 namespace Domain.Requisition
@@ -18,6 +19,10 @@ namespace Domain.Requisition
         public DateTime RequestDate { get; private set; }
 
         public string Status { get; private set; }
+
+        public UserLogin Requester { get; private set; }
+
+        public UserLogin ApprovedBy { get; private set; }
 
         public ApprovalStatus ApprovalStatus { get; private set; }
 
