@@ -24,4 +24,11 @@
     <ProjectReference Include="..\PAS.Domain\PAS.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Common\Behaviors\Properties\launchSettings.json">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
