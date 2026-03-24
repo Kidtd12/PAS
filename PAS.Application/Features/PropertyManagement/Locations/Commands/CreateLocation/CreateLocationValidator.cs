@@ -8,7 +8,7 @@ public class CreateLocationCommandValidator : AbstractValidator<CreateLocationCo
     {
         RuleFor(v => v.Name)
             .NotEmpty().WithMessage("Name is required.")
-            .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
+            .MaximumLength(50).WithMessage("Name must not exceed 50 characters.");
 
         RuleFor(v => v.LocationType)
             .NotEmpty().WithMessage("Location type is required.")
