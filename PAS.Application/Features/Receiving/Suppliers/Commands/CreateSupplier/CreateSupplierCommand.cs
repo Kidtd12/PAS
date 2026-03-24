@@ -32,7 +32,7 @@ public class CreateSupplierCommandValidator : AbstractValidator<CreateSupplierCo
     {
         RuleFor(v => v.SupplierName)
             .NotEmpty().WithMessage("Supplier name is required.")
-            .MaximumLength(200).WithMessage("Supplier name must not exceed 200 characters.");
+            .MaximumLength(200).WithMessage("Supplier name must not exceed 50 characters.");
 
         RuleFor(v => v.ContactPerson)
             .NotEmpty().WithMessage("Contact person is required.")
@@ -51,6 +51,6 @@ public class CreateSupplierCommandValidator : AbstractValidator<CreateSupplierCo
             .MaximumLength(20).WithMessage("Phone must not exceed 20 characters.");
 
         RuleFor(v => v.Address)
-            .MaximumLength(500).WithMessage("Address must not exceed 500 characters.");
+            .MaximumLength(500).WithMessage("Address must not exceed 100 characters.");
     }
 }

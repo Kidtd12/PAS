@@ -57,7 +57,7 @@ public class GetItemMastersHandler : IRequestHandler<GetItemMastersQuery, Result
             item.CurrentStock = totalStock;
             item.ReservedStock = reservedStock;
             item.AvailableStock = totalStock - reservedStock;
-            item.IsLowStock = item.AvailableStock <= (dbItem?.MinStockLevel ?? 0);
+            item.IsLowStock = item.AvailableStock <= (dbItem?.MinStockLevel ?? 10);
         }
 
         if (request.LowStockOnly == true)
