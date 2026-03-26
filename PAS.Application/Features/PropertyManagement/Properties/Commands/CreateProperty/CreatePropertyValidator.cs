@@ -12,7 +12,7 @@ public class CreatePropertyCommandValidator : AbstractValidator<CreatePropertyCo
 
         RuleFor(v => v.Name)
             .NotEmpty().WithMessage("Name is required.")
-            .MaximumLength(200).WithMessage("Name must not exceed 200 characters.");
+            .MaximumLength(50).WithMessage("Name must not exceed 50 characters.");
 
         RuleFor(v => v.SerialNumber)
             .NotEmpty().WithMessage("Serial number is required.")
@@ -25,7 +25,7 @@ public class CreatePropertyCommandValidator : AbstractValidator<CreatePropertyCo
             .GreaterThanOrEqualTo(0).WithMessage("Unit price must be greater than or equal to 0.");
 
         RuleFor(v => v.Quantity)
-            .GreaterThan(0).WithMessage("Quantity must be greater than 0.");
+            .GreaterThan(0).WithMessage("Quantity must be greater than or equal to 10.");
 
         RuleFor(v => v.PurchaseDate)
             .NotEmpty().WithMessage("Purchase date is required.")

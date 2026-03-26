@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Catalog.ItemMasters.Queries.GetLowStockItems;
 
@@ -13,29 +14,29 @@ public class GetLowStockItemsHandler : IRequestHandler<GetLowStockItemsQuery, Re
 
     public async Task<Result<List<LowStockItemDto>>> Handle(GetLowStockItemsQuery request, CancellationToken cancellationToken)
     {
-        var items = await _context.ItemMasters
-            .Include(i => i.InventoryStocks)
-                .ThenInclude(s => s.Shelf)
+        var lowStockItems = await _context.ItemMasters
             .Where(i => !i.IsDeleted)
-            .ToListAsync(cancellationToken);
-
-        var lowStockItems = items
-            .Where(i => (i.InventoryStocks?.Sum(s => s.CurrentQuantity) ?? 0) <= i.MinStockLevel)
-            .Select(i => new LowStockItemDto
+            .Select(i => new
             {
-                ItemId = i.Id,
-                ItemName = i.ItemName,
-                SKU = i.SKU,
-                CurrentStock = i.InventoryStocks?.Sum(s => s.CurrentQuantity) ?? 0,
-                MinStockLevel = i.MinStockLevel,
-                Deficit = i.MinStockLevel - (i.InventoryStocks?.Sum(s => s.CurrentQuantity) ?? 0),
-                Locations = i.InventoryStocks?
-                    .Where(s => s.CurrentQuantity > 0)
-                    .Select(s => $"{s.Shelf.Aisle}-{s.Shelf.Rack}-{s.Shelf.ShelfNumber}")
-                    .ToList() ?? new()
+                Item = i,
+                CurrentStock = i.InventoryStocks.Sum(s => (int?)s.CurrentQuantity) ?? 0
             })
-            .OrderBy(i => i.Deficit)
-            .ToList();
+            .Where(x => x.CurrentStock <= x.Item.MinStockLevel) // MinStockLevel = 10 works here
+            .Select(x => new LowStockItemDto
+            {
+                ItemId = x.Item.Id,
+                ItemName = x.Item.ItemName,
+                SKU = x.Item.SKU,
+                CurrentStock = x.CurrentStock,
+                MinStockLevel = x.Item.MinStockLevel,
+                Deficit = x.Item.MinStockLevel - x.CurrentStock,
+                Locations = x.Item.InventoryStocks
+                    .Where(s => s.CurrentQuantity > 0)
+                    .Select(s => s.Shelf.Aisle + "-" + s.Shelf.Rack + "-" + s.Shelf.ShelfNumber)
+                    .ToList()
+            })
+            .OrderByDescending(i => i.Deficit) // biggest shortage first (better UX)
+            .ToListAsync(cancellationToken);
 
         return Result<List<LowStockItemDto>>.Success(lowStockItems);
     }
