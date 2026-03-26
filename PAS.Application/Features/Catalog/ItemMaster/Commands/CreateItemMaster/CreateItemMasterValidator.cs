@@ -12,7 +12,7 @@ public class CreateItemMasterCommandValidator : AbstractValidator<CreateItemMast
 
         RuleFor(v => v.ItemName)
             .NotEmpty().WithMessage("Item name is required.")
-            .MaximumLength(200).WithMessage("Item name must not exceed 200 characters.");
+            .MaximumLength(100).WithMessage("Item name must not exceed 100 characters.");
 
         RuleFor(v => v.CategoryId)
             .NotEmpty().WithMessage("Category is required.");
@@ -22,6 +22,6 @@ public class CreateItemMasterCommandValidator : AbstractValidator<CreateItemMast
             .MaximumLength(20).WithMessage("Unit of measure must not exceed 20 characters.");
 
         RuleFor(v => v.MinStockLevel)
-            .GreaterThanOrEqualTo(0).WithMessage("Minimum stock level must be greater than or equal to 0.");
+            .GreaterThanOrEqualTo(0).WithMessage("Minimum stock level must be greater than or equal to 10.");
     }
 }
