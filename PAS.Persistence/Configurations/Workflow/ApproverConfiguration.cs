@@ -11,12 +11,12 @@ namespace Persistence.Configurations.Workflow
         {
             builder.ToTable("Approvers");
 
-            builder.HasOne<ApprovalWorkflow>()
-                .WithMany()
+            builder.HasOne(a => a.Workflow)
+                .WithMany(w => w.Approvers)
                 .HasForeignKey(a => a.WorkflowId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne<UserLogin>()
+            builder.HasOne(a => a.User)
                 .WithMany()
                 .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.Restrict);

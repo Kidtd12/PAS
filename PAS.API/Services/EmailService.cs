@@ -17,71 +17,47 @@ public class EmailService : IEmailService
         _logger = logger;
     }
 
-    public async Task SendEmailAsync(string to, string subject, string body, bool isHtml = true, CancellationToken cancellationToken = default)
+    public Task SendEmailAsync(string to, string subject, string body)
     {
-        await SendEmailAsync(new[] { to }, subject, body, isHtml, cancellationToken);
+        return SendCoreAsync(new[] { to }, subject, body, null, null);
     }
 
-    public async Task SendEmailAsync(string[] to, string subject, string body, bool isHtml = true, CancellationToken cancellationToken = default)
+    public Task SendEmailWithAttachmentAsync(string to, string subject, string body, byte[] attachment, string attachmentName)
     {
-        try
-        {
-            using var client = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.SmtpPort);
-            client.EnableSsl = _emailSettings.EnableSsl;
-            client.Credentials = new NetworkCredential(_emailSettings.Username, _emailSettings.Password);
-
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(_emailSettings.SenderEmail, _emailSettings.SenderName),
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = isHtml
-            };
-
-            foreach (var recipient in to)
-            {
-                mailMessage.To.Add(recipient);
-            }
-
-            await client.SendMailAsync(mailMessage, cancellationToken);
-            _logger.LogInformation("Email sent to {Recipients}", string.Join(", ", to));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to send email to {Recipients}", string.Join(", ", to));
-            throw;
-        }
+        return SendCoreAsync(new[] { to }, subject, body, attachment, attachmentName);
     }
 
-    public async Task SendEmailWithAttachmentAsync(string to, string subject, string body, byte[] attachment, string attachmentName, CancellationToken cancellationToken = default)
+    public Task SendEmailToMultipleAsync(string[] to, string subject, string body)
     {
-        try
+        return SendCoreAsync(to, subject, body, null, null);
+    }
+
+    private async Task SendCoreAsync(string[] recipients, string subject, string body, byte[]? attachment, string? attachmentName)
+    {
+        using var client = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.SmtpPort)
         {
-            using var client = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.SmtpPort);
-            client.EnableSsl = _emailSettings.EnableSsl;
-            client.Credentials = new NetworkCredential(_emailSettings.Username, _emailSettings.Password);
+            EnableSsl = _emailSettings.EnableSsl,
+            Credentials = new NetworkCredential(_emailSettings.Username, _emailSettings.Password)
+        };
 
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(_emailSettings.SenderEmail, _emailSettings.SenderName),
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true
-            };
-
-            mailMessage.To.Add(to);
-
-            using var stream = new MemoryStream(attachment);
-            var attachmentFile = new Attachment(stream, attachmentName);
-            mailMessage.Attachments.Add(attachmentFile);
-
-            await client.SendMailAsync(mailMessage, cancellationToken);
-            _logger.LogInformation("Email with attachment sent to {Recipient}", to);
-        }
-        catch (Exception ex)
+        using var mailMessage = new MailMessage
         {
-            _logger.LogError(ex, "Failed to send email with attachment to {Recipient}", to);
-            throw;
+            From = new MailAddress(_emailSettings.SenderEmail, _emailSettings.SenderName),
+            Subject = subject,
+            Body = body,
+            IsBodyHtml = true
+        };
+
+        foreach (var recipient in recipients)
+            mailMessage.To.Add(recipient);
+
+        if (attachment != null && !string.IsNullOrWhiteSpace(attachmentName))
+        {
+            var stream = new MemoryStream(attachment);
+            mailMessage.Attachments.Add(new Attachment(stream, attachmentName));
         }
+
+        await client.SendMailAsync(mailMessage);
+        _logger.LogInformation("Email sent to {Recipients}", string.Join(", ", recipients));
     }
 }

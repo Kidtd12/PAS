@@ -1,43 +1,39 @@
-﻿using Hangfire;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-namespace PAS.API.BackgroundServices;
-
-public class EmailBackgroundService : BackgroundService
+namespace PAS.API.BackgroundServices
 {
-    private readonly ILogger<EmailBackgroundService> _logger;
-    private readonly IBackgroundJobClient _backgroundJobClient;
-
-    public EmailBackgroundService(ILogger<EmailBackgroundService> logger, IBackgroundJobClient backgroundJobClient)
+    public class EmailBackgroundService : BackgroundService
     {
-        _logger = logger;
-        _backgroundJobClient = backgroundJobClient;
-    }
+        private readonly ILogger<EmailBackgroundService> _logger;
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        _logger.LogInformation("Email background service started");
-
-        // Schedule recurring jobs
-        RecurringJob.AddOrUpdate("send-daily-digest", () => SendDailyDigest(), Cron.Daily);
-        RecurringJob.AddOrUpdate("send-weekly-report", () => SendWeeklyReport(), Cron.Weekly);
-
-        while (!stoppingToken.IsCancellationRequested)
+        public EmailBackgroundService(ILogger<EmailBackgroundService> logger)
         {
-            await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+            _logger = logger;
         }
-    }
 
-    public async Task SendDailyDigest()
-    {
-        _logger.LogInformation("Sending daily digest emails");
-        // Implementation for sending daily digest
-        await Task.CompletedTask;
-    }
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            _logger.LogInformation("Email background service started");
 
-    public async Task SendWeeklyReport()
-    {
-        _logger.LogInformation("Sending weekly report emails");
-        // Implementation for sending weekly report
-        await Task.CompletedTask;
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await SendDailyDigest();
+                await Task.Delay(TimeSpan.FromHours(24), stoppingToken);
+            }
+        }
+
+        public Task SendDailyDigest()
+        {
+            _logger.LogInformation("Sending daily digest emails");
+            return Task.CompletedTask;
+        }
+
+        public Task SendWeeklyReport()
+        {
+            _logger.LogInformation("Sending weekly report emails");
+            return Task.CompletedTask;
+        }
     }
 }

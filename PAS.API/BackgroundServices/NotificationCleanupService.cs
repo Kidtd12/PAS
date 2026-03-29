@@ -1,5 +1,5 @@
 ﻿using Application.Common.Interfaces;
-using Hangfire;
+using Microsoft.EntityFrameworkCore;
 
 namespace PAS.API.BackgroundServices;
 
@@ -18,12 +18,10 @@ public class NotificationCleanupService : BackgroundService
     {
         _logger.LogInformation("Notification cleanup service started");
 
-        // Schedule cleanup job to run daily at 2 AM
-        RecurringJob.AddOrUpdate("cleanup-old-notifications", () => CleanupOldNotifications(), Cron.Daily(2));
-
         while (!stoppingToken.IsCancellationRequested)
         {
-            await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+            await CleanupOldNotifications();
+            await Task.Delay(TimeSpan.FromHours(24), stoppingToken);
         }
     }
 

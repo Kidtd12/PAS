@@ -13,10 +13,10 @@ public class EmailSettings
     public int TimeoutMilliseconds { get; set; } = 30000;
     public string TemplatesPath { get; set; } = "Templates/Email";
     public bool Enabled { get; set; } = true;
-    public string BccAddress { get; set; }
-    public string TestRecipient { get; set; }
+    public string BccAddress { get; set; } = string.Empty;
+    public string TestRecipient { get; set; } = string.Empty;
     public string SubjectPrefix { get; set; } = "[ECX PAS] ";
-     public EmailTemplates Templates { get; set; } = new();
+    public EmailTemplates Templates { get; set; } = new();
 }
 
 public class EmailTemplates
@@ -34,5 +34,4 @@ public class EmailTemplates
     public string DisposalApproved { get; set; } = "DisposalApproved.html";
     public string TransferNotification { get; set; } = "TransferNotification.html";
     public string AnnualInventoryReminder { get; set; } = "AnnualInventoryReminder.html";
-}
 }

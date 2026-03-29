@@ -1,5 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Application.Constants;
+using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace PAS.API.Services;
@@ -15,37 +17,36 @@ public class CurrentUserService : ICurrentUserService
         _context = context;
     }
 
-    public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-
-    public Guid? UserGuid
+    public Guid? UserId
     {
         get
         {
-            if (Guid.TryParse(UserId, out var guid))
-                return guid;
-            return null;
+            var value = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)
+                        ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            return Guid.TryParse(value, out var id) ? id : null;
         }
     }
 
-    public string? UserName => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
-
-    public string? Email => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email);
-
-    public IEnumerable<string> Roles => _httpContextAccessor.HttpContext?.User?
-        .FindAll(ClaimTypes.Role).Select(c => c.Value) ?? Enumerable.Empty<string>();
+    public string? Username => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
+    public string? EmployeeCode => _httpContextAccessor.HttpContext?.User?.FindFirstValue("employeeCode");
+    public string? EmployeeName => _httpContextAccessor.HttpContext?.User?.FindFirstValue("fullName");
+    public string? Role => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Role);
+    public Guid? RoleId => null;
 
     public IEnumerable<string> Permissions
     {
         get
         {
+            if (!UserId.HasValue)
+                return Enumerable.Empty<string>();
+
             var user = _context.UserLogins
                 .Include(u => u.Role)
-                .FirstOrDefault(u => u.Id == UserGuid && !u.IsDeleted);
+                .FirstOrDefault(u => u.Id == UserId && !u.IsDeleted);
 
             if (user?.Role == null)
                 return Enumerable.Empty<string>();
 
-            // Get permissions based on role
             return user.Role.RoleName switch
             {
                 SystemRoles.Admin => SystemRoles.RolePermissions.AdminPermissions,
@@ -58,15 +59,6 @@ public class CurrentUserService : ICurrentUserService
         }
     }
 
-    public bool IsAuthenticated => UserId != null;
-
-    public bool IsInRole(string role)
-    {
-        return Roles.Contains(role);
-    }
-
-    public bool HasPermission(string permission)
-    {
-        return Permissions.Contains(permission);
-    }
+    public bool IsAuthenticated => UserId.HasValue;
+    public bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) == true;
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using PAS.API.Configurations;
+using System.Text;
 
 namespace PAS.API.Extensions;
 
@@ -23,7 +23,7 @@ public static class AuthenticationExtensions
                     ValidIssuer = jwtSettings?.Issuer,
                     ValidAudience = jwtSettings?.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtSettings?.Key ?? string.Empty)),
+                        Encoding.UTF8.GetBytes(jwtSettings?.Secret ?? string.Empty)),
                     ClockSkew = TimeSpan.Zero
                 };
 

@@ -18,12 +18,18 @@ namespace Persistence.Configurations.Requisition
             builder.Property(s => s.RecipientSignature)
                 .HasMaxLength(500);
 
-            builder.HasOne<ServiceRequest>()
+            builder.HasOne(s => s.ServiceRequest)
+                .WithOne(sr => sr.StoreIssueVoucher)
+                .HasForeignKey<StoreIssueVoucher>(s => s.SRId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(s => s.IssuedBy)
                 .WithMany()
-                .HasForeignKey(s => s.SRId)
+                .HasForeignKey(s => s.IssuedById)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(s => s.SIVNumber).IsUnique();
+            builder.HasIndex(s => s.SRId).IsUnique();
         }
     }
 }

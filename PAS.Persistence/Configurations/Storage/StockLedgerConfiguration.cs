@@ -18,12 +18,12 @@ namespace Persistence.Configurations.Storage
             builder.Property(s => s.CreatedDate)
                 .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.HasOne<ItemMaster>()
+            builder.HasOne(s => s.Item)
                 .WithMany()
                 .HasForeignKey(s => s.ItemId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<ShelfLocation>()
+            builder.HasOne(s => s.Shelf)
                 .WithMany()
                 .HasForeignKey(s => s.ShelfId)
                 .OnDelete(DeleteBehavior.Restrict);

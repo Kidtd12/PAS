@@ -2,34 +2,17 @@
 
 public class JwtSettings
 {
-    public string Secret { get; set; }
-    public string Issuer { get; set; }
-    public string Audience { get; set; }
-    public int AccessTokenExpirationMinutes { get; set; }
-    public int RefreshTokenExpirationDays { get; set; }
-}
+    public string Secret { get; set; } = string.Empty;
+    public string Issuer { get; set; } = string.Empty;
+    public string Audience { get; set; } = string.Empty;
+    public int AccessTokenExpirationMinutes { get; set; } = 480;
+    public int RefreshTokenExpirationDays { get; set; } = 7;
 
-public class EmailSettings
-{
-    public string SmtpServer { get; set; }
-    public int SmtpPort { get; set; }
-    public string SenderEmail { get; set; }
-    public string SenderName { get; set; }
-    public string Username { get; set; }
-    public string Password { get; set; }
-    public bool EnableSsl { get; set; }
-}
-
-public class FileStorageSettings
-{
-    public string StoragePath { get; set; }
-    public long MaxFileSizeBytes { get; set; }
-    public List<string> AllowedExtensions { get; set; }
-}
-
-public class CorsSettings
-{
-    public string[] AllowedOrigins { get; set; }
-    public string[] AllowedMethods { get; set; }
-    public string[] AllowedHeaders { get; set; }
+    // compatibility aliases
+    public string Key { get => Secret; set => Secret = value; }
+    public int ExpiryInHours
+    {
+        get => AccessTokenExpirationMinutes / 60;
+        set => AccessTokenExpirationMinutes = value * 60;
+    }
 }

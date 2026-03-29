@@ -10,6 +10,8 @@ namespace Persistence.Configurations.Storage
         {
             builder.ToTable("Warehouses");
 
+            builder.Ignore(w => w.ShelfLocations);
+
             builder.Property(w => w.WarehouseName)
                 .IsRequired()
                 .HasMaxLength(100);

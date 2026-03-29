@@ -7,7 +7,7 @@ public class LoginRequest
 {
     [Required]
     [StringLength(50, MinimumLength = 3)]
-    [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.IsValidUsername))]
+    [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.ValidateUsernameAttribute))]
     public string Username { get; set; } = string.Empty;
 
     [Required]

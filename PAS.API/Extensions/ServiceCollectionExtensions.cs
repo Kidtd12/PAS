@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
-using Microsoft.OpenApi.Models;
 using PAS.API.Configurations;
 using System.Text;
 
@@ -11,46 +9,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSwagger(this IServiceCollection services, IConfiguration configuration)
     {
-        var swaggerSettings = configuration.GetSection("Swagger").Get<SwaggerSettings>();
-
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc(swaggerSettings?.Version ?? "v1", new OpenApiInfo
-            {
-                Title = swaggerSettings?.Title ?? "PAS API",
-                Version = swaggerSettings?.Version ?? "v1",
-                Description = swaggerSettings?.Description ?? string.Empty,
-                Contact = new OpenApiContact
-                {
-                    Email = swaggerSettings?.ContactEmail ?? string.Empty
-                }
-            });
-
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                Scheme = "Bearer",
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description = "Enter 'Bearer' followed by your token"
-            });
-
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    Array.Empty<string>()
-                }
-            });
-
             c.EnableAnnotations();
             c.CustomSchemaIds(x => x.FullName);
         });
@@ -92,7 +52,7 @@ public static class ServiceCollectionExtensions
                     ValidIssuer = jwtSettings?.Issuer,
                     ValidAudience = jwtSettings?.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtSettings?.Key ?? string.Empty))
+                        Encoding.UTF8.GetBytes(jwtSettings?.Secret ?? string.Empty))
                 };
 
                 options.Events = new JwtBearerEvents

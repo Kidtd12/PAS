@@ -1,9 +1,9 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using PAS.API.Configurations;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Options;
-using PAS.API.Configurations;
 
 namespace PAS.API.Services;
 
@@ -26,20 +26,19 @@ public class TokenService : ITokenService
             new(ClaimTypes.Role, role)
         };
 
-        // Add permissions as claims
         foreach (var permission in permissions)
         {
             claims.Add(new Claim("permission", permission));
         }
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
             issuer: _jwtSettings.Issuer,
             audience: _jwtSettings.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(_jwtSettings.ExpiryInHours),
+            expires: DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes),
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
@@ -53,11 +52,11 @@ public class TokenService : ITokenService
     public ClaimsPrincipal? ValidateToken(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(_jwtSettings.Key);
+        var key = Encoding.UTF8.GetBytes(_jwtSettings.Secret);
 
         try
         {
-            var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
+            return tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
@@ -67,8 +66,6 @@ public class TokenService : ITokenService
                 ValidAudience = _jwtSettings.Audience,
                 ClockSkew = TimeSpan.Zero
             }, out _);
-
-            return principal;
         }
         catch
         {

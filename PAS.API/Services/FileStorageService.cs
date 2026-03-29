@@ -17,77 +17,42 @@ public class FileStorageService : IFileStorageService
 
     public async Task<string> SaveFileAsync(byte[] content, string fileName, string folder, CancellationToken cancellationToken = default)
     {
-        using var stream = new MemoryStream(content);
-        return await SaveFileAsync(stream, fileName, folder, cancellationToken);
-    }
+        var root = string.IsNullOrWhiteSpace(_settings.StoragePath) ? "uploads" : _settings.StoragePath;
+        var directoryPath = Path.Combine(root, folder);
+        Directory.CreateDirectory(directoryPath);
 
-    public async Task<string> SaveFileAsync(Stream stream, string fileName, string folder, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var directoryPath = Path.Combine(_settings.LocalPath, folder);
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
+        var uniqueFileName = $"{Guid.NewGuid()}_{fileName}";
+        var filePath = Path.Combine(directoryPath, uniqueFileName);
 
-            var uniqueFileName = $"{Guid.NewGuid()}_{fileName}";
-            var filePath = Path.Combine(directoryPath, uniqueFileName);
+        await File.WriteAllBytesAsync(filePath, content, cancellationToken);
+        _logger.LogInformation("File saved: {FilePath}", filePath);
 
-            using var fileStream = new FileStream(filePath, FileMode.Create);
-            await stream.CopyToAsync(fileStream, cancellationToken);
-
-            _logger.LogInformation("File saved: {FilePath}", filePath);
-            return filePath;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to save file {FileName}", fileName);
-            throw;
-        }
+        return filePath;
     }
 
     public async Task<byte[]> GetFileAsync(string filePath, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException($"File not found: {filePath}");
-            }
+        if (!File.Exists(filePath))
+            throw new FileNotFoundException($"File not found: {filePath}");
 
-            return await File.ReadAllBytesAsync(filePath, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to get file from {FilePath}", filePath);
-            throw;
-        }
+        return await File.ReadAllBytesAsync(filePath, cancellationToken);
     }
 
-    public async Task<bool> DeleteFileAsync(string filePath, CancellationToken cancellationToken = default)
+    public Task DeleteFileAsync(string filePath, CancellationToken cancellationToken = default)
     {
-        try
+        if (File.Exists(filePath))
         {
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-                _logger.LogInformation("File deleted: {FilePath}", filePath);
-                return true;
-            }
+            File.Delete(filePath);
+            _logger.LogInformation("File deleted: {FilePath}", filePath);
+        }
 
-            return false;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to delete file {FilePath}", filePath);
-            throw;
-        }
+        return Task.CompletedTask;
     }
 
-    public async Task<string> GetFileUrlAsync(string filePath)
+    public Task<string> GetFileUrlAsync(string filePath)
     {
-        var relativePath = filePath.Replace(_settings.LocalPath, "").Replace("\\", "/");
-        return $"{_settings.BaseUrl}{relativePath}";
+        var root = string.IsNullOrWhiteSpace(_settings.StoragePath) ? "uploads" : _settings.StoragePath;
+        var relativePath = filePath.Replace(root, "").Replace("\\", "/");
+        return Task.FromResult(relativePath);
     }
 }

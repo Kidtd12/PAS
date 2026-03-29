@@ -11,12 +11,10 @@ using Domain.Workflow;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Identity;
-using System.Reflection.Emit;
 
 namespace Persistence.Context
 {
-    public class ApplicationDbContext
-        : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options)

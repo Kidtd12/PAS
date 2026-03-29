@@ -14,12 +14,12 @@ namespace Persistence.Configurations.Receiving
             builder.Property(i => i.DeviationNotes)
                 .HasMaxLength(1000);
 
-            builder.HasOne<ReceivingNote>()
-                .WithMany()
-                .HasForeignKey(i => i.ReceivingNoteId)
+            builder.HasOne(i => i.ReceivingNote)
+                .WithOne(r => r.InspectionLog)
+                .HasForeignKey<InspectionLog>(i => i.ReceivingNoteId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne<UserLogin>()
+            builder.HasOne(i => i.Inspector)
                 .WithMany()
                 .HasForeignKey(i => i.InspectorId)
                 .OnDelete(DeleteBehavior.Restrict);

@@ -1,107 +1,102 @@
 using MediatR;
-using System.Security.Cryptography;
-using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Persistence.Identity;
 
 namespace Application.Features.Users.Authentication.Commands;
 
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, Result<Guid>>
 {
     private readonly IApplicationDbContext _context;
-    private readonly ICurrentUserService _currentUser;
-    private readonly IMediator _mediator;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
 
     public RegisterUserCommandHandler(
         IApplicationDbContext context,
-        ICurrentUserService currentUser,
-        IMediator mediator)
+        UserManager<ApplicationUser> userManager,
+        RoleManager<ApplicationRole> roleManager)
     {
         _context = context;
-        _currentUser = currentUser;
-        _mediator = mediator;
+        _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task<Result<Guid>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        // Check if username already exists
-        var existingUsername = await _context.UserLogins
-            .AnyAsync(u => u.Username == request.Username && !u.IsDeleted, cancellationToken);
-
-        if (existingUsername)
+        // Check if username already exists in Identity
+        var existingIdentityUsername = await _userManager.FindByNameAsync(request.Username);
+        if (existingIdentityUsername != null)
         {
             return Result<Guid>.Failure($"Username '{request.Username}' is already taken.");
         }
 
-        // Check if email already exists
-        var existingEmail = await _context.UserLogins
-            .AnyAsync(u => u.Email == request.Email && !u.IsDeleted, cancellationToken);
-
-        if (existingEmail)
+        // Check if email already exists in Identity
+        var existingIdentityEmail = await _userManager.FindByEmailAsync(request.Email);
+        if (existingIdentityEmail != null)
         {
             return Result<Guid>.Failure($"Email '{request.Email}' is already registered.");
         }
 
         // Validate employee exists
         var employee = await _context.Employees
-            .FirstOrDefaultAsync(e => e.Id == request.EmployeeId && !e.IsDeleted, cancellationToken);
+            .Where(e => e.Id == request.EmployeeId && !e.IsDeleted)
+            .Select(e => new { e.Id, e.FullName })
+            .FirstOrDefaultAsync(cancellationToken);
 
         if (employee == null)
         {
             return Result<Guid>.Failure($"Employee with ID {request.EmployeeId} not found.");
         }
 
-        // Check if employee already has a user account
-        var existingEmployeeUser = await _context.UserLogins
-            .AnyAsync(u => u.EmployeeId == request.EmployeeId && !u.IsDeleted, cancellationToken);
-
-        if (existingEmployeeUser)
-        {
-            return Result<Guid>.Failure("This employee already has a user account.");
-        }
-
         // Validate role exists
         var role = await _context.Roles
             .FirstOrDefaultAsync(r => r.Id == request.RoleId && !r.IsDeleted, cancellationToken);
 
-        if (role == null)
+        if (role == null || string.IsNullOrWhiteSpace(role.RoleName))
         {
             return Result<Guid>.Failure($"Role with ID {request.RoleId} not found.");
         }
 
-        // Hash password (simplified - use proper hashing in production)
-        var passwordHash = HashPassword(request.Password);
+        // Create Identity user in AspNetUsers
+        var identityUser = new ApplicationUser
+        {
+            UserName = request.Username,
+            Email = request.Email,
+            FullName = employee.FullName,
+            IsActive = true,
+            EmailConfirmed = true
+        };
 
-        // Create user
-        var user = new Domain.Users.UserLogin(
-            request.EmployeeId,
-            request.Username,
-            passwordHash,
-            request.RoleId);
+        var identityCreateResult = await _userManager.CreateAsync(identityUser, request.Password);
+        if (!identityCreateResult.Succeeded)
+        {
+            var errors = string.Join("; ", identityCreateResult.Errors.Select(e => e.Description));
+            return Result<Guid>.Failure($"User registration failed: {errors}");
+        }
 
-        typeof(Domain.Users.UserLogin).GetProperty("Email")?.SetValue(user, request.Email);
-        typeof(Domain.Users.UserLogin).GetProperty("IsActive")?.SetValue(user, true);
+        if (!await _roleManager.RoleExistsAsync(role.RoleName))
+        {
+            var createRoleResult = await _roleManager.CreateAsync(new ApplicationRole
+            {
+                Name = role.RoleName,
+                Description = role.Description
+            });
 
-        _context.UserLogins.Add(user);
+            if (!createRoleResult.Succeeded)
+            {
+                var errors = string.Join("; ", createRoleResult.Errors.Select(e => e.Description));
+                return Result<Guid>.Failure($"Role provisioning failed: {errors}");
+            }
+        }
 
-        // Create audit trail
-        var auditTrail = new AuditTrail(
-            _currentUser.UserGuid ?? Guid.Empty,
-            "CREATE",
-            nameof(Domain.Users.UserLogin),
-            user.Id);
-        _context.AuditTrails.Add(auditTrail);
+        var addToRoleResult = await _userManager.AddToRoleAsync(identityUser, role.RoleName);
+        if (!addToRoleResult.Succeeded)
+        {
+            var errors = string.Join("; ", addToRoleResult.Errors.Select(e => e.Description));
+            return Result<Guid>.Failure($"Role assignment failed: {errors}");
+        }
 
-        await _context.SaveChangesAsync(cancellationToken);
-
-        await _mediator.Publish(new EntityCreatedEvent<Domain.Users.UserLogin>(user, _currentUser.UserGuid), cancellationToken);
-
-        return Result<Guid>.Success(user.Id);
-    }
-
-    private string HashPassword(string password)
-    {
-        // In production, use a proper password hashing algorithm like BCrypt or PBKDF2
-        using var sha256 = SHA256.Create();
-        var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-        return Convert.ToBase64String(hashedBytes);
+        return Guid.TryParse(identityUser.Id, out var userId)
+            ? Result<Guid>.Success(userId)
+            : Result<Guid>.Success(Guid.Empty);
     }
 }

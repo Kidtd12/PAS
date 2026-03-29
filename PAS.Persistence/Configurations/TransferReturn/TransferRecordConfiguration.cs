@@ -12,17 +12,17 @@ namespace Persistence.Configurations.TransferReturn
         {
             builder.ToTable("TransferRecords");
 
-            builder.HasOne<ItemMaster>()
+            builder.HasOne(t => t.Item)
                 .WithMany()
                 .HasForeignKey(t => t.ItemId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<PropertyLocation>()
+            builder.HasOne(t => t.FromLocation)
                 .WithMany()
                 .HasForeignKey(t => t.FromLocationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<PropertyLocation>()
+            builder.HasOne(t => t.ToLocation)
                 .WithMany()
                 .HasForeignKey(t => t.ToLocationId)
                 .OnDelete(DeleteBehavior.Restrict);

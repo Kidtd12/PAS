@@ -1,7 +1,8 @@
 ﻿using Application.Features.Users.Authentication.Dtos;
-using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Persistence.Identity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -11,58 +12,65 @@ namespace Application.Features.Users.Authentication.Commands;
 
 public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<AuthResultDto>>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IConfiguration _configuration;
     private readonly ILogger<LoginUserCommandHandler> _logger;
 
     public LoginUserCommandHandler(
-        IApplicationDbContext context,
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
         IConfiguration configuration,
         ILogger<LoginUserCommandHandler> logger)
     {
-        _context = context;
+        _userManager = userManager;
+        _signInManager = signInManager;
         _configuration = configuration;
         _logger = logger;
     }
 
     public async Task<Result<AuthResultDto>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _context.UserLogins
-            .Include(u => u.Employee)
-            .Include(u => u.Role)
-            .FirstOrDefaultAsync(u => u.Username == request.Username && !u.IsDeleted, cancellationToken);
+        var loginInput = request.Username?.Trim();
+        if (string.IsNullOrWhiteSpace(loginInput) || string.IsNullOrWhiteSpace(request.Password))
+        {
+            return Result<AuthResultDto>.Failure("Username and password are required.");
+        }
+
+        var user = await _userManager.FindByNameAsync(loginInput)
+                   ?? await _userManager.FindByEmailAsync(loginInput);
 
         if (user == null)
         {
-            _logger.LogWarning("Login attempt with non-existent username: {Username}", request.Username);
+            _logger.LogWarning("Login attempt with non-existent username/email: {Username}", loginInput);
             return Result<AuthResultDto>.Failure("Invalid username or password.");
         }
 
-        if (!user.IsActive)
+        if (!user.IsActive || !await _signInManager.CanSignInAsync(user))
         {
-            _logger.LogWarning("Login attempt for inactive user: {Username}", request.Username);
-            return Result<AuthResultDto>.Failure("User account is deactivated.");
+            _logger.LogWarning("Login blocked for user: {Username}", user.UserName);
+            return Result<AuthResultDto>.Failure("User account is not allowed to sign in.");
         }
 
-        // Verify password
-        var passwordHash = HashPassword(request.Password);
-        if (user.PasswordHash != passwordHash)
+        var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+        if (signInResult.IsLockedOut)
         {
-            _logger.LogWarning("Invalid password attempt for user: {Username}", request.Username);
+            _logger.LogWarning("Locked out login attempt for user: {Username}", user.UserName);
+            return Result<AuthResultDto>.Failure("User account is locked. Try again later.");
+        }
+
+        if (!signInResult.Succeeded)
+        {
+            _logger.LogWarning("Invalid password attempt for user: {Username}", user.UserName);
             return Result<AuthResultDto>.Failure("Invalid username or password.");
         }
 
-        // Generate JWT token
-        var token = GenerateJwtToken(user);
-        var refreshToken = GenerateRefreshToken();
-        var expiresAt = DateTime.UtcNow.AddHours(request.RememberMe ? 168 : 8); // 7 days or 8 hours
+        var roles = await _userManager.GetRolesAsync(user);
+        var primaryRole = roles.FirstOrDefault() ?? "User";
 
-        // Update last login
-        typeof(Domain.Users.UserLogin).GetProperty("LastLoginAt")?.SetValue(user, DateTime.UtcNow);
-        await _context.SaveChangesAsync(cancellationToken);
-
-        // Get user permissions based on role
-        var permissions = GetPermissionsForRole(user.Role?.RoleName ?? "Staff");
+        var token = GenerateJwtToken(user, roles);
+        var refreshToken = GenerateRefreshToken(user);
+        var expiresAt = DateTime.UtcNow.AddHours(request.RememberMe ? 168 : 8);
 
         var result = new AuthResultDto
         {
@@ -72,39 +80,34 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<
             ExpiresAt = expiresAt,
             User = new UserInfoDto
             {
-                Id = user.Id,
-                Username = user.Username,
-                FullName = user.Employee?.FullName ?? string.Empty,
+                Id = Guid.TryParse(user.Id, out var parsedId) ? parsedId : Guid.Empty,
+                Username = user.UserName ?? string.Empty,
+                FullName = user.FullName,
                 Email = user.Email ?? string.Empty,
-                EmployeeCode = user.Employee?.EmployeeCode ?? string.Empty,
-                Department = user.Employee?.Department ?? string.Empty,
-                Roles = new[] { user.Role?.RoleName ?? "User" },
-                Permissions = permissions
+                EmployeeCode = string.Empty,
+                Department = string.Empty,
+                Roles = roles.ToArray(),
+                Permissions = GetPermissionsForRole(primaryRole)
             }
         };
 
         return Result<AuthResultDto>.Success(result);
     }
 
-    private string HashPassword(string password)
-    {
-        using var sha256 = SHA256.Create();
-        var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-        return Convert.ToBase64String(hashedBytes);
-    }
-
-    private string GenerateJwtToken(Domain.Users.UserLogin user)
+    private string GenerateJwtToken(ApplicationUser user, IEnumerable<string> roles)
     {
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-            new Claim("employeeId", user.EmployeeId.ToString()),
-            new Claim("employeeCode", user.Employee?.EmployeeCode ?? string.Empty),
-            new Claim("fullName", user.Employee?.FullName ?? string.Empty),
-            new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "User")
+            new(JwtRegisteredClaimNames.Sub, user.Id),
+            new(JwtRegisteredClaimNames.UniqueName, user.UserName ?? string.Empty),
+            new(ClaimTypes.Name, user.UserName ?? string.Empty),
+            new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty)
         };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
             _configuration["Jwt:Key"] ?? "YourSuperSecretKeyForJWTTokenGenerationThatShouldBeAtLeast32BytesLong"));
@@ -121,12 +124,9 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    private string GenerateRefreshToken()
+    private string GenerateRefreshToken(ApplicationUser user)
     {
-        var randomNumber = new byte[32];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomNumber);
-        return Convert.ToBase64String(randomNumber);
+        return user.Id;
     }
 
     private string[] GetPermissionsForRole(string role)

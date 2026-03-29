@@ -7,7 +7,7 @@ public class RegisterRequest
 {
     [Required]
     [StringLength(50, MinimumLength = 3)]
-    [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.IsValidUsername))]
+    [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.ValidateUsernameAttribute))]
     public string Username { get; set; } = string.Empty;
 
     [Required]
@@ -16,17 +16,17 @@ public class RegisterRequest
 
     [Required]
     [StringLength(20)]
-    [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.IsAlphanumeric))]
+    [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.ValidateAlphanumericAttribute))]
     public string EmployeeCode { get; set; } = string.Empty;
 
     [Required]
     [StringLength(50)]
-    [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.IsAlphaOnly))]
+    [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.ValidateAlphaOnlyAttribute))]
     public string Department { get; set; } = string.Empty;
 
     [Required]
     [StringLength(100, MinimumLength = 8)]
-    [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.IsStrongPassword))]
+    [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.ValidateStrongPasswordAttribute))]
     public string Password { get; set; } = string.Empty;
 
     [Required]
@@ -37,9 +37,9 @@ public class RegisterRequest
     public Guid RoleId { get; set; }
 
     [EmailAddress]
-    [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.IsValidEmail))]
+    [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.ValidateEmailAttribute))]
     public string? Email { get; set; }
 
-    [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.IsValidPhone))]
+    [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.ValidatePhoneAttribute))]
     public string? PhoneNumber { get; set; }
 }

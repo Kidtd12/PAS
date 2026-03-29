@@ -30,17 +30,17 @@ namespace Persistence.Configurations.PropertyManagement
                 .HasDefaultValue(1);
 
             builder.HasOne(p => p.PropertyType)
-                .WithMany()
+                .WithMany(pt => pt.Properties)
                 .HasForeignKey(p => p.PropertyTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(p => p.Location)
-                .WithMany()
+                .WithMany(l => l.Properties)
                 .HasForeignKey(p => p.LocationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(p => p.SafetyBox)
-                .WithMany()
+                .WithMany(sb => sb.Properties)
                 .HasForeignKey(p => p.SafetyBoxId)
                 .OnDelete(DeleteBehavior.SetNull);
 

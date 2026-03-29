@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace PAS.API.Validators;
@@ -22,6 +23,14 @@ public static class CustomValidators
         }
     }
 
+    public static System.ComponentModel.DataAnnotations.ValidationResult? IsValidEmail(object? value, ValidationContext context)
+    {
+        var input = value as string;
+        return IsValidEmail(input ?? string.Empty)
+            ? System.ComponentModel.DataAnnotations.ValidationResult.Success
+            : new System.ComponentModel.DataAnnotations.ValidationResult("Invalid email format.");
+    }
+
   
     public static bool IsValidPhone(string phone)
     {
@@ -30,6 +39,15 @@ public static class CustomValidators
 
         var regex = new Regex(@"^[\+]?[(]?[0-9]{1,3}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{3,4}[-\s\.]?[0-9]{3,4}$");
         return regex.IsMatch(phone);
+    }
+
+    public static System.ComponentModel.DataAnnotations.ValidationResult? IsValidPhone(object? value, ValidationContext context)
+    {
+        var input = value as string;
+        if (string.IsNullOrWhiteSpace(input)) return System.ComponentModel.DataAnnotations.ValidationResult.Success;
+        return IsValidPhone(input)
+            ? System.ComponentModel.DataAnnotations.ValidationResult.Success
+            : new System.ComponentModel.DataAnnotations.ValidationResult("Invalid phone format.");
     }
 
     public static bool IsValidTinNumber(string tin)
@@ -149,7 +167,14 @@ public static class CustomValidators
         return regex.IsMatch(value);
     }
 
-    
+    public static System.ComponentModel.DataAnnotations.ValidationResult? IsAlphaOnly(object? value, ValidationContext context)
+    {
+        var input = value as string;
+        return IsAlphaOnly(input ?? string.Empty)
+            ? System.ComponentModel.DataAnnotations.ValidationResult.Success
+            : new System.ComponentModel.DataAnnotations.ValidationResult("Only alphabetic characters are allowed.");
+    }
+
     public static bool IsAlphanumeric(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -157,6 +182,14 @@ public static class CustomValidators
 
         var regex = new Regex(@"^[a-zA-Z0-9]+$");
         return regex.IsMatch(value);
+    }
+
+    public static System.ComponentModel.DataAnnotations.ValidationResult? IsAlphanumeric(object? value, ValidationContext context)
+    {
+        var input = value as string;
+        return IsAlphanumeric(input ?? string.Empty)
+            ? System.ComponentModel.DataAnnotations.ValidationResult.Success
+            : new System.ComponentModel.DataAnnotations.ValidationResult("Only alphanumeric characters are allowed.");
     }
 
     public static bool IsValidUrl(string url)
@@ -236,6 +269,14 @@ public static class CustomValidators
         return hasUpper && hasLower && hasDigit && hasSpecial;
     }
 
+    public static System.ComponentModel.DataAnnotations.ValidationResult? IsStrongPassword(object? value, ValidationContext context)
+    {
+        var input = value as string;
+        return IsStrongPassword(input ?? string.Empty)
+            ? System.ComponentModel.DataAnnotations.ValidationResult.Success
+            : new System.ComponentModel.DataAnnotations.ValidationResult("Password is not strong enough.");
+    }
+
  
     public static bool IsValidUsername(string username)
     {
@@ -244,6 +285,14 @@ public static class CustomValidators
 
         var regex = new Regex(@"^[a-zA-Z0-9_]{3,20}$");
         return regex.IsMatch(username);
+    }
+
+    public static System.ComponentModel.DataAnnotations.ValidationResult? IsValidUsername(object? value, ValidationContext context)
+    {
+        var input = value as string;
+        return IsValidUsername(input ?? string.Empty)
+            ? System.ComponentModel.DataAnnotations.ValidationResult.Success
+            : new System.ComponentModel.DataAnnotations.ValidationResult("Invalid username format.");
     }
 
     
@@ -282,6 +331,57 @@ public static class CustomValidators
     public static bool IsNotNullOrWhiteSpace(string? value)
     {
         return !string.IsNullOrWhiteSpace(value);
+    }
+
+    // Explicit DataAnnotations callback methods (unique names)
+    public static System.ComponentModel.DataAnnotations.ValidationResult? ValidateUsernameAttribute(object? value, ValidationContext context)
+    {
+        var input = value as string;
+        return IsValidUsername(input ?? string.Empty)
+            ? System.ComponentModel.DataAnnotations.ValidationResult.Success
+            : new System.ComponentModel.DataAnnotations.ValidationResult("Invalid username format.");
+    }
+
+    public static System.ComponentModel.DataAnnotations.ValidationResult? ValidateAlphanumericAttribute(object? value, ValidationContext context)
+    {
+        var input = value as string;
+        return IsAlphanumeric(input ?? string.Empty)
+            ? System.ComponentModel.DataAnnotations.ValidationResult.Success
+            : new System.ComponentModel.DataAnnotations.ValidationResult("Only alphanumeric characters are allowed.");
+    }
+
+    public static System.ComponentModel.DataAnnotations.ValidationResult? ValidateAlphaOnlyAttribute(object? value, ValidationContext context)
+    {
+        var input = value as string;
+        return IsAlphaOnly(input ?? string.Empty)
+            ? System.ComponentModel.DataAnnotations.ValidationResult.Success
+            : new System.ComponentModel.DataAnnotations.ValidationResult("Only alphabetic characters are allowed.");
+    }
+
+    public static System.ComponentModel.DataAnnotations.ValidationResult? ValidateStrongPasswordAttribute(object? value, ValidationContext context)
+    {
+        var input = value as string;
+        return IsStrongPassword(input ?? string.Empty)
+            ? System.ComponentModel.DataAnnotations.ValidationResult.Success
+            : new System.ComponentModel.DataAnnotations.ValidationResult("Password is not strong enough.");
+    }
+
+    public static System.ComponentModel.DataAnnotations.ValidationResult? ValidateEmailAttribute(object? value, ValidationContext context)
+    {
+        var input = value as string;
+        if (string.IsNullOrWhiteSpace(input)) return System.ComponentModel.DataAnnotations.ValidationResult.Success;
+        return IsValidEmail(input)
+            ? System.ComponentModel.DataAnnotations.ValidationResult.Success
+            : new System.ComponentModel.DataAnnotations.ValidationResult("Invalid email format.");
+    }
+
+    public static System.ComponentModel.DataAnnotations.ValidationResult? ValidatePhoneAttribute(object? value, ValidationContext context)
+    {
+        var input = value as string;
+        if (string.IsNullOrWhiteSpace(input)) return System.ComponentModel.DataAnnotations.ValidationResult.Success;
+        return IsValidPhone(input)
+            ? System.ComponentModel.DataAnnotations.ValidationResult.Success
+            : new System.ComponentModel.DataAnnotations.ValidationResult("Invalid phone format.");
     }
 }
 
