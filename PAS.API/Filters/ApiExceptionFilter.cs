@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PAS.API.Models.Responses;
-using PAS.Application.Common.Exceptions;
 
 namespace PAS.API.Filters;
 
@@ -30,8 +29,7 @@ public class ApiExceptionFilter : IExceptionFilter
             case ValidationException validationException:
                 response.StatusCode = StatusCodes.Status400BadRequest;
                 response.Message = "Validation failed";
-                response.ValidationErrors = validationException.Errors
-                    .ToDictionary(k => k.Key, v => v.Value.ToArray());
+                response.Errors = validationException.Errors.SelectMany(x => x.Value).ToArray();
                 break;
 
             case NotFoundException:

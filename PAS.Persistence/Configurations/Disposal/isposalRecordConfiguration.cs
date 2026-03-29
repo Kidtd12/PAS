@@ -15,15 +15,18 @@ namespace Persistence.Configurations.Disposal
             builder.Property(d => d.Reason)
                 .HasMaxLength(500);
 
-            builder.HasOne<ItemMaster>()
+            builder.Property(d => d.EstimatedValue)
+                .HasPrecision(18, 2);
+
+            builder.HasOne(d => d.Item)
                 .WithMany()
                 .HasForeignKey(d => d.ItemId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //builder.HasOne<UserLogin>()
-            //    .WithMany()
-            //    .HasForeignKey(d => d.DisposedBy)
-            //    .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(d => d.DisposedBy)
+                .WithMany()
+                .HasForeignKey(d => d.DisposedById)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(d => d.DisposalDate);
         }

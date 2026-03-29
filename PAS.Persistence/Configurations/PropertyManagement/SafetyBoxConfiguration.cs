@@ -18,8 +18,8 @@ namespace Persistence.Configurations.PropertyManagement
                 .IsRequired()
                 .HasDefaultValue(1);
 
-            builder.HasOne<PropertyLocation>()
-                .WithMany()
+            builder.HasOne(s => s.Location)
+                .WithMany(l => l.SafetyBoxes)
                 .HasForeignKey(s => s.LocationId)
                 .OnDelete(DeleteBehavior.Restrict);
 

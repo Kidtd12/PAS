@@ -25,13 +25,13 @@ namespace Persistence.Configurations.Users
             builder.Property(u => u.IsActive)
                 .HasDefaultValue(true);
 
-            builder.HasOne<Employee>()
-                .WithMany()
-                .HasForeignKey(u => u.EmployeeId)
+            builder.HasOne(u => u.Employee)
+                .WithOne(e => e.UserLogin)
+                .HasForeignKey<UserLogin>(u => u.EmployeeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<Role>()
-                .WithMany()
+            builder.HasOne(u => u.Role)
+                .WithMany(r => r.Users)
                 .HasForeignKey(u => u.RoleId)
                 .OnDelete(DeleteBehavior.Restrict);
 

@@ -1,5 +1,4 @@
-﻿using Domain.Catalog;
-using Domain.TransferReturn;
+﻿using Domain.TransferReturn;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,7 +13,7 @@ namespace Persistence.Configurations.TransferReturn
             builder.Property(r => r.Reason)
                 .HasMaxLength(500);
 
-            builder.HasOne<ItemMaster>()
+            builder.HasOne(r => r.Item)
                 .WithMany()
                 .HasForeignKey(r => r.ItemId)
                 .OnDelete(DeleteBehavior.Restrict);

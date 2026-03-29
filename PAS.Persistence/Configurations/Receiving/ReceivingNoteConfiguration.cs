@@ -1,5 +1,4 @@
 ﻿using Domain.Receiving;
-using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -19,12 +18,12 @@ namespace Persistence.Configurations.Receiving
                 .IsRequired()
                 .HasMaxLength(50);
 
-            builder.HasOne<Supplier>()
-                .WithMany()
+            builder.HasOne(r => r.Supplier)
+                .WithMany(s => s.ReceivingNotes)
                 .HasForeignKey(r => r.SupplierId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<UserLogin>()
+            builder.HasOne(r => r.ReceivedBy)
                 .WithMany()
                 .HasForeignKey(r => r.ReceivedById)
                 .OnDelete(DeleteBehavior.Restrict);

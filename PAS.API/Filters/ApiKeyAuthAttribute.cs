@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using PAS.API.Models.Responses;
 
 namespace PAS.API.Filters;
 

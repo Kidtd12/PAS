@@ -17,7 +17,7 @@ namespace PAS.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -99,6 +99,10 @@ namespace PAS.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -191,6 +195,12 @@ namespace PAS.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<Guid?>("PropertyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ReceivingNoteId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("RelatedEntityId")
                         .HasColumnType("uniqueidentifier");
 
@@ -208,6 +218,10 @@ namespace PAS.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("FileName");
+
+                    b.HasIndex("PropertyId");
+
+                    b.HasIndex("ReceivingNoteId");
 
                     b.HasIndex("ServiceRequestId");
 
@@ -266,14 +280,27 @@ namespace PAS.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ApprovedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DisposalDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("DisposedBy")
+                    b.Property<string>("DisposalMethod")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("DisposedById")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal?>("EstimatedValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -289,12 +316,19 @@ namespace PAS.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ApprovedById");
+
                     b.HasIndex("DisposalDate");
+
+                    b.HasIndex("DisposedById");
 
                     b.HasIndex("ItemId");
 
@@ -321,6 +355,9 @@ namespace PAS.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<Guid?>("PropertyCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("PropertyTypeId")
                         .HasColumnType("uniqueidentifier");
 
@@ -333,6 +370,9 @@ namespace PAS.Persistence.Migrations
                         .HasDefaultValue(1);
 
                     b.Property<Guid?>("SafetyBoxId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("SafetyBoxShelfId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("SerialNumber")
@@ -356,9 +396,13 @@ namespace PAS.Persistence.Migrations
 
                     b.HasIndex("LocationId");
 
+                    b.HasIndex("PropertyCategoryId");
+
                     b.HasIndex("PropertyTypeId");
 
                     b.HasIndex("SafetyBoxId");
+
+                    b.HasIndex("SafetyBoxShelfId");
 
                     b.HasIndex("SerialNumber");
 
@@ -590,19 +634,37 @@ namespace PAS.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("DeliveryNoteNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DriverName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("GRNNumber")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<DateTime?>("InvoiceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("InvoiceNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<string>("PONumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("ReceivedById")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("ReceivedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -614,6 +676,9 @@ namespace PAS.Persistence.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("VehicleNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -629,6 +694,44 @@ namespace PAS.Persistence.Migrations
                     b.ToTable("ReceivingNotes", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Receiving.ReceivingNoteItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ReceivingNoteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("ReceivingNoteId", "ItemId")
+                        .IsUnique();
+
+                    b.ToTable("ReceivingNoteItems", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Receiving.Supplier", b =>
                 {
                     b.Property<Guid>("Id")
@@ -642,6 +745,9 @@ namespace PAS.Persistence.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -689,6 +795,9 @@ namespace PAS.Persistence.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ItemMasterId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("RequestedQty")
                         .HasColumnType("int");
 
@@ -704,6 +813,8 @@ namespace PAS.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ItemId");
+
+                    b.HasIndex("ItemMasterId");
 
                     b.HasIndex("SRId");
 
@@ -783,10 +894,16 @@ namespace PAS.Persistence.Migrations
                     b.Property<Guid>("IssuedById")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("RecipientName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("RecipientSignature")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SIVNumber")
                         .IsRequired()
@@ -796,15 +913,22 @@ namespace PAS.Persistence.Migrations
                     b.Property<Guid>("SRId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IssuedById");
+
                     b.HasIndex("SIVNumber")
                         .IsUnique();
 
-                    b.HasIndex("SRId");
+                    b.HasIndex("SRId")
+                        .IsUnique();
 
                     b.ToTable("StoreIssueVouchers", (string)null);
                 });
@@ -815,6 +939,9 @@ namespace PAS.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("BatchNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -823,10 +950,16 @@ namespace PAS.Persistence.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ItemMasterId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("ReservedQuantity")
@@ -837,12 +970,19 @@ namespace PAS.Persistence.Migrations
                     b.Property<Guid>("ShelfId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ShelfLocationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ItemMasterId");
+
                     b.HasIndex("ShelfId");
+
+                    b.HasIndex("ShelfLocationId");
 
                     b.HasIndex("ItemId", "ShelfId")
                         .IsUnique();
@@ -861,8 +1001,17 @@ namespace PAS.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("BinType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -888,6 +1037,9 @@ namespace PAS.Persistence.Migrations
                     b.Property<Guid>("WarehouseId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Zone")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("WarehouseId", "Aisle", "Rack", "ShelfNumber")
@@ -902,6 +1054,9 @@ namespace PAS.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("BatchNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -909,6 +1064,9 @@ namespace PAS.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<Guid?>("InventoryStockId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -918,6 +1076,9 @@ namespace PAS.Persistence.Migrations
 
                     b.Property<int>("QuantityChange")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("ReceivingNoteId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ReferenceId")
                         .HasColumnType("uniqueidentifier");
@@ -937,7 +1098,11 @@ namespace PAS.Persistence.Migrations
 
                     b.HasIndex("CreatedDate");
 
+                    b.HasIndex("InventoryStockId");
+
                     b.HasIndex("ItemId");
+
+                    b.HasIndex("ReceivingNoteId");
 
                     b.HasIndex("ReferenceId");
 
@@ -952,8 +1117,14 @@ namespace PAS.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -988,6 +1159,9 @@ namespace PAS.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ApprovedById")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -1008,14 +1182,45 @@ namespace PAS.Persistence.Migrations
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("RequestedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReturnNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReturnType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("SourceLocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("SourceShelfId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("SupplierId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ApprovedById");
+
                     b.HasIndex("ItemId");
 
                     b.HasIndex("RequestDate");
+
+                    b.HasIndex("RequestedById");
+
+                    b.HasIndex("SourceLocationId");
+
+                    b.HasIndex("SourceShelfId");
+
+                    b.HasIndex("SupplierId");
 
                     b.ToTable("ReturnMaterialRequestNotes", (string)null);
                 });
@@ -1026,10 +1231,28 @@ namespace PAS.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ApprovedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("BatchNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid>("FromLocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("FromShelfId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("InitiatedById")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
@@ -1041,22 +1264,48 @@ namespace PAS.Persistence.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reference")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("ToLocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ToShelfId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("TransferDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("TransferNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ApprovedById");
+
                     b.HasIndex("FromLocationId");
+
+                    b.HasIndex("FromShelfId");
+
+                    b.HasIndex("InitiatedById");
 
                     b.HasIndex("ItemId");
 
                     b.HasIndex("ToLocationId");
+
+                    b.HasIndex("ToShelfId");
 
                     b.HasIndex("TransferDate");
 
@@ -1077,6 +1326,9 @@ namespace PAS.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("EmployeeCode")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -1087,8 +1339,14 @@ namespace PAS.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Position")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -1184,6 +1442,9 @@ namespace PAS.Persistence.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uniqueidentifier");
@@ -1324,6 +1585,33 @@ namespace PAS.Persistence.Migrations
                     b.ToTable("Approvers", (string)null);
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -1430,37 +1718,6 @@ namespace PAS.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Persistence.Identity.ApplicationRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
-
-                    b.ToTable("AspNetRoles", (string)null);
-                });
-
             modelBuilder.Entity("Persistence.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -1510,6 +1767,9 @@ namespace PAS.Persistence.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Position")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -1545,11 +1805,13 @@ namespace PAS.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Catalog.ItemMaster", b =>
                 {
-                    b.HasOne("Domain.Catalog.Category", null)
-                        .WithMany()
+                    b.HasOne("Domain.Catalog.Category", "Category")
+                        .WithMany("Items")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Domain.Common.AuditTrail", b =>
@@ -1565,6 +1827,14 @@ namespace PAS.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Common.DocumentAttachment", b =>
                 {
+                    b.HasOne("Domain.PropertyManagement.Property", null)
+                        .WithMany("Attachments")
+                        .HasForeignKey("PropertyId");
+
+                    b.HasOne("Domain.Receiving.ReceivingNote", null)
+                        .WithMany("Attachments")
+                        .HasForeignKey("ReceivingNoteId");
+
                     b.HasOne("Domain.Requisition.ServiceRequest", "ServiceRequest")
                         .WithMany()
                         .HasForeignKey("ServiceRequestId")
@@ -1584,33 +1854,59 @@ namespace PAS.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Disposal.DisposalRecord", b =>
                 {
-                    b.HasOne("Domain.Catalog.ItemMaster", null)
+                    b.HasOne("Domain.Users.UserLogin", "ApprovedBy")
+                        .WithMany()
+                        .HasForeignKey("ApprovedById");
+
+                    b.HasOne("Domain.Users.UserLogin", "DisposedBy")
+                        .WithMany()
+                        .HasForeignKey("DisposedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Catalog.ItemMaster", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("ApprovedBy");
+
+                    b.Navigation("DisposedBy");
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("Domain.PropertyManagement.Property", b =>
                 {
                     b.HasOne("Domain.PropertyManagement.PropertyLocation", "Location")
-                        .WithMany()
+                        .WithMany("Properties")
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domain.PropertyManagement.PropertyCategory", "PropertyCategory")
+                        .WithMany("Properties")
+                        .HasForeignKey("PropertyCategoryId");
+
                     b.HasOne("Domain.PropertyManagement.PropertyType", "PropertyType")
-                        .WithMany()
+                        .WithMany("Properties")
                         .HasForeignKey("PropertyTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.PropertyManagement.SafetyBox", "SafetyBox")
-                        .WithMany()
+                        .WithMany("Properties")
                         .HasForeignKey("SafetyBoxId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("Domain.PropertyManagement.SafetyBoxShelf", null)
+                        .WithMany("Properties")
+                        .HasForeignKey("SafetyBoxShelfId");
+
                     b.Navigation("Location");
+
+                    b.Navigation("PropertyCategory");
 
                     b.Navigation("PropertyType");
 
@@ -1629,11 +1925,13 @@ namespace PAS.Persistence.Migrations
 
             modelBuilder.Entity("Domain.PropertyManagement.SafetyBox", b =>
                 {
-                    b.HasOne("Domain.PropertyManagement.PropertyLocation", null)
-                        .WithMany()
+                    b.HasOne("Domain.PropertyManagement.PropertyLocation", "Location")
+                        .WithMany("SafetyBoxes")
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Location");
                 });
 
             modelBuilder.Entity("Domain.PropertyManagement.SafetyBoxShelf", b =>
@@ -1647,32 +1945,59 @@ namespace PAS.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Receiving.InspectionLog", b =>
                 {
-                    b.HasOne("Domain.Users.UserLogin", null)
+                    b.HasOne("Domain.Users.UserLogin", "Inspector")
                         .WithMany()
                         .HasForeignKey("InspectorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Receiving.ReceivingNote", null)
-                        .WithMany()
-                        .HasForeignKey("ReceivingNoteId")
+                    b.HasOne("Domain.Receiving.ReceivingNote", "ReceivingNote")
+                        .WithOne("InspectionLog")
+                        .HasForeignKey("Domain.Receiving.InspectionLog", "ReceivingNoteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Inspector");
+
+                    b.Navigation("ReceivingNote");
                 });
 
             modelBuilder.Entity("Domain.Receiving.ReceivingNote", b =>
                 {
-                    b.HasOne("Domain.Users.UserLogin", null)
+                    b.HasOne("Domain.Users.UserLogin", "ReceivedBy")
                         .WithMany()
                         .HasForeignKey("ReceivedById")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Receiving.Supplier", null)
-                        .WithMany()
+                    b.HasOne("Domain.Receiving.Supplier", "Supplier")
+                        .WithMany("ReceivingNotes")
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("ReceivedBy");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("Domain.Receiving.ReceivingNoteItem", b =>
+                {
+                    b.HasOne("Domain.Catalog.ItemMaster", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Receiving.ReceivingNote", "ReceivingNote")
+                        .WithMany("Items")
+                        .HasForeignKey("ReceivingNoteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("ReceivingNote");
                 });
 
             modelBuilder.Entity("Domain.Requisition.SR_Detail", b =>
@@ -1682,6 +2007,10 @@ namespace PAS.Persistence.Migrations
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domain.Catalog.ItemMaster", null)
+                        .WithMany("ServiceRequestDetails")
+                        .HasForeignKey("ItemMasterId");
 
                     b.HasOne("Domain.Requisition.ServiceRequest", null)
                         .WithMany("Details")
@@ -1706,27 +2035,41 @@ namespace PAS.Persistence.Migrations
                         .HasForeignKey("ApprovalStatusId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Domain.Users.UserLogin", null)
+                    b.HasOne("Domain.Users.UserLogin", "ApprovedBy")
                         .WithMany()
                         .HasForeignKey("ApprovedById")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Domain.Users.UserLogin", null)
+                    b.HasOne("Domain.Users.UserLogin", "Requester")
                         .WithMany()
                         .HasForeignKey("RequesterId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ApprovalStatus");
+
+                    b.Navigation("ApprovedBy");
+
+                    b.Navigation("Requester");
                 });
 
             modelBuilder.Entity("Domain.Requisition.StoreIssueVoucher", b =>
                 {
-                    b.HasOne("Domain.Requisition.ServiceRequest", null)
+                    b.HasOne("Domain.Users.UserLogin", "IssuedBy")
                         .WithMany()
-                        .HasForeignKey("SRId")
+                        .HasForeignKey("IssuedById")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domain.Requisition.ServiceRequest", "ServiceRequest")
+                        .WithOne("StoreIssueVoucher")
+                        .HasForeignKey("Domain.Requisition.StoreIssueVoucher", "SRId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("IssuedBy");
+
+                    b.Navigation("ServiceRequest");
                 });
 
             modelBuilder.Entity("Domain.Storage.InventoryStock", b =>
@@ -1737,11 +2080,19 @@ namespace PAS.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domain.Catalog.ItemMaster", null)
+                        .WithMany("InventoryStocks")
+                        .HasForeignKey("ItemMasterId");
+
                     b.HasOne("Domain.Storage.ShelfLocation", "ShelfLocation")
                         .WithMany()
                         .HasForeignKey("ShelfId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domain.Storage.ShelfLocation", null)
+                        .WithMany("InventoryStocks")
+                        .HasForeignKey("ShelfLocationId");
 
                     b.Navigation("Item");
 
@@ -1761,47 +2112,121 @@ namespace PAS.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Storage.StockLedger", b =>
                 {
-                    b.HasOne("Domain.Catalog.ItemMaster", null)
+                    b.HasOne("Domain.Storage.InventoryStock", null)
+                        .WithMany("StockLedgerEntries")
+                        .HasForeignKey("InventoryStockId");
+
+                    b.HasOne("Domain.Catalog.ItemMaster", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Storage.ShelfLocation", null)
+                    b.HasOne("Domain.Receiving.ReceivingNote", null)
+                        .WithMany("StockLedgers")
+                        .HasForeignKey("ReceivingNoteId");
+
+                    b.HasOne("Domain.Storage.ShelfLocation", "Shelf")
                         .WithMany()
                         .HasForeignKey("ShelfId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Shelf");
                 });
 
             modelBuilder.Entity("Domain.TransferReturn.ReturnMaterialRequestNote", b =>
                 {
-                    b.HasOne("Domain.Catalog.ItemMaster", null)
+                    b.HasOne("Domain.Users.UserLogin", "ApprovedBy")
+                        .WithMany()
+                        .HasForeignKey("ApprovedById");
+
+                    b.HasOne("Domain.Catalog.ItemMaster", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domain.Users.UserLogin", "RequestedBy")
+                        .WithMany()
+                        .HasForeignKey("RequestedById");
+
+                    b.HasOne("Domain.PropertyManagement.PropertyLocation", "SourceLocation")
+                        .WithMany()
+                        .HasForeignKey("SourceLocationId");
+
+                    b.HasOne("Domain.Storage.ShelfLocation", "SourceShelf")
+                        .WithMany()
+                        .HasForeignKey("SourceShelfId");
+
+                    b.HasOne("Domain.Receiving.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId");
+
+                    b.Navigation("ApprovedBy");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("RequestedBy");
+
+                    b.Navigation("SourceLocation");
+
+                    b.Navigation("SourceShelf");
+
+                    b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("Domain.TransferReturn.TransferRecord", b =>
                 {
-                    b.HasOne("Domain.PropertyManagement.PropertyLocation", null)
+                    b.HasOne("Domain.Users.UserLogin", "ApprovedBy")
+                        .WithMany()
+                        .HasForeignKey("ApprovedById");
+
+                    b.HasOne("Domain.PropertyManagement.PropertyLocation", "FromLocation")
                         .WithMany()
                         .HasForeignKey("FromLocationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Catalog.ItemMaster", null)
+                    b.HasOne("Domain.Storage.ShelfLocation", "FromShelf")
+                        .WithMany()
+                        .HasForeignKey("FromShelfId");
+
+                    b.HasOne("Domain.Users.UserLogin", "InitiatedBy")
+                        .WithMany()
+                        .HasForeignKey("InitiatedById");
+
+                    b.HasOne("Domain.Catalog.ItemMaster", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.PropertyManagement.PropertyLocation", null)
+                    b.HasOne("Domain.PropertyManagement.PropertyLocation", "ToLocation")
                         .WithMany()
                         .HasForeignKey("ToLocationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domain.Storage.ShelfLocation", "ToShelf")
+                        .WithMany()
+                        .HasForeignKey("ToShelfId");
+
+                    b.Navigation("ApprovedBy");
+
+                    b.Navigation("FromLocation");
+
+                    b.Navigation("FromShelf");
+
+                    b.Navigation("InitiatedBy");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("ToLocation");
+
+                    b.Navigation("ToShelf");
                 });
 
             modelBuilder.Entity("Domain.Users.Permission", b =>
@@ -1821,37 +2246,45 @@ namespace PAS.Persistence.Migrations
                         .HasForeignKey("AspNetUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Domain.Users.Employee", null)
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
+                    b.HasOne("Domain.Users.Employee", "Employee")
+                        .WithOne("UserLogin")
+                        .HasForeignKey("Domain.Users.UserLogin", "EmployeeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Users.Role", null)
-                        .WithMany()
+                    b.HasOne("Domain.Users.Role", "Role")
+                        .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("Domain.Workflow.Approver", b =>
                 {
-                    b.HasOne("Domain.Users.UserLogin", null)
+                    b.HasOne("Domain.Users.UserLogin", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Workflow.ApprovalWorkflow", null)
-                        .WithMany()
+                    b.HasOne("Domain.Workflow.ApprovalWorkflow", "Workflow")
+                        .WithMany("Approvers")
                         .HasForeignKey("WorkflowId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("Workflow");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Persistence.Identity.ApplicationRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1878,7 +2311,7 @@ namespace PAS.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Persistence.Identity.ApplicationRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1902,22 +2335,103 @@ namespace PAS.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Catalog.Category", b =>
                 {
+                    b.Navigation("Items");
+
                     b.Navigation("SubCategories");
+                });
+
+            modelBuilder.Entity("Domain.Catalog.ItemMaster", b =>
+                {
+                    b.Navigation("InventoryStocks");
+
+                    b.Navigation("ServiceRequestDetails");
+                });
+
+            modelBuilder.Entity("Domain.PropertyManagement.Property", b =>
+                {
+                    b.Navigation("Attachments");
+                });
+
+            modelBuilder.Entity("Domain.PropertyManagement.PropertyCategory", b =>
+                {
+                    b.Navigation("Properties");
+                });
+
+            modelBuilder.Entity("Domain.PropertyManagement.PropertyLocation", b =>
+                {
+                    b.Navigation("Properties");
+
+                    b.Navigation("SafetyBoxes");
+                });
+
+            modelBuilder.Entity("Domain.PropertyManagement.PropertyType", b =>
+                {
+                    b.Navigation("Properties");
                 });
 
             modelBuilder.Entity("Domain.PropertyManagement.SafetyBox", b =>
                 {
+                    b.Navigation("Properties");
+
                     b.Navigation("Shelves");
+                });
+
+            modelBuilder.Entity("Domain.PropertyManagement.SafetyBoxShelf", b =>
+                {
+                    b.Navigation("Properties");
+                });
+
+            modelBuilder.Entity("Domain.Receiving.ReceivingNote", b =>
+                {
+                    b.Navigation("Attachments");
+
+                    b.Navigation("InspectionLog");
+
+                    b.Navigation("Items");
+
+                    b.Navigation("StockLedgers");
+                });
+
+            modelBuilder.Entity("Domain.Receiving.Supplier", b =>
+                {
+                    b.Navigation("ReceivingNotes");
                 });
 
             modelBuilder.Entity("Domain.Requisition.ServiceRequest", b =>
                 {
                     b.Navigation("Details");
+
+                    b.Navigation("StoreIssueVoucher");
+                });
+
+            modelBuilder.Entity("Domain.Storage.InventoryStock", b =>
+                {
+                    b.Navigation("StockLedgerEntries");
+                });
+
+            modelBuilder.Entity("Domain.Storage.ShelfLocation", b =>
+                {
+                    b.Navigation("InventoryStocks");
                 });
 
             modelBuilder.Entity("Domain.Storage.Warehouse", b =>
                 {
                     b.Navigation("Shelves");
+                });
+
+            modelBuilder.Entity("Domain.Users.Employee", b =>
+                {
+                    b.Navigation("UserLogin");
+                });
+
+            modelBuilder.Entity("Domain.Users.Role", b =>
+                {
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Domain.Workflow.ApprovalWorkflow", b =>
+                {
+                    b.Navigation("Approvers");
                 });
 #pragma warning restore 612, 618
         }

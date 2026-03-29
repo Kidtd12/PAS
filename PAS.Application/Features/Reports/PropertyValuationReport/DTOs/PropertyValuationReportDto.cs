@@ -89,3 +89,25 @@ public class PropertyValuationDetailDto
     public string SafetyBox { get; set; } = string.Empty;
     public int? ShelfNumber { get; set; }
 }
+
+public class PropertyIssuanceReportDto
+{
+    public DateTime GeneratedAt { get; set; }
+    public string GeneratedBy { get; set; } = string.Empty;
+    public DateTime FromDate { get; set; }
+    public DateTime ToDate { get; set; }
+    public int TotalVouchers { get; set; }
+    public int TotalIssuedItems { get; set; }
+    public List<PropertyIssuanceItemDto> Items { get; set; } = new();
+}
+
+public class PropertyIssuanceItemDto
+{
+    public Guid VoucherId { get; set; }
+    public string SIVNumber { get; set; } = string.Empty;
+    public DateTime IssueDate { get; set; }
+    public string IssuedBy { get; set; } = string.Empty;
+    public string RecipientName { get; set; } = string.Empty;
+    public string Department { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+}

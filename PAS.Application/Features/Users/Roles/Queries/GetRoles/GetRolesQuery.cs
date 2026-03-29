@@ -8,4 +8,5 @@ namespace Application.Features.Users.Roles.Queries;
 public record GetRolesQuery : IRequest<Result<List<RoleDto>>>
 {
     public bool IncludeUserCount { get; init; } = true;
+    public string? SearchTerm { get; init; }
 }

@@ -1,80 +1,103 @@
-using FluentValidation.AspNetCore;
-using PAS.API.Extensions;
-using PAS.API.Hubs;
-using PAS.API.Middleware;
-using PAS.Application;
-using PAS.Infrastructure;
-using PAS.Persistence;
+using System.Text;
+using Application.Common.Interfaces;
+using Application.Common.Models;
+using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using PAS.API.Configurations;
+using PAS.API.Services;
 using Persistence.Context;
-using Serilog;
+using Persistence.Identity;
 
-// Configure Serilog
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.File("logs/pas-api-.txt", rollingInterval: RollingInterval.Day)
-    .WriteTo.ApplicationInsights("YOUR-APP-INSIGHTS-KEY", TelemetryConverter.Traces)
-    .Enrich.WithMachineName()
-    .Enrich.WithThreadId()
-    .Enrich.WithEnvironmentName()
-    .CreateLogger();
+var builder = WebApplication.CreateBuilder(args);
 
-try
-{
-    Log.Information("Starting up the Property Automation System API");
+builder.Services.AddControllers();
 
-    var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sql => sql.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null)));
 
-    // Add Serilog
-    builder.Host.UseSerilog();
-
-    // Add services
-    builder.Services.AddApplicationServices();
-    builder.Services.AddPersistenceServices(builder.Configuration);
-    builder.Services.AddInfrastructureServices(builder.Configuration);
-    builder.Services.AddApiServices(builder.Configuration);
-    builder.Services.AddControllers()
-        .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Program>());
-    builder.Services.AddSignalR();
-    builder.Services.AddHealthChecks()
-        .AddDbContextCheck<ApplicationDbContext>()
-        .AddUrlGroup(new Uri("https://www.ecx.com.et"), "ECX Website");
-    builder.Services.AddSwaggerDocumentation();
-    builder.Services.AddCorsPolicy(builder.Configuration);
-    builder.Services.AddJwtAuthentication(builder.Configuration);
-
-    var app = builder.Build();
-
-    if (app.Environment.IsDevelopment())
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     {
-        app.UseSwaggerDocumentation();
-    }
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
-    app.UseHttpsRedirection();
-    app.UseCors("AllowSpecificOrigin");
-    app.UseAuthentication();
-    app.UseAuthorization();
-    app.UseMiddleware<ExceptionHandlingMiddleware>();
-    app.UseMiddleware<RequestLoggingMiddleware>();
-    app.UseMiddleware<PerformanceMiddleware>();
-    app.UseMiddleware<JwtMiddleware>();
-    app.MapControllers();
-    app.MapHub<NotificationHub>("/notificationHub");
-    app.MapHealthChecks("/health");
+builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContextAdapter>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IDateTimeService, DateTimeService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 
-    // Seed database
-    using (var scope = app.Services.CreateScope())
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.Configure<FileStorageSettings>(builder.Configuration.GetSection("FileStorage"));
+
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssemblies(typeof(Result).Assembly));
+
+builder.Services.AddAutoMapper(_ => { }, typeof(Result).Assembly, typeof(Program).Assembly);
+
+var jwtKey = builder.Configuration["Jwt:Key"] ?? string.Empty;
+if (!string.IsNullOrWhiteSpace(jwtKey))
+{
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidAudience = builder.Configuration["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+            };
+        });
+}
+
+builder.Services.AddAuthorization();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.EnableAnnotations();
+    c.CustomSchemaIds(type => type.FullName);
+    c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+});
+
+var app = builder.Build();
+
+var runMigrationsOnStartup = builder.Configuration.GetValue<bool>("Database:RunMigrationsOnStartup");
+if (runMigrationsOnStartup)
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
     {
-        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializer>();
-        await dbInitializer.InitializeAsync();
+        db.Database.Migrate();
     }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Database migration failed during startup.");
+    }
+}
 
-    app.Run();
-}
-catch (Exception ex)
+if (app.Environment.IsDevelopment())
 {
-    Log.Fatal(ex, "Application start-up failed");
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
-finally
-{
-    Log.CloseAndFlush();
-}
+
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();

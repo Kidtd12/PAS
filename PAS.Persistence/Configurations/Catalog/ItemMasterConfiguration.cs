@@ -28,8 +28,11 @@ namespace Persistence.Configurations.Catalog
             builder.Property(i => i.MinStockLevel)
                 .HasDefaultValue(0);
 
-            builder.HasOne<Category>()
-                .WithMany()
+            builder.Property(i => i.UnitPrice)
+                .HasPrecision(18, 2);
+
+            builder.HasOne(i => i.Category)
+                .WithMany(c => c.Items)
                 .HasForeignKey(i => i.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 

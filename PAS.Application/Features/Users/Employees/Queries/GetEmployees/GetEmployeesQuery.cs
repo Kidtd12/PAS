@@ -11,6 +11,7 @@ public record GetEmployeesQuery : IRequest<Result<PaginatedList<EmployeeListDto>
     public string? Department { get; init; }
     public bool? IsActive { get; init; }
     public bool? HasUserAccount { get; init; }
+    public bool? WithUserAccountOnly { get; init; }
     public int PageNumber { get; init; } = 1;
     public int PageSize { get; init; } = 10;
 }

@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PAS.API.Configurations;
-using PAS.Application.Common.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 

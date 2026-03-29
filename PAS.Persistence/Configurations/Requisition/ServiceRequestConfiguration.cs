@@ -1,5 +1,4 @@
 using Domain.Requisition;
-using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -19,12 +18,12 @@ namespace Persistence.Configurations.Requisition
                 .IsRequired()
                 .HasMaxLength(50);
 
-            builder.HasOne<UserLogin>()
+            builder.HasOne(s => s.Requester)
                 .WithMany()
                 .HasForeignKey(s => s.RequesterId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<UserLogin>()
+            builder.HasOne(s => s.ApprovedBy)
                 .WithMany()
                 .HasForeignKey(s => s.ApprovedById)
                 .OnDelete(DeleteBehavior.Restrict);
