@@ -36,32 +36,55 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
             return Result<Guid>.Failure($"Email '{request.Email}' is already registered.");
         }
 
-        // Validate employee exists
-        var employee = await _context.Employees
-            .Where(e => e.Id == request.EmployeeId && !e.IsDeleted)
-            .Select(e => new { e.Id, e.FullName })
-            .FirstOrDefaultAsync(cancellationToken);
+        var employeeCode = await GetOrGenerateEmployeeCodeAsync(request.EmployeeCode, cancellationToken);
 
-        if (employee == null)
+        var existingEmployeeCode = await _context.Employees
+            .AnyAsync(e => e.EmployeeCode == employeeCode && !e.IsDeleted, cancellationToken);
+
+        if (existingEmployeeCode)
         {
-            return Result<Guid>.Failure($"Employee with ID {request.EmployeeId} not found.");
+            return Result<Guid>.Failure($"Employee with code '{employeeCode}' already exists.");
         }
 
-        // Validate role exists
-        var role = await _context.Roles
-            .FirstOrDefaultAsync(r => r.Id == request.RoleId && !r.IsDeleted, cancellationToken);
+        var roleName = string.IsNullOrWhiteSpace(request.RoleName)
+            ? "Employee"
+            : request.RoleName.Trim();
 
-        if (role == null || string.IsNullOrWhiteSpace(role.RoleName))
+        var identityRole = await _roleManager.FindByNameAsync(roleName);
+        if (identityRole == null)
         {
-            return Result<Guid>.Failure($"Role with ID {request.RoleId} not found.");
+            var createRoleResult = await _roleManager.CreateAsync(new ApplicationRole
+            {
+                Name = roleName,
+                Description = $"Auto-created role: {roleName}"
+            });
+
+            if (!createRoleResult.Succeeded)
+            {
+                var errors = string.Join("; ", createRoleResult.Errors.Select(e => e.Description));
+                return Result<Guid>.Failure($"Role creation failed: {errors}");
+            }
         }
+
+        var employee = new Domain.Users.Employee(
+            employeeCode,
+            request.FullName,
+            request.Department);
+
+        if (!string.IsNullOrWhiteSpace(request.Email))
+            typeof(Domain.Users.Employee).GetProperty("Email")?.SetValue(employee, request.Email);
+
+        if (!string.IsNullOrWhiteSpace(request.PhoneNumber))
+            typeof(Domain.Users.Employee).GetProperty("Phone")?.SetValue(employee, request.PhoneNumber);
+
+        _context.Employees.Add(employee);
 
         // Create Identity user in AspNetUsers
         var identityUser = new ApplicationUser
         {
             UserName = request.Username,
             Email = request.Email,
-            FullName = employee.FullName,
+            FullName = request.FullName,
             IsActive = true,
             EmailConfirmed = true
         };
@@ -73,30 +96,32 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
             return Result<Guid>.Failure($"User registration failed: {errors}");
         }
 
-        if (!await _roleManager.RoleExistsAsync(role.RoleName))
-        {
-            var createRoleResult = await _roleManager.CreateAsync(new ApplicationRole
-            {
-                Name = role.RoleName,
-                Description = role.Description
-            });
-
-            if (!createRoleResult.Succeeded)
-            {
-                var errors = string.Join("; ", createRoleResult.Errors.Select(e => e.Description));
-                return Result<Guid>.Failure($"Role provisioning failed: {errors}");
-            }
-        }
-
-        var addToRoleResult = await _userManager.AddToRoleAsync(identityUser, role.RoleName);
+        var addToRoleResult = await _userManager.AddToRoleAsync(identityUser, roleName);
         if (!addToRoleResult.Succeeded)
         {
             var errors = string.Join("; ", addToRoleResult.Errors.Select(e => e.Description));
             return Result<Guid>.Failure($"Role assignment failed: {errors}");
         }
 
+        await _context.SaveChangesAsync(cancellationToken);
+
         return Guid.TryParse(identityUser.Id, out var userId)
             ? Result<Guid>.Success(userId)
             : Result<Guid>.Success(Guid.Empty);
+    }
+
+    private async Task<string> GetOrGenerateEmployeeCodeAsync(string? requestedCode, CancellationToken cancellationToken)
+    {
+        if (!string.IsNullOrWhiteSpace(requestedCode))
+            return requestedCode.Trim();
+
+        string code;
+        do
+        {
+            code = $"EMP-{DateTime.UtcNow.Ticks.ToString()[^10..]}";
+        }
+        while (await _context.Employees.AnyAsync(e => e.EmployeeCode == code && !e.IsDeleted, cancellationToken));
+
+        return code;
     }
 }

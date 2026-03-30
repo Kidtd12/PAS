@@ -1,10 +1,5 @@
-﻿using Application.Common.Security;
-using Application.Events;
-using Application.Features.Users.Authentication.Dtos;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Application.Features.Users.Authentication.Commands;
 
@@ -13,8 +8,11 @@ public record RegisterUserCommand : IRequest<Result<Guid>>
     public string Username { get; init; } = string.Empty;
     public string Password { get; init; } = string.Empty;
     public string Email { get; init; } = string.Empty;
-    public Guid EmployeeId { get; init; }
-    public Guid RoleId { get; init; }
+    public string FullName { get; init; } = string.Empty;
+    public string Department { get; init; } = string.Empty;
+    public string? EmployeeCode { get; init; }
+    public string? PhoneNumber { get; init; }
+    public string? RoleName { get; init; }
 }
 
 public class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
@@ -40,10 +38,20 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
             .EmailAddress().WithMessage("Valid email is required.")
             .MaximumLength(100).WithMessage("Email must not exceed 100 characters.");
 
-        RuleFor(v => v.EmployeeId)
-            .NotEmpty().WithMessage("Employee is required.");
+        RuleFor(v => v.FullName)
+            .NotEmpty().WithMessage("Full name is required.")
+            .MaximumLength(100).WithMessage("Full name must not exceed 100 characters.");
 
-        RuleFor(v => v.RoleId)
-            .NotEmpty().WithMessage("Role is required.");
+        RuleFor(v => v.Department)
+            .NotEmpty().WithMessage("Department is required.")
+            .MaximumLength(50).WithMessage("Department must not exceed 50 characters.");
+
+        RuleFor(v => v.EmployeeCode)
+            .MaximumLength(20).WithMessage("Employee code must not exceed 20 characters.")
+            .When(v => !string.IsNullOrWhiteSpace(v.EmployeeCode));
+
+        RuleFor(v => v.RoleName)
+            .MaximumLength(50).WithMessage("Role name must not exceed 50 characters.")
+            .When(v => !string.IsNullOrWhiteSpace(v.RoleName));
     }
 }

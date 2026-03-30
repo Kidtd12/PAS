@@ -11,23 +11,46 @@ namespace PAS.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_DisposalRecords_UserLogins_DisposedBy",
-                table: "DisposalRecords");
+            migrationBuilder.Sql(@"
+IF EXISTS (
+    SELECT 1
+    FROM sys.foreign_keys
+    WHERE name = 'FK_DisposalRecords_UserLogins_DisposedBy'
+)
+BEGIN
+    ALTER TABLE [DisposalRecords] DROP CONSTRAINT [FK_DisposalRecords_UserLogins_DisposedBy];
+END
+");
 
             migrationBuilder.DropIndex(
                 name: "IX_StoreIssueVouchers_SRId",
                 table: "StoreIssueVouchers");
 
-            migrationBuilder.RenameColumn(
-                name: "DisposedBy",
-                table: "DisposalRecords",
-                newName: "DisposedById");
+            migrationBuilder.Sql(@"
+IF COL_LENGTH('DisposalRecords', 'DisposedBy') IS NOT NULL
+    AND COL_LENGTH('DisposalRecords', 'DisposedById') IS NULL
+BEGIN
+    EXEC sp_rename 'DisposalRecords.DisposedBy', 'DisposedById', 'COLUMN';
+END
+");
 
-            migrationBuilder.RenameIndex(
-                name: "IX_DisposalRecords_DisposedBy",
-                table: "DisposalRecords",
-                newName: "IX_DisposalRecords_DisposedById");
+            migrationBuilder.Sql(@"
+IF EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'IX_DisposalRecords_DisposedBy'
+      AND object_id = OBJECT_ID('DisposalRecords')
+)
+AND NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'IX_DisposalRecords_DisposedById'
+      AND object_id = OBJECT_ID('DisposalRecords')
+)
+BEGIN
+    EXEC sp_rename N'[DisposalRecords].[IX_DisposalRecords_DisposedBy]', N'IX_DisposalRecords_DisposedById', 'INDEX';
+END
+");
 
             migrationBuilder.AddColumn<string>(
                 name: "City",

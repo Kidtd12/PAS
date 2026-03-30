@@ -1,9 +1,7 @@
-﻿using Application.Common.Interfaces;
-using Application.Features.Users.Authentication.Commands;
+﻿using Application.Features.Users.Authentication.Commands;
 using Application.Features.Users.Authentication.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using PAS.API.Models.Requests;
 using PAS.API.Models.Responses;
 using Swashbuckle.AspNetCore.Annotations;
@@ -14,12 +12,10 @@ namespace PAS.API.Controllers.Auth;
 public class AuthController : BaseApiController
 {
     private readonly ILogger<AuthController> _logger;
-    private readonly IApplicationDbContext _context;
 
-    public AuthController(ILogger<AuthController> logger, IApplicationDbContext context)
+    public AuthController(ILogger<AuthController> logger)
     {
         _logger = logger;
-        _context = context;
     }
 
     /// <summary>
@@ -54,22 +50,16 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ApiResponse<Guid>>> Register(PAS.API.Models.Requests.RegisterRequest request)
     {
-        var employee = await _context.Employees
-            .AsNoTracking()
-            .Where(e => e.EmployeeCode == request.EmployeeCode && !e.IsDeleted)
-            .Select(e => new { e.Id })
-            .FirstOrDefaultAsync();
-
-        if (employee == null)
-            return BadRequest(ApiResponse<Guid>.ErrorResponse("Employee not found for provided employee code.", 400));
-
         var command = new RegisterUserCommand
         {
             Username = request.Username,
             Password = request.Password,
             Email = request.Email ?? string.Empty,
-            EmployeeId = employee.Id,
-            RoleId = request.RoleId
+            FullName = request.FullName,
+            Department = request.Department,
+            EmployeeCode = request.EmployeeCode,
+            PhoneNumber = request.PhoneNumber,
+            RoleName = request.RoleName
         };
 
         var result = await Mediator.Send(command);

@@ -14,10 +14,9 @@ public class RegisterRequest
     [StringLength(100)]
     public string FullName { get; set; } = string.Empty;
 
-    [Required]
     [StringLength(20)]
     [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.ValidateAlphanumericAttribute))]
-    public string EmployeeCode { get; set; } = string.Empty;
+    public string? EmployeeCode { get; set; }
 
     [Required]
     [StringLength(50)]
@@ -33,8 +32,8 @@ public class RegisterRequest
     [Compare("Password")]
     public string ConfirmPassword { get; set; } = string.Empty;
 
-    [Required]
-    public Guid RoleId { get; set; }
+    [StringLength(50)]
+    public string? RoleName { get; set; }
 
     [EmailAddress]
     [CustomValidation(typeof(CustomValidators), nameof(CustomValidators.ValidateEmailAttribute))]
