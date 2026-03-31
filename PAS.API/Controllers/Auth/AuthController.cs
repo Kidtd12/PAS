@@ -8,7 +8,8 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace PAS.API.Controllers.Auth;
 
-[AllowAnonymous]
+[ApiController]
+[Route("api/[controller]")]
 public class AuthController : BaseApiController
 {
     private readonly ILogger<AuthController> _logger;
@@ -22,6 +23,7 @@ public class AuthController : BaseApiController
     /// Authenticate user and get JWT token
     /// </summary>
     [HttpPost("login")]
+    [AllowAnonymous]
     [SwaggerOperation(Summary = "Login to the system")]
     [ProducesResponseType(typeof(ApiResponse<AuthResultDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -45,6 +47,7 @@ public class AuthController : BaseApiController
     /// Register a new user
     /// </summary>
     [HttpPost("register")]
+    [AllowAnonymous]
     [SwaggerOperation(Summary = "Register a new user")]
     [ProducesResponseType(typeof(ApiResponse<Guid>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -84,6 +87,7 @@ public class AuthController : BaseApiController
     /// Refresh JWT token
     /// </summary>
     [HttpPost("refresh-token")]
+    [AllowAnonymous]
     [SwaggerOperation(Summary = "Refresh JWT token")]
     [ProducesResponseType(typeof(ApiResponse<AuthResultDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -118,6 +122,7 @@ public class AuthController : BaseApiController
     /// Forgot password - send reset email
     /// </summary>
     [HttpPost("forgot-password")]
+    [AllowAnonymous]
     [SwaggerOperation(Summary = "Send password reset email")]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -132,6 +137,7 @@ public class AuthController : BaseApiController
     /// Reset password with token
     /// </summary>
     [HttpPost("reset-password")]
+    [AllowAnonymous]
     [SwaggerOperation(Summary = "Reset password using token")]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
