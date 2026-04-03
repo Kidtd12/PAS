@@ -26,11 +26,17 @@ public class CreateDisposalRecordCommandHandler : IRequestHandler<CreateDisposal
         }
 
         // Validate all items and check stock availability
-        var itemsToDispose = new List<(Domain.Catalog.ItemMaster Item, int Quantity, string Reason)>();
+        var itemsToDispose = new List<(Domain.Catalog.ItemMaster Item, int Quantity, string Reason, Guid ShelfId)>();
         var validationErrors = new List<string>();
 
         foreach (var itemDto in request.Items)
         {
+            if (itemDto.Quantity <= 0)
+            {
+                validationErrors.Add($"Quantity must be greater than zero for item {itemDto.ItemId}.");
+                continue;
+            }
+
             var item = await _context.ItemMasters
                 .FirstOrDefaultAsync(i => i.Id == itemDto.ItemId && !i.IsDeleted, cancellationToken);
 
@@ -51,8 +57,20 @@ public class CreateDisposalRecordCommandHandler : IRequestHandler<CreateDisposal
                 continue;
             }
 
+            var shelfId = await _context.InventoryStocks
+                .Where(s => s.ItemId == item.Id && !s.IsDeleted && (s.CurrentQuantity - s.ReservedQuantity) > 0)
+                .OrderByDescending(s => s.CurrentQuantity - s.ReservedQuantity)
+                .Select(s => s.ShelfId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (shelfId == Guid.Empty)
+            {
+                validationErrors.Add($"No valid shelf location found for item '{item.ItemName}'.");
+                continue;
+            }
+
             var reason = string.IsNullOrWhiteSpace(itemDto.Reason) ? request.Reason : itemDto.Reason;
-            itemsToDispose.Add((item, itemDto.Quantity, reason));
+            itemsToDispose.Add((item, itemDto.Quantity, reason, shelfId));
         }
 
         if (validationErrors.Any())
@@ -63,7 +81,7 @@ public class CreateDisposalRecordCommandHandler : IRequestHandler<CreateDisposal
         // Create disposal records
         var disposalRecords = new List<Domain.Disposal.DisposalRecord>();
 
-        foreach (var (item, quantity, reason) in itemsToDispose)
+        foreach (var (item, quantity, reason, shelfId) in itemsToDispose)
         {
             var disposalRecord = new Domain.Disposal.DisposalRecord(
                 item.Id,
@@ -80,9 +98,13 @@ public class CreateDisposalRecordCommandHandler : IRequestHandler<CreateDisposal
         // Create stock ledger entries (pending approval - will be processed on approval)
         foreach (var record in disposalRecords)
         {
+            var shelfId = itemsToDispose
+                .First(x => x.Item.Id == record.ItemId)
+                .ShelfId;
+
             var stockLedger = new StockLedger(
                 record.ItemId,
-                Guid.Empty, // Will be assigned when stock is actually deducted
+                shelfId,
                 -record.Quantity,
                 "DISPOSAL_PENDING",
                 record.Id);

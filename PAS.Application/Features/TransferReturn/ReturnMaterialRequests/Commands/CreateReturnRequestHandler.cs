@@ -60,8 +60,27 @@ public class CreateReturnRequestCommandHandler : IRequestHandler<CreateReturnReq
         Guid? sourceLocationId = request.SourceLocationId;
         Guid? sourceShelfId = request.SourceShelfId;
 
+        if (request.Quantity <= 0)
+        {
+            return Result<Guid>.Failure("Quantity must be greater than zero.");
+        }
+
+        if (sourceLocationId.HasValue && !sourceShelfId.HasValue)
+        {
+            var sourceLocation = await _context.PropertyLocations
+                .FirstOrDefaultAsync(l => l.Id == sourceLocationId.Value && !l.IsDeleted, cancellationToken);
+
+            if (sourceLocation == null)
+            {
+                return Result<Guid>.Failure($"Source location with ID {sourceLocationId} not found.");
+            }
+        }
+
         if (sourceShelfId.HasValue)
         {
+            // If shelf is provided, source location will be derived from shelf's warehouse mapping.
+            sourceLocationId = null;
+
             var sourceShelf = await _context.ShelfLocations
                 .Include(s => s.Warehouse)
                 .FirstOrDefaultAsync(s => s.Id == sourceShelfId && !s.IsDeleted, cancellationToken);
@@ -71,7 +90,22 @@ public class CreateReturnRequestCommandHandler : IRequestHandler<CreateReturnReq
                 return Result<Guid>.Failure($"Source shelf with ID {sourceShelfId} not found.");
             }
 
-            sourceLocationId = sourceShelf.WarehouseId;
+            // Map shelf's warehouse to PropertyLocation (ReturnMaterialRequest FK expects PropertyLocations.Id)
+            var mappedLocation = await _context.PropertyLocations
+                .FirstOrDefaultAsync(l => !l.IsDeleted
+                                       && l.LocationType == "Warehouse"
+                                       && l.Name == sourceShelf.Warehouse!.WarehouseName, cancellationToken);
+
+            if (mappedLocation == null)
+            {
+                mappedLocation = new Domain.PropertyManagement.PropertyLocation(
+                    sourceShelf.Warehouse!.WarehouseName,
+                    "Warehouse");
+                _context.PropertyLocations.Add(mappedLocation);
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+
+            sourceLocationId = mappedLocation.Id;
         }
 
         // Check if stock is available for return

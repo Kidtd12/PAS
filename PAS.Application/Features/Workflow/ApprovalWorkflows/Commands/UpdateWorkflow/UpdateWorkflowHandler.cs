@@ -44,12 +44,15 @@ public class UpdateWorkflowCommandHandler : IRequestHandler<UpdateWorkflowComman
 
         workflow.MarkUpdated();
 
-        var auditTrail = new AuditTrail(
-            _currentUser.UserGuid ?? Guid.Empty,
-            "UPDATE",
-            nameof(ApprovalWorkflow),
-            workflow.Id);
-        _context.AuditTrails.Add(auditTrail);
+        if (_currentUser.UserGuid.HasValue)
+        {
+            var auditTrail = new AuditTrail(
+                _currentUser.UserGuid.Value,
+                "UPDATE",
+                nameof(ApprovalWorkflow),
+                workflow.Id);
+            _context.AuditTrails.Add(auditTrail);
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

@@ -31,12 +31,15 @@ public class RemoveApproverCommandHandler : IRequestHandler<RemoveApproverComman
 
         approver.SoftDelete();
 
-        var auditTrail = new AuditTrail(
-            _currentUser.UserGuid ?? Guid.Empty,
-            "REMOVE_APPROVER",
-            nameof(Approver),
-            approver.Id);
-        _context.AuditTrails.Add(auditTrail);
+        if (_currentUser.UserGuid.HasValue)
+        {
+            var auditTrail = new AuditTrail(
+                _currentUser.UserGuid.Value,
+                "REMOVE_APPROVER",
+                nameof(Approver),
+                approver.Id);
+            _context.AuditTrails.Add(auditTrail);
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

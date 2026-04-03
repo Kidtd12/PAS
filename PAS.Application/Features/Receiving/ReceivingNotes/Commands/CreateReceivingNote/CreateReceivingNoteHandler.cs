@@ -55,6 +55,17 @@ public class CreateReceivingNoteCommandHandler : IRequestHandler<CreateReceiving
             }
         }
 
+        var defaultShelfId = await _context.ShelfLocations
+            .Where(s => !s.IsDeleted)
+            .OrderBy(s => s.ShelfNumber)
+            .Select(s => s.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (defaultShelfId == Guid.Empty)
+        {
+            return Result<Guid>.Failure("No shelf location exists. Create at least one shelf location before creating receiving notes.");
+        }
+
         // Create receiving note
         var receivingNote = new Domain.Receiving.ReceivingNote(
             request.GRNNumber,
@@ -79,7 +90,7 @@ public class CreateReceivingNoteCommandHandler : IRequestHandler<CreateReceiving
             // Create stock ledger entry for received items (pending inspection)
             var ledger = new StockLedger(
                 item.ItemId,
-                Guid.Empty, // Shelf will be assigned after inspection
+                defaultShelfId,
                 item.Quantity,
                 "RECEIVED_PENDING_INSPECTION",
                 receivingNote.Id);

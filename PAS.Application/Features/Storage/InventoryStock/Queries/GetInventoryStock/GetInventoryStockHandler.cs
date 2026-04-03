@@ -24,7 +24,7 @@ public class GetInventoryStockQueryHandler : IRequestHandler<GetInventoryStockQu
     {
         var query = _context.InventoryStocks
             .Include(i => i.Item)
-            .Include(i => i.Shelf)
+            .Include(i => i.ShelfLocation)
                 .ThenInclude(s => s.Warehouse)
             .Where(i => !i.IsDeleted)
             .AsNoTracking();
@@ -42,7 +42,7 @@ public class GetInventoryStockQueryHandler : IRequestHandler<GetInventoryStockQu
 
         if (request.WarehouseId.HasValue)
         {
-            query = query.Where(i => i.Shelf.WarehouseId == request.WarehouseId);
+            query = query.Where(i => i.ShelfLocation != null && i.ShelfLocation.WarehouseId == request.WarehouseId);
         }
 
         if (request.LowStockOnly == true)

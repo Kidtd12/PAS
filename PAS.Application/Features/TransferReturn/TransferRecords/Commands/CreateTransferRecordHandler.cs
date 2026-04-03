@@ -25,6 +25,11 @@ public class CreateTransferRecordCommandHandler : IRequestHandler<CreateTransfer
             return Result<Guid>.Failure("User not authenticated.");
         }
 
+        if (request.Quantity <= 0)
+        {
+            return Result<Guid>.Failure("Quantity must be greater than zero.");
+        }
+
         // Validate item exists
         var item = await _context.ItemMasters
             .FirstOrDefaultAsync(i => i.Id == request.ItemId && !i.IsDeleted, cancellationToken);
@@ -64,7 +69,7 @@ public class CreateTransferRecordCommandHandler : IRequestHandler<CreateTransfer
 
         // Find source location and shelf from current inventory
         var inventoryStock = await _context.InventoryStocks
-            .Include(i => i.Shelf)
+            .Include(i => i.ShelfLocation)
                 .ThenInclude(s => s.Warehouse)
             .FirstOrDefaultAsync(i => i.ItemId == request.ItemId &&
                                      i.CurrentQuantity >= request.Quantity &&
@@ -75,6 +80,27 @@ public class CreateTransferRecordCommandHandler : IRequestHandler<CreateTransfer
             return Result<Guid>.Failure("Insufficient stock available for transfer.");
         }
 
+        if (inventoryStock.ShelfLocation?.Warehouse == null)
+        {
+            return Result<Guid>.Failure("Source inventory shelf/warehouse is invalid.");
+        }
+
+        // Resolve source PropertyLocation (TransferRecord FK expects PropertyLocations, not Warehouses)
+        var sourceWarehouse = inventoryStock.ShelfLocation.Warehouse;
+        var fromLocation = await _context.PropertyLocations
+            .FirstOrDefaultAsync(l => !l.IsDeleted
+                                   && l.LocationType == "Warehouse"
+                                   && l.Name == sourceWarehouse.WarehouseName, cancellationToken);
+
+        if (fromLocation == null)
+        {
+            fromLocation = new Domain.PropertyManagement.PropertyLocation(
+                sourceWarehouse.WarehouseName,
+                "Warehouse");
+            _context.PropertyLocations.Add(fromLocation);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
         // Generate transfer number
         var transferCount = await _context.TransferRecords.CountAsync(cancellationToken) + 1;
         var transferNumber = $"TRF-{DateTime.Now:yyyyMMdd}-{transferCount:D4}";
@@ -82,7 +108,7 @@ public class CreateTransferRecordCommandHandler : IRequestHandler<CreateTransfer
         // Create transfer record
         var transferRecord = new Domain.TransferReturn.TransferRecord(
             request.ItemId,
-            inventoryStock.Shelf?.WarehouseId ?? Guid.Empty,
+            fromLocation.Id,
             request.ToLocationId,
             request.Quantity);
 

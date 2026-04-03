@@ -40,12 +40,15 @@ public class DeleteWorkflowCommandHandler : IRequestHandler<DeleteWorkflowComman
             }
         }
 
-        var auditTrail = new AuditTrail(
-            _currentUser.UserGuid ?? Guid.Empty,
-            "DELETE",
-            nameof(ApprovalWorkflow),
-            workflow.Id);
-        _context.AuditTrails.Add(auditTrail);
+        if (_currentUser.UserGuid.HasValue)
+        {
+            var auditTrail = new AuditTrail(
+                _currentUser.UserGuid.Value,
+                "DELETE",
+                nameof(ApprovalWorkflow),
+                workflow.Id);
+            _context.AuditTrails.Add(auditTrail);
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

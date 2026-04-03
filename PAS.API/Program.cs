@@ -1,4 +1,5 @@
 using System.Text;
+using Application.Common.Json;
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using MediatR;
@@ -17,6 +18,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options =>
 {
     options.Conventions.Add(new ApiControllerRouteConvention("api/[controller]"));
+})
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new NullableGuidJsonConverter());
 });
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -53,7 +58,12 @@ builder.Services.AddAutoMapper(_ => { }, typeof(Result).Assembly, typeof(Program
 var jwtKey = builder.Configuration["Jwt:Key"] ?? string.Empty;
 if (!string.IsNullOrWhiteSpace(jwtKey))
 {
-    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
         .AddJwtBearer(options =>
         {
             options.TokenValidationParameters = new TokenValidationParameters

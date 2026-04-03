@@ -27,7 +27,7 @@ public class AdjustStockCommandHandler : IRequestHandler<AdjustStockCommand, Res
 
         var inventory = await _context.InventoryStocks
             .Include(i => i.Item)
-            .Include(i => i.Shelf)
+            .Include(i => i.ShelfLocation)
             .FirstOrDefaultAsync(i => i.Id == request.InventoryId && !i.IsDeleted, cancellationToken);
 
         if (inventory == null)

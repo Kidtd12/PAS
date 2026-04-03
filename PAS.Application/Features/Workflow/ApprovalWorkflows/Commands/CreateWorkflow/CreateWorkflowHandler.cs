@@ -34,13 +34,16 @@ public class CreateWorkflowCommandHandler : IRequestHandler<CreateWorkflowComman
         _context.ApprovalWorkflows.Add(workflow);
         await _context.SaveChangesAsync(cancellationToken);
 
-        var auditTrail = new AuditTrail(
-            _currentUser.UserGuid ?? Guid.Empty,
-            "CREATE",
-            nameof(ApprovalWorkflow),
-            workflow.Id);
-        _context.AuditTrails.Add(auditTrail);
-        await _context.SaveChangesAsync(cancellationToken);
+        if (_currentUser.UserGuid.HasValue)
+        {
+            var auditTrail = new AuditTrail(
+                _currentUser.UserGuid.Value,
+                "CREATE",
+                nameof(ApprovalWorkflow),
+                workflow.Id);
+            _context.AuditTrails.Add(auditTrail);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
 
         await _mediator.Publish(new EntityCreatedEvent<ApprovalWorkflow>(workflow, _currentUser.UserGuid), cancellationToken);
 

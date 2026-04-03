@@ -12,8 +12,8 @@ using Persistence.Context;
 namespace PAS.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260330093326_IdentityAuthAlignment")]
-    partial class IdentityAuthAlignment
+    [Migration("20260403112144_InitialStable")]
+    partial class InitialStable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

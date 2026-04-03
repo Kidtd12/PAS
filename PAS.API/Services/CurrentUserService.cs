@@ -10,6 +10,8 @@ public class CurrentUserService : ICurrentUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IApplicationDbContext _context;
+    private Guid? _resolvedUserId;
+    private bool _resolved;
 
     public CurrentUserService(IHttpContextAccessor httpContextAccessor, IApplicationDbContext context)
     {
@@ -21,9 +23,61 @@ public class CurrentUserService : ICurrentUserService
     {
         get
         {
-            var value = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)
-                        ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(JwtRegisteredClaimNames.Sub);
-            return Guid.TryParse(value, out var id) ? id : null;
+            if (_resolved)
+            {
+                return _resolvedUserId;
+            }
+
+            _resolved = true;
+
+            var subject = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)
+                          ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                _resolvedUserId = null;
+                return _resolvedUserId;
+            }
+
+            // 1) If token subject is already legacy UserLogin.Id
+            if (Guid.TryParse(subject, out var parsedId))
+            {
+                var byId = _context.UserLogins
+                    .AsNoTracking()
+                    .FirstOrDefault(u => u.Id == parsedId && !u.IsDeleted);
+
+                if (byId != null)
+                {
+                    _resolvedUserId = byId.Id;
+                    return _resolvedUserId;
+                }
+            }
+
+            // 2) Resolve from AspNetUsers.Id stored in UserLogin.AspNetUserId
+            var byAspNetUserId = _context.UserLogins
+                .AsNoTracking()
+                .FirstOrDefault(u => u.AspNetUserId == subject && !u.IsDeleted);
+
+            if (byAspNetUserId != null)
+            {
+                _resolvedUserId = byAspNetUserId.Id;
+                return _resolvedUserId;
+            }
+
+            // 3) Final fallback by username
+            var username = Username;
+            if (!string.IsNullOrWhiteSpace(username))
+            {
+                var byUsername = _context.UserLogins
+                    .AsNoTracking()
+                    .FirstOrDefault(u => u.Username == username && !u.IsDeleted);
+
+                _resolvedUserId = byUsername?.Id;
+                return _resolvedUserId;
+            }
+
+            _resolvedUserId = null;
+            return _resolvedUserId;
         }
     }
 

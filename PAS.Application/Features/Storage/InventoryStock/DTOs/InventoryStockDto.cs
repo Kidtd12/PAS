@@ -27,8 +27,8 @@ public class InventoryStockDto : IMapFrom<Domain.Storage.InventoryStock>
             .ForMember(d => d.ItemName, opt => opt.MapFrom(s => s.Item != null ? s.Item.ItemName : string.Empty))
             .ForMember(d => d.SKU, opt => opt.MapFrom(s => s.Item != null ? s.Item.SKU : string.Empty))
             .ForMember(d => d.UnitOfMeasure, opt => opt.MapFrom(s => s.Item != null ? s.Item.UnitOfMeasure : string.Empty))
-            .ForMember(d => d.ShelfLocation, opt => opt.MapFrom(s => s.Shelf != null ? $"{s.Shelf.Aisle}-{s.Shelf.Rack}-{s.Shelf.ShelfNumber}" : string.Empty))
-            .ForMember(d => d.WarehouseName, opt => opt.MapFrom(s => s.Shelf != null && s.Shelf.Warehouse != null ? s.Shelf.Warehouse.WarehouseName : string.Empty));
+            .ForMember(d => d.ShelfLocation, opt => opt.MapFrom(s => s.ShelfLocation != null ? $"{s.ShelfLocation.Aisle}-{s.ShelfLocation.Rack}-{s.ShelfLocation.ShelfNumber}" : string.Empty))
+            .ForMember(d => d.WarehouseName, opt => opt.MapFrom(s => s.ShelfLocation != null && s.ShelfLocation.Warehouse != null ? s.ShelfLocation.Warehouse.WarehouseName : string.Empty));
     }
 }
 

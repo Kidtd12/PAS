@@ -51,7 +51,8 @@ public class CreateInspectionCommandHandler : IRequestHandler<CreateInspectionCo
 
         // Validate items match receiving note items
         var receivingItems = await _context.StockLedgers
-            .Where(l => l.ReferenceId == receivingNote.Id && l.TransactionType == "RECEIVED")
+            .Where(l => l.ReferenceId == receivingNote.Id &&
+                        (l.TransactionType == "RECEIVED" || l.TransactionType == "RECEIVED_PENDING_INSPECTION"))
             .ToListAsync(cancellationToken);
 
         foreach (var item in request.Items)
@@ -139,10 +140,18 @@ public class CreateInspectionCommandHandler : IRequestHandler<CreateInspectionCo
                     $"Rejected during inspection: {item.Remarks ?? "Quality issues"}");
                 _context.ReturnMaterialRequestNotes.Add(returnRequest);
 
+                var receivingShelfId = receivingItems
+                    .FirstOrDefault(i => i.ItemId == item.ItemId)?.ShelfId ?? Guid.Empty;
+
+                if (receivingShelfId == Guid.Empty)
+                {
+                    return Result<Guid>.Failure($"No valid shelf location found for rejected item {item.ItemId}.");
+                }
+
                 // Create stock ledger entry for rejected items
                 var stockLedger = new StockLedger(
                     item.ItemId,
-                    Guid.Empty,
+                    receivingShelfId,
                     -item.RejectedQuantity,
                     "INSPECTED_REJECTED",
                     inspection.Id);
