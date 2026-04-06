@@ -24,8 +24,6 @@ public class GetTransferRecordByIdQueryHandler : IRequestHandler<GetTransferReco
             .Include(t => t.Item)
             .Include(t => t.FromLocation)
             .Include(t => t.ToLocation)
-            .Include(t => t.InitiatedBy)
-            .Include(t => t.ApprovedBy)
             .AsNoTracking()
             .FirstOrDefaultAsync(t => t.Id == request.Id && !t.IsDeleted, cancellationToken);
 

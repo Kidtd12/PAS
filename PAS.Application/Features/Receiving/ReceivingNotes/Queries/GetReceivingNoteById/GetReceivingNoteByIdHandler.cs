@@ -19,9 +19,7 @@ public class GetReceivingNoteByIdQueryHandler : IRequestHandler<GetReceivingNote
     {
         var receivingNote = await _context.ReceivingNotes
             .Include(r => r.Supplier)
-            .Include(r => r.ReceivedBy)
             .Include(r => r.InspectionLog)
-                .ThenInclude(i => i.Inspector)
             .Include(r => r.Attachments)
             .AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == request.Id && !r.IsDeleted, cancellationToken);
@@ -61,7 +59,7 @@ public class GetReceivingNoteByIdQueryHandler : IRequestHandler<GetReceivingNote
             {
                 Id = receivingNote.InspectionLog.Id,
                 InspectionDate = receivingNote.InspectionLog.InspectionDate,
-                InspectorName = receivingNote.InspectionLog.Inspector?.Username ?? "Unknown",
+                InspectorName = string.Empty,
                 IsPassed = receivingNote.InspectionLog.IsPassed,
                 DeviationNotes = receivingNote.InspectionLog.DeviationNotes,
                 AcceptedQuantity = items.Sum(i => i.AcceptedQuantity),

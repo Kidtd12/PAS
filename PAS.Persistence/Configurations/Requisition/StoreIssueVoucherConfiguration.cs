@@ -1,5 +1,4 @@
 ﻿using Domain.Requisition;
-using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -21,11 +20,6 @@ namespace Persistence.Configurations.Requisition
             builder.HasOne(s => s.ServiceRequest)
                 .WithOne(sr => sr.StoreIssueVoucher)
                 .HasForeignKey<StoreIssueVoucher>(s => s.SRId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne(s => s.IssuedBy)
-                .WithMany()
-                .HasForeignKey(s => s.IssuedById)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(s => s.SIVNumber).IsUnique();

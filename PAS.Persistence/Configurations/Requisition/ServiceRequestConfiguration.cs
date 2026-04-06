@@ -18,16 +18,6 @@ namespace Persistence.Configurations.Requisition
                 .IsRequired()
                 .HasMaxLength(50);
 
-            builder.HasOne(s => s.Requester)
-                .WithMany()
-                .HasForeignKey(s => s.RequesterId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne(s => s.ApprovedBy)
-                .WithMany()
-                .HasForeignKey(s => s.ApprovedById)
-                .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasOne(s => s.ApprovalStatus)
                 .WithMany()
                 .HasForeignKey(s => s.ApprovalStatusId)

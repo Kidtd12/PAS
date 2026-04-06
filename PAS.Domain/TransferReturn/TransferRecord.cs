@@ -3,8 +3,6 @@ using Domain.Catalog;
 using Domain.Common;
 using Domain.PropertyManagement;
 using Domain.Storage;
-using Domain.Users;
-
 namespace Domain.TransferReturn
 {
     public class TransferRecord : BaseEntity
@@ -52,10 +50,6 @@ namespace Domain.TransferReturn
         public ShelfLocation? FromShelf { get; private set; }
 
         public ShelfLocation? ToShelf { get; private set; }
-
-        public UserLogin? InitiatedBy { get; private set; }
-
-        public UserLogin? ApprovedBy { get; private set; }
 
         private TransferRecord()
         {

@@ -1,43 +1,50 @@
 using Application.Features.Users.Roles.Dtos;
-using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
+using Persistence.Identity;
 
 namespace Application.Features.Users.Roles.Queries;
 
 public class GetRolesQueryHandler : IRequestHandler<GetRolesQuery, Result<List<RoleDto>>>
 {
-    private readonly IApplicationDbContext _context;
-    private readonly IMapper _mapper;
+    private readonly RoleManager<ApplicationRole> _roleManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public GetRolesQueryHandler(IApplicationDbContext context, IMapper mapper)
+    public GetRolesQueryHandler(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
     {
-        _context = context;
-        _mapper = mapper;
+        _roleManager = roleManager;
+        _userManager = userManager;
     }
 
     public async Task<Result<List<RoleDto>>> Handle(GetRolesQuery request, CancellationToken cancellationToken)
     {
-        var roles = await _context.Roles
-            .Include(r => r.Users.Where(u => !u.IsDeleted))
-            .Where(r => !r.IsDeleted)
-            .OrderBy(r => r.RoleName)
-            .ToListAsync(cancellationToken);
+        var rolesQuery = _roleManager.Roles.AsNoTracking();
 
-        var roleDtos = _mapper.Map<List<RoleDto>>(roles);
-
-        if (request.IncludeUserCount)
+        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            foreach (var roleDto in roleDtos)
-            {
-                var role = roles.First(r => r.Id == roleDto.Id);
-                roleDto.UserCount = role.Users?.Count ?? 0;
-            }
+            rolesQuery = rolesQuery.Where(r => r.Name != null && r.Name.Contains(request.SearchTerm));
         }
 
-        // Add permissions based on role name
-        foreach (var roleDto in roleDtos)
+        var roles = await rolesQuery
+            .OrderBy(r => r.Name)
+            .ToListAsync(cancellationToken);
+
+        var roleDtos = new List<RoleDto>(roles.Count);
+
+        foreach (var role in roles)
         {
-            roleDto.Permissions = GetPermissionsForRole(roleDto.RoleName);
+            var roleUsers = role.Name is null
+                ? new List<ApplicationUser>()
+                : (await _userManager.GetUsersInRoleAsync(role.Name)).ToList();
+
+            roleDtos.Add(new RoleDto
+            {
+                Id = Guid.TryParse(role.Id, out var parsedRoleId) ? parsedRoleId : Guid.Empty,
+                RoleName = role.Name ?? string.Empty,
+                Description = role.Description,
+                UserCount = request.IncludeUserCount ? roleUsers.Count : 0,
+                Permissions = GetPermissionsForRole(role.Name ?? string.Empty)
+            });
         }
 
         return Result<List<RoleDto>>.Success(roleDtos);

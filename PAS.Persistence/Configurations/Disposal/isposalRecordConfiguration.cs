@@ -1,6 +1,5 @@
 ﻿using Domain.Catalog;
 using Domain.Disposal;
-using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -21,11 +20,6 @@ namespace Persistence.Configurations.Disposal
             builder.HasOne(d => d.Item)
                 .WithMany()
                 .HasForeignKey(d => d.ItemId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne(d => d.DisposedBy)
-                .WithMany()
-                .HasForeignKey(d => d.DisposedById)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(d => d.DisposalDate);

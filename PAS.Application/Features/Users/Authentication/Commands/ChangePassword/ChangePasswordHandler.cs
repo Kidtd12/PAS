@@ -1,17 +1,17 @@
 using MediatR;
-using System.Security.Cryptography;
-using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Persistence.Identity;
 
 namespace Application.Features.Users.Authentication.Commands;
 
 public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, Result>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly ICurrentUserService _currentUser;
 
-    public ChangePasswordCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
+    public ChangePasswordCommandHandler(UserManager<ApplicationUser> userManager, ICurrentUserService currentUser)
     {
-        _context = context;
+        _userManager = userManager;
         _currentUser = currentUser;
     }
 
@@ -20,23 +20,14 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
         if (!_currentUser.UserId.HasValue)
             return Result.Failure("User not authenticated.");
 
-        var user = await _context.UserLogins.FirstOrDefaultAsync(u => u.Id == _currentUser.UserId.Value && !u.IsDeleted, cancellationToken);
+        var user = await _userManager.FindByIdAsync(_currentUser.UserId.Value.ToString());
         if (user == null)
             return Result.Failure("User not found.");
 
-        if (user.PasswordHash != Hash(request.CurrentPassword))
-            return Result.Failure("Current password is invalid.");
-
-        typeof(Domain.Users.UserLogin).GetProperty(nameof(Domain.Users.UserLogin.PasswordHash))?.SetValue(user, Hash(request.NewPassword));
-        user.MarkUpdated();
-        await _context.SaveChangesAsync(cancellationToken);
+        var changeResult = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+        if (!changeResult.Succeeded)
+            return Result.Failure(string.Join("; ", changeResult.Errors.Select(e => e.Description)));
 
         return Result.Success();
-    }
-
-    private static string Hash(string value)
-    {
-        using var sha = SHA256.Create();
-        return Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(value)));
     }
 }

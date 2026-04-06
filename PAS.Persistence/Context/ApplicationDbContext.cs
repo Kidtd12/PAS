@@ -57,8 +57,6 @@ namespace Persistence.Context
         public DbSet<Notification> Notifications { get; set; }
 
         // Users
-        public DbSet<UserLogin> UserLogins { get; set; }
-        public DbSet<Role> Roles { get; set; }
         public DbSet<Employee> Employees { get; set; }
 
         // Workflow

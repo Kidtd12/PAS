@@ -1,6 +1,8 @@
 using Application.Common.Security;
 using Application.Features.Users.Authentication.Dtos;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
+using Persistence.Identity;
 
 namespace Application.Features.Users.Authentication.Queries;
 
@@ -9,35 +11,39 @@ public record GetUserByIdQuery(Guid Id) : IRequest<Result<UserDetailDto>>;
 
 public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<UserDetailDto>>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
 
-    public GetUserByIdQueryHandler(IApplicationDbContext context)
+    public GetUserByIdQueryHandler(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
     {
-        _context = context;
+        _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task<Result<UserDetailDto>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
-        var user = await _context.UserLogins
-            .Include(u => u.Employee)
-            .Include(u => u.Role)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == request.Id && !u.IsDeleted, cancellationToken);
+        var user = await _userManager.FindByIdAsync(request.Id.ToString());
 
         if (user == null)
             return Result<UserDetailDto>.Failure("User not found.");
 
+        var roles = await _userManager.GetRolesAsync(user);
+        var primaryRoleName = roles.FirstOrDefault() ?? string.Empty;
+        var roleEntity = string.IsNullOrWhiteSpace(primaryRoleName)
+            ? null
+            : await _roleManager.FindByNameAsync(primaryRoleName);
+
         var dto = new UserDetailDto
         {
-            Id = user.Id,
-            Username = user.Username,
+            Id = request.Id,
+            Username = user.UserName ?? string.Empty,
             Email = user.Email ?? string.Empty,
             IsActive = user.IsActive,
-            RoleId = user.RoleId,
-            RoleName = user.Role?.RoleName ?? string.Empty,
-            EmployeeId = user.EmployeeId,
-            EmployeeCode = user.Employee?.EmployeeCode ?? string.Empty,
-            EmployeeName = user.Employee?.FullName ?? string.Empty
+            RoleId = roleEntity != null && Guid.TryParse(roleEntity.Id, out var roleId) ? roleId : Guid.Empty,
+            RoleName = primaryRoleName,
+            EmployeeId = Guid.Empty,
+            EmployeeCode = string.Empty,
+            EmployeeName = string.Empty
         };
 
         return Result<UserDetailDto>.Success(dto);

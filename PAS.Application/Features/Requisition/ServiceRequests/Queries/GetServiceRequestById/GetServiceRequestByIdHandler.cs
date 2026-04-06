@@ -17,15 +17,11 @@ public class GetServiceRequestByIdQueryHandler : IRequestHandler<GetServiceReque
     public async Task<Result<ServiceRequestDetailDto>> Handle(GetServiceRequestByIdQuery request, CancellationToken cancellationToken)
     {
         var serviceRequest = await _context.ServiceRequests
-            .Include(s => s.Requester)
-                .ThenInclude(r => r.Employee)
-            .Include(s => s.ApprovedBy)
             .Include(s => s.Details)
                 .ThenInclude(d => d.Item)
             .Include(s => s.Details)
                 .ThenInclude(d => d.Shelf)
             .Include(s => s.StoreIssueVoucher)
-                .ThenInclude(siv => siv.IssuedBy)
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == request.Id && !s.IsDeleted, cancellationToken);
 

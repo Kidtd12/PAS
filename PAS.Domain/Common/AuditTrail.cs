@@ -1,6 +1,4 @@
 ﻿using System;
-using Domain.Users;
-
 namespace Domain.Common
 {
     public class AuditTrail : BaseEntity
@@ -14,11 +12,6 @@ namespace Domain.Common
         public Guid EntityId { get; private set; }
 
         public DateTime ActionDate { get; private set; }
-
-        // Navigation property
-        public UserLogin UserLogin { get; private set; }
-
-        public UserLogin User => UserLogin;
 
         public AuditTrail(Guid userId, string action, string entityName, Guid entityId)
         {

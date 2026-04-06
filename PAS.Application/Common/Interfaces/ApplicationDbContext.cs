@@ -19,8 +19,6 @@ namespace Application.Common.Interfaces
         DbSet<Category> Categories { get; }
         DbSet<ItemMaster> ItemMasters { get; }
         DbSet<Employee> Employees { get; }
-        DbSet<UserLogin> UserLogins { get; }
-        DbSet<Role> Roles { get; }
         DbSet<Permission> Permissions { get; }
         DbSet<Warehouse> Warehouses { get; }
         DbSet<ShelfLocation> ShelfLocations { get; }

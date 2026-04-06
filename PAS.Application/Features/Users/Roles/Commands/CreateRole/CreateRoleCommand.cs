@@ -1,5 +1,7 @@
 using Application.Common.Security;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
+using Persistence.Identity;
 
 namespace Application.Features.Users.Roles.Commands.CreateRole;
 
@@ -12,21 +14,23 @@ public record CreateRoleCommand : IRequest<Result<Guid>>
 
 public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, Result<Guid>>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly RoleManager<ApplicationRole> _roleManager;
 
-    public CreateRoleCommandHandler(IApplicationDbContext context)
+    public CreateRoleCommandHandler(RoleManager<ApplicationRole> roleManager)
     {
-        _context = context;
+        _roleManager = roleManager;
     }
 
     public async Task<Result<Guid>> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
     {
-        if (await _context.Roles.AnyAsync(r => r.RoleName == request.RoleName && !r.IsDeleted, cancellationToken))
+        if (await _roleManager.RoleExistsAsync(request.RoleName))
             return Result<Guid>.Failure("Role already exists.");
 
-        var role = new Domain.Users.Role(request.RoleName, request.Description);
-        _context.Roles.Add(role);
-        await _context.SaveChangesAsync(cancellationToken);
-        return Result<Guid>.Success(role.Id);
+        var role = new ApplicationRole { Name = request.RoleName, Description = request.Description };
+        var createResult = await _roleManager.CreateAsync(role);
+        if (!createResult.Succeeded)
+            return Result<Guid>.Failure(string.Join("; ", createResult.Errors.Select(e => e.Description)));
+
+        return Result<Guid>.Success(Guid.TryParse(role.Id, out var roleId) ? roleId : Guid.Empty);
     }
 }

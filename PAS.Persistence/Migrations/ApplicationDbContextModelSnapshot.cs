@@ -161,8 +161,6 @@ namespace PAS.Persistence.Migrations
 
                     b.HasIndex("EntityId");
 
-                    b.HasIndex("UserId");
-
                     b.HasIndex("EntityName", "EntityId");
 
                     b.ToTable("AuditTrails", (string)null);
@@ -280,9 +278,6 @@ namespace PAS.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ApprovedById")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("ApprovedDate")
                         .HasColumnType("datetime2");
 
@@ -324,11 +319,7 @@ namespace PAS.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApprovedById");
-
                     b.HasIndex("DisposalDate");
-
-                    b.HasIndex("DisposedById");
 
                     b.HasIndex("ItemId");
 
@@ -617,8 +608,6 @@ namespace PAS.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InspectorId");
-
                     b.HasIndex("ReceivingNoteId")
                         .IsUnique();
 
@@ -684,8 +673,6 @@ namespace PAS.Persistence.Migrations
 
                     b.HasIndex("GRNNumber")
                         .IsUnique();
-
-                    b.HasIndex("ReceivedById");
 
                     b.HasIndex("Status");
 
@@ -864,10 +851,6 @@ namespace PAS.Persistence.Migrations
 
                     b.HasIndex("ApprovalStatusId");
 
-                    b.HasIndex("ApprovedById");
-
-                    b.HasIndex("RequesterId");
-
                     b.HasIndex("SRNumber")
                         .IsUnique();
 
@@ -921,8 +904,6 @@ namespace PAS.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IssuedById");
 
                     b.HasIndex("SIVNumber")
                         .IsUnique();
@@ -1208,13 +1189,9 @@ namespace PAS.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApprovedById");
-
                     b.HasIndex("ItemId");
 
                     b.HasIndex("RequestDate");
-
-                    b.HasIndex("RequestedById");
 
                     b.HasIndex("SourceLocationId");
 
@@ -1293,13 +1270,9 @@ namespace PAS.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApprovedById");
-
                     b.HasIndex("FromLocationId");
 
                     b.HasIndex("FromShelfId");
-
-                    b.HasIndex("InitiatedById");
 
                     b.HasIndex("ItemId");
 
@@ -1397,99 +1370,6 @@ namespace PAS.Persistence.Migrations
                     b.ToTable("Permissions", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Users.Role", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleName")
-                        .IsUnique();
-
-                    b.ToTable("Roles", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Users.UserLogin", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AspNetUserId")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AspNetUserId")
-                        .IsUnique()
-                        .HasFilter("[AspNetUserId] IS NOT NULL");
-
-                    b.HasIndex("EmployeeId")
-                        .IsUnique();
-
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("Username")
-                        .IsUnique();
-
-                    b.ToTable("UserLogins", (string)null);
-                });
-
             modelBuilder.Entity("Domain.Workflow.ApprovalStatus", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1576,8 +1456,6 @@ namespace PAS.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.HasIndex("WorkflowId", "ApprovalLevel")
                         .IsUnique();
@@ -1818,17 +1696,6 @@ namespace PAS.Persistence.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Domain.Common.AuditTrail", b =>
-                {
-                    b.HasOne("Domain.Users.UserLogin", "UserLogin")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("UserLogin");
-                });
-
             modelBuilder.Entity("Domain.Common.DocumentAttachment", b =>
                 {
                     b.HasOne("Domain.PropertyManagement.Property", null)
@@ -1847,36 +1714,13 @@ namespace PAS.Persistence.Migrations
                     b.Navigation("ServiceRequest");
                 });
 
-            modelBuilder.Entity("Domain.Common.Notification", b =>
-                {
-                    b.HasOne("Domain.Users.UserLogin", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Domain.Disposal.DisposalRecord", b =>
                 {
-                    b.HasOne("Domain.Users.UserLogin", "ApprovedBy")
-                        .WithMany()
-                        .HasForeignKey("ApprovedById");
-
-                    b.HasOne("Domain.Users.UserLogin", "DisposedBy")
-                        .WithMany()
-                        .HasForeignKey("DisposedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Domain.Catalog.ItemMaster", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("ApprovedBy");
-
-                    b.Navigation("DisposedBy");
 
                     b.Navigation("Item");
                 });
@@ -1949,38 +1793,22 @@ namespace PAS.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Receiving.InspectionLog", b =>
                 {
-                    b.HasOne("Domain.Users.UserLogin", "Inspector")
-                        .WithMany()
-                        .HasForeignKey("InspectorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Domain.Receiving.ReceivingNote", "ReceivingNote")
                         .WithOne("InspectionLog")
                         .HasForeignKey("Domain.Receiving.InspectionLog", "ReceivingNoteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Inspector");
-
                     b.Navigation("ReceivingNote");
                 });
 
             modelBuilder.Entity("Domain.Receiving.ReceivingNote", b =>
                 {
-                    b.HasOne("Domain.Users.UserLogin", "ReceivedBy")
-                        .WithMany()
-                        .HasForeignKey("ReceivedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Domain.Receiving.Supplier", "Supplier")
                         .WithMany("ReceivingNotes")
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("ReceivedBy");
 
                     b.Navigation("Supplier");
                 });
@@ -2039,39 +1867,16 @@ namespace PAS.Persistence.Migrations
                         .HasForeignKey("ApprovalStatusId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Domain.Users.UserLogin", "ApprovedBy")
-                        .WithMany()
-                        .HasForeignKey("ApprovedById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Domain.Users.UserLogin", "Requester")
-                        .WithMany()
-                        .HasForeignKey("RequesterId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("ApprovalStatus");
-
-                    b.Navigation("ApprovedBy");
-
-                    b.Navigation("Requester");
                 });
 
             modelBuilder.Entity("Domain.Requisition.StoreIssueVoucher", b =>
                 {
-                    b.HasOne("Domain.Users.UserLogin", "IssuedBy")
-                        .WithMany()
-                        .HasForeignKey("IssuedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Domain.Requisition.ServiceRequest", "ServiceRequest")
                         .WithOne("StoreIssueVoucher")
                         .HasForeignKey("Domain.Requisition.StoreIssueVoucher", "SRId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("IssuedBy");
 
                     b.Navigation("ServiceRequest");
                 });
@@ -2143,19 +1948,11 @@ namespace PAS.Persistence.Migrations
 
             modelBuilder.Entity("Domain.TransferReturn.ReturnMaterialRequestNote", b =>
                 {
-                    b.HasOne("Domain.Users.UserLogin", "ApprovedBy")
-                        .WithMany()
-                        .HasForeignKey("ApprovedById");
-
                     b.HasOne("Domain.Catalog.ItemMaster", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("Domain.Users.UserLogin", "RequestedBy")
-                        .WithMany()
-                        .HasForeignKey("RequestedById");
 
                     b.HasOne("Domain.PropertyManagement.PropertyLocation", "SourceLocation")
                         .WithMany()
@@ -2169,11 +1966,7 @@ namespace PAS.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("SupplierId");
 
-                    b.Navigation("ApprovedBy");
-
                     b.Navigation("Item");
-
-                    b.Navigation("RequestedBy");
 
                     b.Navigation("SourceLocation");
 
@@ -2184,10 +1977,6 @@ namespace PAS.Persistence.Migrations
 
             modelBuilder.Entity("Domain.TransferReturn.TransferRecord", b =>
                 {
-                    b.HasOne("Domain.Users.UserLogin", "ApprovedBy")
-                        .WithMany()
-                        .HasForeignKey("ApprovedById");
-
                     b.HasOne("Domain.PropertyManagement.PropertyLocation", "FromLocation")
                         .WithMany()
                         .HasForeignKey("FromLocationId")
@@ -2197,10 +1986,6 @@ namespace PAS.Persistence.Migrations
                     b.HasOne("Domain.Storage.ShelfLocation", "FromShelf")
                         .WithMany()
                         .HasForeignKey("FromShelfId");
-
-                    b.HasOne("Domain.Users.UserLogin", "InitiatedBy")
-                        .WithMany()
-                        .HasForeignKey("InitiatedById");
 
                     b.HasOne("Domain.Catalog.ItemMaster", "Item")
                         .WithMany()
@@ -2218,13 +2003,9 @@ namespace PAS.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("ToShelfId");
 
-                    b.Navigation("ApprovedBy");
-
                     b.Navigation("FromLocation");
 
                     b.Navigation("FromShelf");
-
-                    b.Navigation("InitiatedBy");
 
                     b.Navigation("Item");
 
@@ -2233,55 +2014,13 @@ namespace PAS.Persistence.Migrations
                     b.Navigation("ToShelf");
                 });
 
-            modelBuilder.Entity("Domain.Users.Permission", b =>
-                {
-                    b.HasOne("Domain.Users.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("Domain.Users.UserLogin", b =>
-                {
-                    b.HasOne("Persistence.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("AspNetUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Domain.Users.Employee", "Employee")
-                        .WithOne("UserLogin")
-                        .HasForeignKey("Domain.Users.UserLogin", "EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Users.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("Role");
-                });
-
             modelBuilder.Entity("Domain.Workflow.Approver", b =>
                 {
-                    b.HasOne("Domain.Users.UserLogin", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Domain.Workflow.ApprovalWorkflow", "Workflow")
                         .WithMany("Approvers")
                         .HasForeignKey("WorkflowId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
 
                     b.Navigation("Workflow");
                 });
@@ -2421,16 +2160,6 @@ namespace PAS.Persistence.Migrations
             modelBuilder.Entity("Domain.Storage.Warehouse", b =>
                 {
                     b.Navigation("Shelves");
-                });
-
-            modelBuilder.Entity("Domain.Users.Employee", b =>
-                {
-                    b.Navigation("UserLogin");
-                });
-
-            modelBuilder.Entity("Domain.Users.Role", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Domain.Workflow.ApprovalWorkflow", b =>

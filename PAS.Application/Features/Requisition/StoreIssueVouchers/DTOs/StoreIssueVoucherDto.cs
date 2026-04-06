@@ -23,7 +23,7 @@ public class StoreIssueVoucherDto : IMapFrom<Domain.Requisition.StoreIssueVouche
     {
         profile.CreateMap<Domain.Requisition.StoreIssueVoucher, StoreIssueVoucherDto>()
             .ForMember(d => d.SRNumber, opt => opt.MapFrom(s => s.ServiceRequest != null ? s.ServiceRequest.SRNumber : string.Empty))
-            .ForMember(d => d.IssuedByName, opt => opt.MapFrom(s => s.IssuedBy != null ? s.IssuedBy.Username : string.Empty))
+            .ForMember(d => d.IssuedByName, opt => opt.Ignore())
             .ForMember(d => d.TotalItems, opt => opt.Ignore())
             .ForMember(d => d.TotalQuantity, opt => opt.Ignore());
     }

@@ -1,6 +1,5 @@
 ﻿using Application.Common.Interfaces;
 using Application.Constants;
-using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -9,14 +8,12 @@ namespace PAS.API.Services;
 public class CurrentUserService : ICurrentUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IApplicationDbContext _context;
     private Guid? _resolvedUserId;
     private bool _resolved;
 
-    public CurrentUserService(IHttpContextAccessor httpContextAccessor, IApplicationDbContext context)
+    public CurrentUserService(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
-        _context = context;
     }
 
     public Guid? UserId
@@ -39,44 +36,7 @@ public class CurrentUserService : ICurrentUserService
                 return _resolvedUserId;
             }
 
-            // 1) If token subject is already legacy UserLogin.Id
-            if (Guid.TryParse(subject, out var parsedId))
-            {
-                var byId = _context.UserLogins
-                    .AsNoTracking()
-                    .FirstOrDefault(u => u.Id == parsedId && !u.IsDeleted);
-
-                if (byId != null)
-                {
-                    _resolvedUserId = byId.Id;
-                    return _resolvedUserId;
-                }
-            }
-
-            // 2) Resolve from AspNetUsers.Id stored in UserLogin.AspNetUserId
-            var byAspNetUserId = _context.UserLogins
-                .AsNoTracking()
-                .FirstOrDefault(u => u.AspNetUserId == subject && !u.IsDeleted);
-
-            if (byAspNetUserId != null)
-            {
-                _resolvedUserId = byAspNetUserId.Id;
-                return _resolvedUserId;
-            }
-
-            // 3) Final fallback by username
-            var username = Username;
-            if (!string.IsNullOrWhiteSpace(username))
-            {
-                var byUsername = _context.UserLogins
-                    .AsNoTracking()
-                    .FirstOrDefault(u => u.Username == username && !u.IsDeleted);
-
-                _resolvedUserId = byUsername?.Id;
-                return _resolvedUserId;
-            }
-
-            _resolvedUserId = null;
+            _resolvedUserId = Guid.TryParse(subject, out var parsedId) ? parsedId : null;
             return _resolvedUserId;
         }
     }
@@ -91,17 +51,10 @@ public class CurrentUserService : ICurrentUserService
     {
         get
         {
-            if (!UserId.HasValue)
+            if (string.IsNullOrWhiteSpace(Role))
                 return Enumerable.Empty<string>();
 
-            var user = _context.UserLogins
-                .Include(u => u.Role)
-                .FirstOrDefault(u => u.Id == UserId && !u.IsDeleted);
-
-            if (user?.Role == null)
-                return Enumerable.Empty<string>();
-
-            return user.Role.RoleName switch
+            return Role switch
             {
                 SystemRoles.Admin => SystemRoles.RolePermissions.AdminPermissions,
                 SystemRoles.StoreOfficer => SystemRoles.RolePermissions.StoreOfficerPermissions,

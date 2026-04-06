@@ -18,13 +18,12 @@ public class GetAuditTrailsHandler : IRequestHandler<GetAuditTrailsQuery, Result
     public async Task<Result<PaginatedList<AuditTrailListDto>>> Handle(GetAuditTrailsQuery request, CancellationToken cancellationToken)
     {
         var query = _context.AuditTrails
-            .Include(a => a.User)
             .Where(a => !a.IsDeleted)
             .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(request.UserName))
         {
-            query = query.Where(a => a.User != null && a.User.Username.Contains(request.UserName));
+            query = query.Where(a => false);
         }
 
         if (!string.IsNullOrWhiteSpace(request.Action))

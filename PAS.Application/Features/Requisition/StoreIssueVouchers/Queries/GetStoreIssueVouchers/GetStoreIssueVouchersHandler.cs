@@ -19,7 +19,6 @@ public class GetStoreIssueVouchersQueryHandler : IRequestHandler<GetStoreIssueVo
     {
         var query = _context.StoreIssueVouchers
             .Include(s => s.ServiceRequest)
-            .Include(s => s.IssuedBy)
             .Where(s => !s.IsDeleted)
             .AsNoTracking();
 

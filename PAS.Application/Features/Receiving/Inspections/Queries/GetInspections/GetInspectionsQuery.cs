@@ -33,7 +33,6 @@ public class GetInspectionsHandler : IRequestHandler<GetInspectionsQuery, Result
     {
         var query = _context.InspectionLogs
             .Include(i => i.ReceivingNote)
-            .Include(i => i.Inspector)
             .Where(i => !i.IsDeleted)
             .AsNoTracking();
 

@@ -21,7 +21,6 @@ public class GetTransferRecordsQueryHandler : IRequestHandler<GetTransferRecords
             .Include(t => t.Item)
             .Include(t => t.FromLocation)
             .Include(t => t.ToLocation)
-            .Include(t => t.InitiatedBy)
             .Where(t => !t.IsDeleted)
             .AsNoTracking();
 
@@ -72,7 +71,7 @@ public class GetTransferRecordsQueryHandler : IRequestHandler<GetTransferRecords
             ToLocation = t.ToLocation != null ? t.ToLocation.Name : string.Empty,
             TransferDate = t.TransferDate,
             Status = t.Status,
-            InitiatedBy = t.InitiatedBy != null ? t.InitiatedBy.Username : string.Empty
+            InitiatedBy = string.Empty
         });
 
         var paginatedTransfers = await projectedQuery

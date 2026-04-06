@@ -19,9 +19,6 @@ public class GetStoreIssueVoucherByIdQueryHandler : IRequestHandler<GetStoreIssu
     {
         var siv = await _context.StoreIssueVouchers
             .Include(s => s.ServiceRequest)
-                .ThenInclude(sr => sr.Requester)
-                    .ThenInclude(r => r.Employee)
-            .Include(s => s.IssuedBy)
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == request.Id && !s.IsDeleted, cancellationToken);
 
@@ -63,8 +60,8 @@ public class GetStoreIssueVoucherByIdQueryHandler : IRequestHandler<GetStoreIssu
                 Id = siv.ServiceRequest.Id,
                 SRNumber = siv.ServiceRequest.SRNumber,
                 RequestDate = siv.ServiceRequest.RequestDate,
-                RequesterName = siv.ServiceRequest.Requester?.Employee?.FullName ?? "Unknown",
-                Department = siv.ServiceRequest.Requester?.Employee?.Department ?? "Unknown"
+                RequesterName = string.Empty,
+                Department = string.Empty
             };
         }
 

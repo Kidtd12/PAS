@@ -22,9 +22,6 @@ public class RequisitionHistoryReportQueryHandler : IRequestHandler<RequisitionH
     public async Task<Result<RequisitionHistoryReportDto>> Handle(RequisitionHistoryReportQuery request, CancellationToken cancellationToken)
     {
         var query = _context.ServiceRequests
-            .Include(s => s.Requester)
-                .ThenInclude(r => r.Employee)
-            .Include(s => s.ApprovedBy)
             .Include(s => s.Details)
                 .ThenInclude(d => d.Item)
             .Include(s => s.StoreIssueVoucher)
@@ -39,7 +36,7 @@ public class RequisitionHistoryReportQueryHandler : IRequestHandler<RequisitionH
 
         if (!string.IsNullOrWhiteSpace(request.Department))
         {
-            query = query.Where(s => s.Requester.Employee.Department == request.Department);
+            query = query.Where(s => false);
         }
 
         if (request.RequesterId.HasValue)
@@ -80,8 +77,7 @@ public class RequisitionHistoryReportQueryHandler : IRequestHandler<RequisitionH
 
         // Group by department
         var byDepartment = requisitions
-            .Where(r => r.Requester?.Employee != null)
-            .GroupBy(r => r.Requester.Employee.Department)
+            .GroupBy(r => string.Empty)
             .Select(g => new RequisitionByDepartmentDto
             {
                 Department = g.Key,
@@ -114,13 +110,13 @@ public class RequisitionHistoryReportQueryHandler : IRequestHandler<RequisitionH
             Id = r.Id,
             SRNumber = r.SRNumber,
             RequestDate = r.RequestDate,
-            RequesterName = r.Requester?.Employee?.FullName ?? "Unknown",
-            Department = r.Requester?.Employee?.Department ?? "Unknown",
+            RequesterName = string.Empty,
+            Department = string.Empty,
             Status = r.Status,
             ItemCount = r.Details?.Count ?? 0,
             TotalQuantity = r.Details?.Sum(d => d.RequestedQty) ?? 0,
             IssuedQuantity = r.Details?.Sum(d => d.IssuedQty) ?? 0,
-            ApproverName = r.ApprovedBy?.Username,
+            ApproverName = string.Empty,
             ApprovedDate = null, // Would need to track approval date
             SIVNumber = r.StoreIssueVoucher?.SIVNumber,
             IssueDate = r.StoreIssueVoucher?.IssueDate,

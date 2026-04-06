@@ -26,8 +26,6 @@ public class ApplicationDbContextAdapter : IApplicationDbContext
     public DbSet<Category> Categories => _db.Set<Category>();
     public DbSet<ItemMaster> ItemMasters => _db.Set<ItemMaster>();
     public DbSet<Employee> Employees => _db.Set<Employee>();
-    public DbSet<UserLogin> UserLogins => _db.Set<UserLogin>();
-    public DbSet<Role> Roles => _db.Set<Role>();
     public DbSet<Permission> Permissions => _db.Set<Permission>();
     public DbSet<Warehouse> Warehouses => _db.Set<Warehouse>();
     public DbSet<ShelfLocation> ShelfLocations => _db.Set<ShelfLocation>();

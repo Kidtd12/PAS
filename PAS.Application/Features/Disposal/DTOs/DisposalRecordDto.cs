@@ -29,7 +29,7 @@ public class DisposalRecordDto : IMapFrom<Domain.Disposal.DisposalRecord>
             .ForMember(d => d.ItemName, opt => opt.MapFrom(s => s.Item != null ? s.Item.ItemName : string.Empty))
             .ForMember(d => d.SKU, opt => opt.MapFrom(s => s.Item != null ? s.Item.SKU : string.Empty))
             .ForMember(d => d.UnitOfMeasure, opt => opt.MapFrom(s => s.Item != null ? s.Item.UnitOfMeasure : string.Empty))
-            .ForMember(d => d.DisposedByName, opt => opt.MapFrom(s => s.DisposedByUser != null ? s.DisposedByUser.Username : string.Empty))
+            .ForMember(d => d.DisposedByName, opt => opt.Ignore())
             .ForMember(d => d.Status, opt => opt.Ignore())
             .ForMember(d => d.ApprovedByName, opt => opt.Ignore())
             .ForMember(d => d.EstimatedValue, opt => opt.Ignore())

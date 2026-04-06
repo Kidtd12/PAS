@@ -201,18 +201,7 @@ public class CreateInspectionCommandHandler : IRequestHandler<CreateInspectionCo
         // Notify store officer for approved items
         if (inspection.IsPassed && totalAccepted > 0)
         {
-            var storeOfficers = await _context.UserLogins
-                .Where(u => u.Role.RoleName == "StoreOfficer" && u.IsActive && !u.IsDeleted)
-                .Select(u => u.Id)
-                .ToListAsync(cancellationToken);
-
-            foreach (var officerId in storeOfficers)
-            {
-                var officerNotification = new Notification(
-                    officerId,
-                    $"New stock available from GRN #{receivingNote.GRNNumber}. Total accepted: {totalAccepted} units.");
-                _context.Notifications.Add(officerNotification);
-            }
+            // Store officer broadcast is skipped here after removing legacy UserLogin model.
         }
 
         // Notify supplier for rejected items (if email service available)

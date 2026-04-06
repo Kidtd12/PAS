@@ -19,8 +19,6 @@ public class GetWorkflowByIdHandler : IRequestHandler<GetWorkflowByIdQuery, Resu
     {
         var workflow = await _context.ApprovalWorkflows
             .Include(w => w.Approvers.Where(a => !a.IsDeleted))
-                .ThenInclude(a => a.User)
-                    .ThenInclude(u => u.Employee)
             .AsNoTracking()
             .FirstOrDefaultAsync(w => w.Id == request.Id && !w.IsDeleted, cancellationToken);
 
@@ -37,7 +35,7 @@ public class GetWorkflowByIdHandler : IRequestHandler<GetWorkflowByIdQuery, Resu
             {
                 Id = a.Id,
                 UserId = a.UserId,
-                UserName = a.User?.Employee?.FullName ?? a.User?.Username ?? "Unknown",
+                UserName = string.Empty,
                 ApprovalLevel = a.ApprovalLevel,
                 AssignedAt = a.CreatedAt
             })

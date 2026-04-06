@@ -19,7 +19,6 @@ public class GetReceivingNotesQueryHandler : IRequestHandler<GetReceivingNotesQu
     {
         var query = _context.ReceivingNotes
             .Include(r => r.Supplier)
-            .Include(r => r.ReceivedBy)
             .Include(r => r.InspectionLog)
             .Where(r => !r.IsDeleted)
             .AsNoTracking();
@@ -75,7 +74,7 @@ public class GetReceivingNotesQueryHandler : IRequestHandler<GetReceivingNotesQu
             SupplierName = r.Supplier != null ? r.Supplier.SupplierName : string.Empty,
             ReceivedDate = r.ReceivedDate,
             Status = r.Status,
-            ReceivedBy = r.ReceivedBy != null ? r.ReceivedBy.Username : string.Empty,
+            ReceivedBy = string.Empty,
             ItemCount = 0, // Would need to calculate from items
             TotalQuantity = 0, // Would need to calculate from items
             HasInspection = r.InspectionLog != null

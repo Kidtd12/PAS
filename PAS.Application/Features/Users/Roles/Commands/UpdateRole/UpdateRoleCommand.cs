@@ -1,5 +1,7 @@
 using Application.Common.Security;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
+using Persistence.Identity;
 
 namespace Application.Features.Users.Roles.Commands.UpdateRole;
 
@@ -13,22 +15,24 @@ public record UpdateRoleCommand : IRequest<Result>
 
 public class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand, Result>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly RoleManager<ApplicationRole> _roleManager;
 
-    public UpdateRoleCommandHandler(IApplicationDbContext context)
+    public UpdateRoleCommandHandler(RoleManager<ApplicationRole> roleManager)
     {
-        _context = context;
+        _roleManager = roleManager;
     }
 
     public async Task<Result> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
     {
-        var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == request.Id && !r.IsDeleted, cancellationToken);
+        var role = await _roleManager.FindByIdAsync(request.Id.ToString());
         if (role == null) return Result.Failure("Role not found.");
 
-        typeof(Domain.Users.Role).GetProperty(nameof(Domain.Users.Role.RoleName))?.SetValue(role, request.RoleName);
-        typeof(Domain.Users.Role).GetProperty(nameof(Domain.Users.Role.Description))?.SetValue(role, request.Description);
-        role.MarkUpdated();
-        await _context.SaveChangesAsync(cancellationToken);
+        role.Name = request.RoleName;
+        role.Description = request.Description;
+        var updateResult = await _roleManager.UpdateAsync(role);
+        if (!updateResult.Succeeded)
+            return Result.Failure(string.Join("; ", updateResult.Errors.Select(e => e.Description)));
+
         return Result.Success();
     }
 }

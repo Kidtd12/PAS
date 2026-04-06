@@ -19,7 +19,6 @@ public class GetReturnRequestsQueryHandler : IRequestHandler<GetReturnRequestsQu
     {
         var query = _context.ReturnMaterialRequestNotes
             .Include(r => r.Item)
-            .Include(r => r.RequestedBy)
             .Where(r => !r.IsDeleted)
             .AsNoTracking();
 
@@ -69,7 +68,7 @@ public class GetReturnRequestsQueryHandler : IRequestHandler<GetReturnRequestsQu
             Reason = r.Reason,
             RequestDate = r.RequestDate,
             Status = r.Status,
-            RequestedBy = r.RequestedBy != null ? r.RequestedBy.Username : string.Empty
+            RequestedBy = string.Empty
         });
 
         var paginatedReturns = await projectedQuery

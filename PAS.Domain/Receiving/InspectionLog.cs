@@ -1,7 +1,5 @@
 ﻿using System;
 using Domain.Common;
-using Domain.Users;
-
 namespace Domain.Receiving
 {
     public class InspectionLog : BaseEntity
@@ -17,8 +15,6 @@ namespace Domain.Receiving
         public DateTime InspectionDate { get; private set; }
 
         public ReceivingNote? ReceivingNote { get; private set; }
-
-        public UserLogin? Inspector { get; private set; }
 
         private InspectionLog()
         {

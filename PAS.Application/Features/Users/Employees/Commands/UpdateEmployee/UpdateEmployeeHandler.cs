@@ -24,7 +24,6 @@ public class UpdateEmployeeCommandHandler : IRequestHandler<UpdateEmployeeComman
         }
 
         var employee = await _context.Employees
-            .Include(e => e.UserLogin)
             .FirstOrDefaultAsync(e => e.Id == request.Id && !e.IsDeleted, cancellationToken);
 
         if (employee == null)
@@ -70,12 +69,6 @@ public class UpdateEmployeeCommandHandler : IRequestHandler<UpdateEmployeeComman
         typeof(Domain.Users.Employee).GetProperty("IsActive")?.SetValue(employee, request.IsActive);
 
         employee.MarkUpdated();
-
-        // If deactivating employee, also deactivate user account
-        if (!request.IsActive && employee.UserLogin != null && employee.UserLogin.IsActive)
-        {
-            typeof(Domain.Users.UserLogin).GetProperty("IsActive")?.SetValue(employee.UserLogin, false);
-        }
 
         // Create audit trail
         var auditTrail = new AuditTrail(

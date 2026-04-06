@@ -18,7 +18,6 @@ public class GetAuditTrailByEntityHandler : IRequestHandler<GetAuditTrailByEntit
     public async Task<Result<List<AuditTrailDto>>> Handle(GetAuditTrailByEntityQuery request, CancellationToken cancellationToken)
     {
         var trails = await _context.AuditTrails
-            .Include(a => a.User)
             .Where(a => a.EntityName == request.EntityName &&
                        a.EntityId == request.EntityId &&
                        !a.IsDeleted)

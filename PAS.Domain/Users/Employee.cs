@@ -16,8 +16,6 @@ namespace Domain.Users
 
         public bool IsActive { get; private set; } = true;
 
-        public UserLogin? UserLogin { get; private set; }
-
         private Employee()
         {
         }

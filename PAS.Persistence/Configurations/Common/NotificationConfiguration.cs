@@ -1,5 +1,4 @@
 ﻿using Domain.Common;
-using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -20,11 +19,6 @@ namespace Persistence.Configurations.Common
 
             builder.Property(n => n.SentDate)
                 .HasDefaultValueSql("GETUTCDATE()");
-
-            builder.HasOne<UserLogin>()
-                .WithMany()
-                .HasForeignKey(n => n.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasIndex(n => n.UserId);
             builder.HasIndex(n => n.IsRead);

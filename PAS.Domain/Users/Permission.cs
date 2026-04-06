@@ -11,8 +11,6 @@ namespace Domain.Users
 
         public Guid? RoleId { get; private set; }
 
-        public Role Role { get; private set; }
-
         private Permission()
         {
         }

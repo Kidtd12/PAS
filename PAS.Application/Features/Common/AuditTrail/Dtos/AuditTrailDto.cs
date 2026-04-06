@@ -17,7 +17,7 @@ public class AuditTrailDto : IMapFrom<Domain.Common.AuditTrail>
     public void Mapping(Profile profile)
     {
         profile.CreateMap<Domain.Common.AuditTrail, AuditTrailDto>()
-            .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.User != null ? s.User.Username : "System"))
+            .ForMember(d => d.UserName, opt => opt.Ignore())
             .ForMember(d => d.Details, opt => opt.MapFrom(s => $"{s.Action} on {s.EntityName} with ID: {s.EntityId}"));
     }
 }

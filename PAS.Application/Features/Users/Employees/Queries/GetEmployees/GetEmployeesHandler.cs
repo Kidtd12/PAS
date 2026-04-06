@@ -16,7 +16,6 @@ public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, Resul
     public async Task<Result<PaginatedList<EmployeeListDto>>> Handle(GetEmployeesQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Employees
-            .Include(e => e.UserLogin)
             .Where(e => !e.IsDeleted)
             .AsNoTracking();
 
@@ -42,9 +41,9 @@ public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, Resul
         if (request.HasUserAccount.HasValue)
         {
             if (request.HasUserAccount.Value)
-                query = query.Where(e => e.UserLogin != null && !e.UserLogin.IsDeleted);
+                query = query.Where(e => false);
             else
-                query = query.Where(e => e.UserLogin == null || e.UserLogin.IsDeleted);
+                query = query.Where(e => true);
         }
 
         // Project to DTO
@@ -57,7 +56,7 @@ public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, Resul
             Position = e.Position ?? string.Empty,
             Email = e.Email ?? string.Empty,
             IsActive = e.IsActive,
-            HasUserAccount = e.UserLogin != null && !e.UserLogin.IsDeleted
+            HasUserAccount = false
         });
 
         var paginatedEmployees = await projectedQuery

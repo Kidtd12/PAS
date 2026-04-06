@@ -182,7 +182,6 @@ public class GetDashboardStatisticsHandler : IRequestHandler<GetDashboardStatist
     private async Task GetRecentActivities(DashboardDto dashboard, CancellationToken cancellationToken)
     {
         var recentActivities = await _context.AuditTrails
-            .Include(a => a.User)
             .OrderByDescending(a => a.ActionDate)
             .Take(10)
             .ToListAsync(cancellationToken);
@@ -193,7 +192,7 @@ public class GetDashboardStatisticsHandler : IRequestHandler<GetDashboardStatist
             Action = a.Action,
             EntityName = a.EntityName,
             EntityId = a.EntityId.ToString(),
-            UserName = a.User?.Username ?? "System",
+            UserName = "System",
             ActionDate = a.ActionDate,
             TimeAgo = GetTimeAgo(a.ActionDate),
             Icon = GetActivityIcon(a.Action),
@@ -234,8 +233,6 @@ public class GetDashboardStatisticsHandler : IRequestHandler<GetDashboardStatist
         if (_currentUser.HasPermission(Permissions.Requisitions.Approve))
         {
             var pendingRequisitions = await _context.ServiceRequests
-                .Include(s => s.Requester)
-                    .ThenInclude(r => r.Employee)
                 .Where(s => s.Status == "Pending" && !s.IsDeleted)
                 .Take(5)
                 .ToListAsync(cancellationToken);
@@ -248,7 +245,7 @@ public class GetDashboardStatisticsHandler : IRequestHandler<GetDashboardStatist
                 Reference = r.SRNumber,
                 DueDate = r.RequestDate.AddDays(2),
                 Priority = "High",
-                AssignedTo = r.Requester?.Employee?.FullName ?? "Unknown",
+                AssignedTo = string.Empty,
                 Status = r.Status
             }));
         }

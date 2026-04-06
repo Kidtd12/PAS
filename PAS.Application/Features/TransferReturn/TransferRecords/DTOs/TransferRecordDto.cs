@@ -45,8 +45,8 @@ public class TransferRecordDto : IMapFrom<Domain.TransferReturn.TransferRecord>
             .ForMember(d => d.ToLocationType, opt => opt.MapFrom(s => s.ToLocation != null ? s.ToLocation.LocationType : string.Empty))
             .ForMember(d => d.FromShelfLocation, opt => opt.MapFrom(s => s.FromShelf != null ? $"{s.FromShelf.Aisle}-{s.FromShelf.Rack}-{s.FromShelf.ShelfNumber}" : string.Empty))
             .ForMember(d => d.ToShelfLocation, opt => opt.MapFrom(s => s.ToShelf != null ? $"{s.ToShelf.Aisle}-{s.ToShelf.Rack}-{s.ToShelf.ShelfNumber}" : string.Empty))
-            .ForMember(d => d.InitiatedByName, opt => opt.MapFrom(s => s.InitiatedBy != null ? s.InitiatedBy.Username : string.Empty))
-            .ForMember(d => d.ApprovedByName, opt => opt.MapFrom(s => s.ApprovedBy != null ? s.ApprovedBy.Username : string.Empty));
+            .ForMember(d => d.InitiatedByName, opt => opt.Ignore())
+            .ForMember(d => d.ApprovedByName, opt => opt.Ignore());
     }
 }
 

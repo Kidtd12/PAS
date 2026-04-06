@@ -26,7 +26,6 @@ public class DeleteEmployeeCommandHandler : IRequestHandler<DeleteEmployeeComman
         }
 
         var employee = await _context.Employees
-            .Include(e => e.UserLogin)
             .FirstOrDefaultAsync(e => e.Id == request.Id && !e.IsDeleted, cancellationToken);
 
         if (employee == null)
@@ -35,9 +34,8 @@ public class DeleteEmployeeCommandHandler : IRequestHandler<DeleteEmployeeComman
         }
 
         // Check if employee has associated records
-        var userLoginId = employee.UserLogin?.Id;
-        var hasActivity = userLoginId.HasValue && await _context.AuditTrails
-            .AnyAsync(a => a.UserId == userLoginId.Value, cancellationToken);
+        var hasActivity = await _context.AuditTrails
+            .AnyAsync(a => a.UserId == employee.Id, cancellationToken);
 
         if (hasActivity)
         {
@@ -45,12 +43,6 @@ public class DeleteEmployeeCommandHandler : IRequestHandler<DeleteEmployeeComman
         }
 
         employee.SoftDelete();
-
-        // Also soft delete user account if exists
-        if (employee.UserLogin != null && !employee.UserLogin.IsDeleted)
-        {
-            employee.UserLogin.SoftDelete();
-        }
 
         // Create audit trail
         var auditTrail = new AuditTrail(

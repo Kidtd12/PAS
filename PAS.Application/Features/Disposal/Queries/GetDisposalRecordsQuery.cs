@@ -33,7 +33,6 @@ public class GetDisposalRecordsHandler : IRequestHandler<GetDisposalRecordsQuery
     {
         var query = _context.DisposalRecords
             .Include(d => d.Item)
-            .Include(d => d.DisposedByUser)
             .Where(d => !d.IsDeleted)
             .AsNoTracking();
 
@@ -72,7 +71,7 @@ public class GetDisposalRecordsHandler : IRequestHandler<GetDisposalRecordsQuery
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            query = query.Where(d => d.Item.ItemName.Contains(request.SearchTerm) ||
+            query = query.Where(d => (d.Item != null && d.Item.ItemName.Contains(request.SearchTerm)) ||
                                     d.Reason.Contains(request.SearchTerm));
         }
 

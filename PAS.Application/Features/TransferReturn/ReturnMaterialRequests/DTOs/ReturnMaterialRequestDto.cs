@@ -36,8 +36,8 @@ public class ReturnMaterialRequestDto : IMapFrom<Domain.TransferReturn.ReturnMat
         profile.CreateMap<Domain.TransferReturn.ReturnMaterialRequestNote, ReturnMaterialRequestDto>()
             .ForMember(d => d.ItemName, opt => opt.MapFrom(s => s.Item != null ? s.Item.ItemName : string.Empty))
             .ForMember(d => d.ItemSKU, opt => opt.MapFrom(s => s.Item != null ? s.Item.SKU : string.Empty))
-            .ForMember(d => d.RequestedByName, opt => opt.MapFrom(s => s.RequestedBy != null ? s.RequestedBy.Username : string.Empty))
-            .ForMember(d => d.ApprovedByName, opt => opt.MapFrom(s => s.ApprovedBy != null ? s.ApprovedBy.Username : string.Empty))
+            .ForMember(d => d.RequestedByName, opt => opt.Ignore())
+            .ForMember(d => d.ApprovedByName, opt => opt.Ignore())
             .ForMember(d => d.SourceLocationName, opt => opt.MapFrom(s => s.SourceLocation != null ? s.SourceLocation.Name : string.Empty))
             .ForMember(d => d.SourceShelfLocation, opt => opt.MapFrom(s => s.SourceShelf != null ? $"{s.SourceShelf.Aisle}-{s.SourceShelf.Rack}-{s.SourceShelf.ShelfNumber}" : string.Empty))
             .ForMember(d => d.SupplierName, opt => opt.MapFrom(s => s.Supplier != null ? s.Supplier.SupplierName : string.Empty));

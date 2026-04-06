@@ -79,22 +79,16 @@ public class ApproveServiceRequestCommandHandler : IRequestHandler<ApproveServic
         ApproveServiceRequestCommand request,
         CancellationToken cancellationToken)
     {
-        var requester = await _context.UserLogins
-            .FirstOrDefaultAsync(u => u.Id == serviceRequest.RequesterId, cancellationToken);
+        var status = request.IsApproved ? "approved" : "rejected";
+        var message = $"Your service request {serviceRequest.SRNumber} has been {status}.";
 
-        if (requester != null)
+        if (!string.IsNullOrWhiteSpace(request.Remarks))
         {
-            var status = request.IsApproved ? "approved" : "rejected";
-            var message = $"Your service request {serviceRequest.SRNumber} has been {status}.";
-
-            if (!string.IsNullOrWhiteSpace(request.Remarks))
-            {
-                message += $" Remarks: {request.Remarks}";
-            }
-
-            var notification = new Notification(requester.Id, message);
-            _context.Notifications.Add(notification);
-            await _context.SaveChangesAsync(cancellationToken);
+            message += $" Remarks: {request.Remarks}";
         }
+
+        var notification = new Notification(serviceRequest.RequesterId, message);
+        _context.Notifications.Add(notification);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

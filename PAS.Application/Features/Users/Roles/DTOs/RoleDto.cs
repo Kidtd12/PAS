@@ -1,9 +1,6 @@
-﻿using Application.Common.Mappings;
-using AutoMapper;
+﻿namespace Application.Features.Users.Roles.Dtos;
 
-namespace Application.Features.Users.Roles.Dtos;
-
-public class RoleDto : IMapFrom<Domain.Users.Role>
+public class RoleDto
 {
     public Guid Id { get; set; }
     public string RoleName { get; set; } = string.Empty;
@@ -11,12 +8,6 @@ public class RoleDto : IMapFrom<Domain.Users.Role>
     public int UserCount { get; set; }
     public List<string> Permissions { get; set; } = new();
 
-    public void Mapping(Profile profile)
-    {
-        profile.CreateMap<Domain.Users.Role, RoleDto>()
-            .ForMember(d => d.UserCount, opt => opt.Ignore())
-            .ForMember(d => d.Permissions, opt => opt.Ignore());
-    }
 }
 
 public class RoleDetailDto : RoleDto

@@ -22,9 +22,9 @@ public class ServiceRequestDetailDto : IMapFrom<Domain.Requisition.ServiceReques
     public void Mapping(Profile profile)
     {
         profile.CreateMap<Domain.Requisition.ServiceRequest, ServiceRequestDetailDto>()
-            .ForMember(d => d.RequesterName, opt => opt.MapFrom(s => s.Requester != null ? s.Requester.Username : string.Empty))
-            .ForMember(d => d.ApproverName, opt => opt.MapFrom(s => s.ApprovedBy != null ? s.ApprovedBy.Username : string.Empty))
-            .ForMember(d => d.Department, opt => opt.MapFrom(s => s.Requester != null && s.Requester.Employee != null ? s.Requester.Employee.Department : string.Empty));
+            .ForMember(d => d.RequesterName, opt => opt.Ignore())
+            .ForMember(d => d.ApproverName, opt => opt.Ignore())
+            .ForMember(d => d.Department, opt => opt.Ignore());
     }
 }
 

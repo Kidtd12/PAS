@@ -1,5 +1,4 @@
 ﻿using Domain.Receiving;
-using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,11 +17,6 @@ namespace Persistence.Configurations.Receiving
                 .WithOne(r => r.InspectionLog)
                 .HasForeignKey<InspectionLog>(i => i.ReceivingNoteId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasOne(i => i.Inspector)
-                .WithMany()
-                .HasForeignKey(i => i.InspectorId)
-                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(i => i.ReceivingNoteId).IsUnique();
         }

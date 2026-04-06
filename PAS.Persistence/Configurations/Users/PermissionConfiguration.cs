@@ -17,11 +17,6 @@ namespace Persistence.Configurations.Users
             builder.Property(p => p.Description)
                 .HasMaxLength(200);
 
-            builder.HasOne(p => p.Role)
-                .WithMany()
-                .HasForeignKey(p => p.RoleId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasIndex(p => p.PermissionName).IsUnique();
             builder.HasIndex(p => p.RoleId);
         }

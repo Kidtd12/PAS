@@ -15,27 +15,16 @@ public class GetEmployeeByUserIdQueryHandler : IRequestHandler<GetEmployeeByUser
 
     public async Task<Result<EmployeeDetailDto>> Handle(GetEmployeeByUserIdQuery request, CancellationToken cancellationToken)
     {
-        var user = await _context.UserLogins
-            .Include(u => u.Employee)
-            .FirstOrDefaultAsync(u => u.Id == request.UserId && !u.IsDeleted, cancellationToken);
+        var employee = await _context.Employees
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == request.UserId && !e.IsDeleted, cancellationToken);
 
-        if (user?.Employee == null)
+        if (employee == null)
         {
             throw new NotFoundException(nameof(Domain.Users.Employee), $"User ID {request.UserId}");
         }
 
-        var employeeDto = _mapper.Map<EmployeeDetailDto>(user.Employee);
-
-        // Map user account
-        employeeDto.UserAccount = new UserAccountSummaryDto
-        {
-            Id = user.Id,
-            Username = user.Username,
-            Email = user.Email ?? string.Empty,
-            Role = user.Role?.RoleName ?? "Unknown",
-            IsActive = user.IsActive,
-            LastLoginAt = null
-        };
+        var employeeDto = _mapper.Map<EmployeeDetailDto>(employee);
 
         return Result<EmployeeDetailDto>.Success(employeeDto);
     }

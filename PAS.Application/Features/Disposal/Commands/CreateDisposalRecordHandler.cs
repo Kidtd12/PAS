@@ -137,7 +137,6 @@ public class CreateDisposalRecordCommandHandler : IRequestHandler<CreateDisposal
     {
         // Get all approvers for disposal workflow
         var approvers = await _context.Approvers
-            .Include(a => a.User)
             .Where(a => a.Workflow.WorkflowName == "DisposalApproval" && !a.IsDeleted)
             .OrderBy(a => a.ApprovalLevel)
             .ToListAsync(cancellationToken);

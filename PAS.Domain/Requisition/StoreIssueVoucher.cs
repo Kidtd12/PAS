@@ -1,7 +1,5 @@
 ﻿using System;
 using Domain.Common;
-using Domain.Users;
-
 namespace Domain.Requisition
 {
     public class StoreIssueVoucher : BaseEntity
@@ -23,8 +21,6 @@ namespace Domain.Requisition
         public string Status { get; private set; } = "Issued";
 
         public ServiceRequest? ServiceRequest { get; private set; }
-
-        public UserLogin? IssuedBy { get; private set; }
 
         private StoreIssueVoucher()
         {

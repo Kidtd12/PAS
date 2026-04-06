@@ -1,5 +1,7 @@
 using Application.Common.Security;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
+using Persistence.Identity;
 
 namespace Application.Features.Users.Authentication.Commands;
 
@@ -8,21 +10,23 @@ public record ActivateUserCommand(Guid Id) : IRequest<Result>;
 
 public class ActivateUserCommandHandler : IRequestHandler<ActivateUserCommand, Result>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ActivateUserCommandHandler(IApplicationDbContext context)
+    public ActivateUserCommandHandler(UserManager<ApplicationUser> userManager)
     {
-        _context = context;
+        _userManager = userManager;
     }
 
     public async Task<Result> Handle(ActivateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _context.UserLogins.FirstOrDefaultAsync(u => u.Id == request.Id && !u.IsDeleted, cancellationToken);
+        var user = await _userManager.FindByIdAsync(request.Id.ToString());
         if (user == null) return Result.Failure("User not found.");
 
-        typeof(Domain.Users.UserLogin).GetProperty(nameof(Domain.Users.UserLogin.IsActive))?.SetValue(user, true);
-        user.MarkUpdated();
-        await _context.SaveChangesAsync(cancellationToken);
+        user.IsActive = true;
+        var updateResult = await _userManager.UpdateAsync(user);
+        if (!updateResult.Succeeded)
+            return Result.Failure(string.Join("; ", updateResult.Errors.Select(e => e.Description)));
+
         return Result.Success();
     }
 }

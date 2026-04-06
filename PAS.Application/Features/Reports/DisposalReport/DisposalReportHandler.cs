@@ -23,8 +23,6 @@ public class DisposalReportQueryHandler : IRequestHandler<DisposalReportQuery, R
     {
         var query = _context.DisposalRecords
             .Include(d => d.Item)
-            .Include(d => d.DisposedBy)
-            .Include(d => d.ApprovedBy)
             .Where(d => !d.IsDeleted && d.DisposalDate >= request.FromDate && d.DisposalDate <= request.ToDate)
             .AsNoTracking();
 
@@ -122,8 +120,8 @@ public class DisposalReportQueryHandler : IRequestHandler<DisposalReportQuery, R
             Method = d.DisposalMethod ?? "Unknown",
             Status = d.Status,
             EstimatedValue = d.EstimatedValue ?? 0,
-            DisposedBy = d.DisposedBy?.Username ?? "Unknown",
-            ApprovedBy = d.ApprovedBy?.Username ?? "N/A",
+            DisposedBy = string.Empty,
+            ApprovedBy = string.Empty,
             ApprovedDate = d.ApprovedDate
         }).ToList();
 

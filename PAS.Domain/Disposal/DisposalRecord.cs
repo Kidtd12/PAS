@@ -1,7 +1,5 @@
 ﻿using System;
 using Domain.Common;
-using Domain.Users;
-
 namespace Domain.Disposal
 {
     public class DisposalRecord : BaseEntity
@@ -23,12 +21,6 @@ namespace Domain.Disposal
         public decimal? EstimatedValue { get; private set; }
 
         public Catalog.ItemMaster? Item { get; private set; }
-
-        public Users.UserLogin? DisposedBy { get; private set; }
-
-        public Users.UserLogin? DisposedByUser => DisposedBy;
-
-        public Users.UserLogin? ApprovedBy { get; private set; }
 
         public DateTime? ApprovedDate { get; private set; }
 

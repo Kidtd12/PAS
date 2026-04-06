@@ -1,5 +1,7 @@
 using Application.Common.Security;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
+using Persistence.Identity;
 
 namespace Application.Features.Users.Authentication.Commands;
 
@@ -15,28 +17,40 @@ public record UpdateUserCommand : IRequest<Result>
 
 public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Result>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
 
-    public UpdateUserCommandHandler(IApplicationDbContext context)
+    public UpdateUserCommandHandler(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
     {
-        _context = context;
+        _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task<Result> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _context.UserLogins.FirstOrDefaultAsync(u => u.Id == request.Id && !u.IsDeleted, cancellationToken);
+        var user = await _userManager.FindByIdAsync(request.Id.ToString());
         if (user == null) return Result.Failure("User not found.");
 
-        if (await _context.UserLogins.AnyAsync(u => u.Username == request.Username && u.Id != request.Id && !u.IsDeleted, cancellationToken))
+        var existing = await _userManager.FindByNameAsync(request.Username);
+        if (existing != null && existing.Id != user.Id)
             return Result.Failure("Username already exists.");
 
-        typeof(Domain.Users.UserLogin).GetProperty(nameof(Domain.Users.UserLogin.Username))?.SetValue(user, request.Username);
-        typeof(Domain.Users.UserLogin).GetProperty(nameof(Domain.Users.UserLogin.Email))?.SetValue(user, request.Email);
-        typeof(Domain.Users.UserLogin).GetProperty(nameof(Domain.Users.UserLogin.RoleId))?.SetValue(user, request.RoleId);
-        typeof(Domain.Users.UserLogin).GetProperty(nameof(Domain.Users.UserLogin.IsActive))?.SetValue(user, request.IsActive);
-        user.MarkUpdated();
+        user.UserName = request.Username;
+        user.Email = request.Email;
+        user.IsActive = request.IsActive;
+        var updateResult = await _userManager.UpdateAsync(user);
+        if (!updateResult.Succeeded)
+            return Result.Failure(string.Join("; ", updateResult.Errors.Select(e => e.Description)));
 
-        await _context.SaveChangesAsync(cancellationToken);
+        var role = await _roleManager.FindByIdAsync(request.RoleId.ToString());
+        if (role != null && !string.IsNullOrWhiteSpace(role.Name))
+        {
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            if (currentRoles.Any())
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            await _userManager.AddToRoleAsync(user, role.Name);
+        }
+
         return Result.Success();
     }
 }

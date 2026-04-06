@@ -23,7 +23,7 @@ public class ReceivingNoteDto : IMapFrom<Domain.Receiving.ReceivingNote>
     {
         profile.CreateMap<Domain.Receiving.ReceivingNote, ReceivingNoteDto>()
             .ForMember(d => d.SupplierName, opt => opt.MapFrom(s => s.Supplier != null ? s.Supplier.SupplierName : string.Empty))
-            .ForMember(d => d.ReceivedByName, opt => opt.MapFrom(s => s.ReceivedBy != null ? s.ReceivedBy.Username : string.Empty))
+            .ForMember(d => d.ReceivedByName, opt => opt.Ignore())
             .ForMember(d => d.HasInspection, opt => opt.MapFrom(s => s.InspectionLog != null))
             .ForMember(d => d.TotalItems, opt => opt.Ignore())
             .ForMember(d => d.TotalQuantity, opt => opt.Ignore())

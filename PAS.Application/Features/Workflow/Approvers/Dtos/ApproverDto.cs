@@ -17,6 +17,6 @@ public class ApproverDto : IMapFrom<Approver>
     {
         profile.CreateMap<Approver, ApproverDto>()
             .ForMember(d => d.WorkflowName, opt => opt.MapFrom(s => s.Workflow != null ? s.Workflow.WorkflowName : string.Empty))
-            .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.User != null ? s.User.Username : string.Empty));
+            .ForMember(d => d.UserName, opt => opt.Ignore());
     }
 }

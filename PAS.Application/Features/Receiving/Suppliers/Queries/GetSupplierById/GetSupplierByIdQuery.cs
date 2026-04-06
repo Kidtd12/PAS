@@ -23,8 +23,6 @@ public class GetSupplierByIdHandler : IRequestHandler<GetSupplierByIdQuery, Resu
     {
         var supplier = await _context.Suppliers
             .Include(s => s.ReceivingNotes.Where(r => !r.IsDeleted))
-                .ThenInclude(r => r.ReceivedBy)
-            .Include(s => s.ReceivingNotes.Where(r => !r.IsDeleted))
                 .ThenInclude(r => r.StockLedgers)
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == request.Id && !s.IsDeleted, cancellationToken);
@@ -51,7 +49,7 @@ public class GetSupplierByIdHandler : IRequestHandler<GetSupplierByIdQuery, Resu
                 GRNNumber = note.GRNNumber,
                 ReceivedDate = note.ReceivedDate,
                 Status = note.Status,
-                ReceivedBy = note.ReceivedBy?.Username ?? "Unknown",
+                ReceivedBy = string.Empty,
                 ItemsCount = itemsReceived.Count,
                 TotalQuantity = itemsReceived.Sum(l => l.QuantityChange > 0 ? l.QuantityChange : 0),
                 TotalValue = 0 // Would need unit price from items

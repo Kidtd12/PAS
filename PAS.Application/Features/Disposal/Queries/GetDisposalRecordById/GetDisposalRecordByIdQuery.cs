@@ -22,8 +22,6 @@ public class GetDisposalRecordByIdQueryHandler : IRequestHandler<GetDisposalReco
     {
         var entity = await _context.DisposalRecords
             .Include(d => d.Item)
-            .Include(d => d.DisposedBy)
-            .Include(d => d.ApprovedBy)
             .AsNoTracking()
             .FirstOrDefaultAsync(d => d.Id == request.Id && !d.IsDeleted, cancellationToken);
 

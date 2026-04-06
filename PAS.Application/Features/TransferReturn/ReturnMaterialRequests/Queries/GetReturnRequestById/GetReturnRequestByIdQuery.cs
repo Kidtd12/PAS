@@ -22,8 +22,6 @@ public class GetReturnRequestByIdQueryHandler : IRequestHandler<GetReturnRequest
     {
         var entity = await _context.ReturnMaterialRequestNotes
             .Include(r => r.Item)
-            .Include(r => r.RequestedBy)
-            .Include(r => r.ApprovedBy)
             .Include(r => r.SourceLocation)
             .Include(r => r.SourceShelf)
             .Include(r => r.Supplier)

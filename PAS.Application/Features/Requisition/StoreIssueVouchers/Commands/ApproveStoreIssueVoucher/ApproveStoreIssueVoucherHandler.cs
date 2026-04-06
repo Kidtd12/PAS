@@ -81,22 +81,16 @@ public class ApproveStoreIssueVoucherCommandHandler : IRequestHandler<ApproveSto
         ApproveStoreIssueVoucherCommand request,
         CancellationToken cancellationToken)
     {
-        var issuer = await _context.UserLogins
-            .FirstOrDefaultAsync(u => u.Id == siv.IssuedById, cancellationToken);
+        var status = request.IsApproved ? "approved" : "rejected";
+        var message = $"Your store issue voucher {siv.SIVNumber} has been {status}.";
 
-        if (issuer != null)
+        if (!string.IsNullOrWhiteSpace(request.Remarks))
         {
-            var status = request.IsApproved ? "approved" : "rejected";
-            var message = $"Your store issue voucher {siv.SIVNumber} has been {status}.";
-
-            if (!string.IsNullOrWhiteSpace(request.Remarks))
-            {
-                message += $" Remarks: {request.Remarks}";
-            }
-
-            var notification = new Notification(issuer.Id, message);
-            _context.Notifications.Add(notification);
-            await _context.SaveChangesAsync(cancellationToken);
+            message += $" Remarks: {request.Remarks}";
         }
+
+        var notification = new Notification(siv.IssuedById, message);
+        _context.Notifications.Add(notification);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

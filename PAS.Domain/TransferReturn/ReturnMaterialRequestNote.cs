@@ -4,8 +4,6 @@ using Domain.Common;
 using Domain.PropertyManagement;
 using Domain.Receiving;
 using Domain.Storage;
-using Domain.Users;
-
 namespace Domain.TransferReturn
 {
     public class ReturnMaterialRequestNote : BaseEntity
@@ -35,10 +33,6 @@ namespace Domain.TransferReturn
         public DateTime RequestDate { get; private set; }
 
         public ItemMaster? Item { get; private set; }
-
-        public UserLogin? RequestedBy { get; private set; }
-
-        public UserLogin? ApprovedBy { get; private set; }
 
         public Supplier? Supplier { get; private set; }
 

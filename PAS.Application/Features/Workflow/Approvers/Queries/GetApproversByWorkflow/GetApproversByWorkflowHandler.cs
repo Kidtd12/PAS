@@ -19,7 +19,6 @@ public class GetApproversByWorkflowHandler : IRequestHandler<GetApproversByWorkf
     {
         var approvers = await _context.Approvers
             .Include(a => a.Workflow)
-            .Include(a => a.User)
             .Where(a => a.WorkflowId == request.WorkflowId && !a.IsDeleted)
             .OrderBy(a => a.ApprovalLevel)
             .ProjectTo<ApproverDto>(_mapper.ConfigurationProvider)

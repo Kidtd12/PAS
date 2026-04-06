@@ -21,7 +21,7 @@ public class InspectionDto : IMapFrom<Domain.Receiving.InspectionLog>
     {
         profile.CreateMap<Domain.Receiving.InspectionLog, InspectionDto>()
             .ForMember(d => d.GRNNumber, opt => opt.MapFrom(s => s.ReceivingNote != null ? s.ReceivingNote.GRNNumber : string.Empty))
-            .ForMember(d => d.InspectorName, opt => opt.MapFrom(s => s.Inspector != null ? s.Inspector.Username : string.Empty))
+            .ForMember(d => d.InspectorName, opt => opt.Ignore())
             .ForMember(d => d.Items, opt => opt.Ignore());
     }
 }

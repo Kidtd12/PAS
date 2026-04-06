@@ -23,11 +23,6 @@ namespace Persistence.Configurations.Receiving
                 .HasForeignKey(r => r.SupplierId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(r => r.ReceivedBy)
-                .WithMany()
-                .HasForeignKey(r => r.ReceivedById)
-                .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasIndex(r => r.GRNNumber).IsUnique();
             builder.HasIndex(r => r.Status);
         }

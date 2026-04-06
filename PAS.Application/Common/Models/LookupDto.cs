@@ -3,7 +3,6 @@ using System;
 using Domain.Catalog;
 using Domain.Catalog;
 using Domain.PropertyManagement;
-using Domain.Users;
 
 namespace Application.Common.Models
 {
@@ -28,8 +27,6 @@ namespace Application.Common.Models
                 CreateMap<PropertyLocation, LookupDto>()
                     .ForMember(d => d.Title, opt => opt.MapFrom(s => s.Name));
 
-                CreateMap<Role, LookupDto>()
-                    .ForMember(d => d.Title, opt => opt.MapFrom(s => s.RoleName));
             }
         }
     }

@@ -24,9 +24,6 @@ public class GetInspectionByIdHandler : IRequestHandler<GetInspectionByIdQuery, 
         var inspection = await _context.InspectionLogs
             .Include(i => i.ReceivingNote)
                 .ThenInclude(r => r.Supplier)
-            .Include(i => i.ReceivingNote)
-                .ThenInclude(r => r.ReceivedBy)
-            .Include(i => i.Inspector)
             .AsNoTracking()
             .FirstOrDefaultAsync(i => i.Id == request.Id && !i.IsDeleted, cancellationToken);
 
@@ -77,7 +74,7 @@ public class GetInspectionByIdHandler : IRequestHandler<GetInspectionByIdQuery, 
             GRNNumber = receivingNote.GRNNumber,
             SupplierName = receivingNote.Supplier?.SupplierName ?? "Unknown",
             ReceivedDate = receivingNote.ReceivedDate,
-            ReceivedBy = receivingNote.ReceivedBy?.Username ?? "Unknown",
+            ReceivedBy = string.Empty,
             TotalItems = inspectionDto.Items.Count,
             TotalQuantity = totalReceived
         };
