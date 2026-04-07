@@ -124,9 +124,9 @@ public class AuthController : BaseApiController
     [HttpPost("forgot-password")]
     [AllowAnonymous]
     [SwaggerOperation(Summary = "Send password reset email")]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<ForgotPasswordResponseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request)
+    public async Task<ActionResult<ApiResponse<ForgotPasswordResponseDto>>> ForgotPassword(ForgotPasswordRequest request)
     {
         var command = new ForgotPasswordCommand { Email = request.Email };
         var result = await Mediator.Send(command);

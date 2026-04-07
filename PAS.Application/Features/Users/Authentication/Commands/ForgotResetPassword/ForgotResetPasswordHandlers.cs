@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Persistence.Identity;
 using System.Net;
@@ -7,32 +8,35 @@ using Application.Common.Interfaces;
 
 namespace Application.Features.Users.Authentication.Commands;
 
-public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, Result>
+public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, Result<ForgotPasswordResponseDto>>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IEmailService _emailService;
     private readonly ILogger<ForgotPasswordCommandHandler> _logger;
+    private readonly IHostEnvironment _environment;
 
     public ForgotPasswordCommandHandler(
         UserManager<ApplicationUser> userManager,
         IEmailService emailService,
-        ILogger<ForgotPasswordCommandHandler> logger)
+        ILogger<ForgotPasswordCommandHandler> logger,
+        IHostEnvironment environment)
     {
         _userManager = userManager;
         _emailService = emailService;
         _logger = logger;
+        _environment = environment;
     }
 
-    public async Task<Result> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
+    public async Task<Result<ForgotPasswordResponseDto>> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.Email))
-            return Result.Failure("Email is required.");
+            return Result<ForgotPasswordResponseDto>.Failure("Email is required.");
 
         var user = await _userManager.FindByEmailAsync(request.Email.Trim());
 
         // Do not leak whether the account exists.
         if (user == null || string.IsNullOrWhiteSpace(user.Email))
-            return Result.Success();
+            return Result<ForgotPasswordResponseDto>.Success(new ForgotPasswordResponseDto { EmailSent = true });
 
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
         var encodedToken = WebUtility.UrlEncode(resetToken);
@@ -52,16 +56,25 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
         try
         {
             await _emailService.SendEmailAsync(user.Email, "PAS Password Reset", message);
+            return Result<ForgotPasswordResponseDto>.Success(new ForgotPasswordResponseDto
+            {
+                EmailSent = true,
+                Token = _environment.IsDevelopment() ? resetToken : string.Empty,
+                EncodedToken = _environment.IsDevelopment() ? encodedToken : string.Empty
+            });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed sending reset password email for {Email}", user.Email);
             // Keep response generic/success so reset flow can continue in environments
             // where SMTP is not configured (token is logged above for local testing).
-            return Result.Success();
+            return Result<ForgotPasswordResponseDto>.Success(new ForgotPasswordResponseDto
+            {
+                EmailSent = false,
+                Token = _environment.IsDevelopment() ? resetToken : string.Empty,
+                EncodedToken = _environment.IsDevelopment() ? encodedToken : string.Empty
+            });
         }
-
-        return Result.Success();
     }
 }
 
@@ -83,8 +96,21 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
         if (user == null)
             return Result.Failure("Invalid reset token.");
 
-        var decodedToken = WebUtility.UrlDecode(request.Token);
-        var resetResult = await _userManager.ResetPasswordAsync(user, decodedToken, request.NewPassword);
+        var token = request.Token.Trim();
+
+        // Try token as-is first (Swagger/JSON usually sends raw token correctly).
+        var resetResult = await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
+
+        // Fallback for URL-encoded token inputs.
+        if (!resetResult.Succeeded)
+        {
+            var decodedToken = WebUtility.UrlDecode(token);
+            if (!string.Equals(decodedToken, token, StringComparison.Ordinal))
+            {
+                resetResult = await _userManager.ResetPasswordAsync(user, decodedToken, request.NewPassword);
+            }
+        }
+
         if (!resetResult.Succeeded)
             return Result.Failure(string.Join("; ", resetResult.Errors.Select(e => e.Description)));
 
