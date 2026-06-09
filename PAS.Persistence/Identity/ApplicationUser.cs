@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Persistence.Identity
 {
@@ -9,5 +10,8 @@ namespace Persistence.Identity
         public bool IsActive { get; set; } = true;
 
         public string? Position { get; set; }
+
+        [Column("PhotoUrl")]
+        public string? ProfileImageUrl { get; set; }
     }
 }

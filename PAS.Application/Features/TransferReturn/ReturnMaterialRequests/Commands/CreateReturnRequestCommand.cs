@@ -12,9 +12,7 @@ public record CreateReturnRequestCommand : IRequest<Result<Guid>>
     public int Quantity { get; init; }
     public string Reason { get; init; } = string.Empty;
     public string ReturnType { get; init; } = string.Empty;
-    public Guid? SourceLocationId { get; init; }
     public Guid? SourceShelfId { get; init; }
-    public Guid? SupplierId { get; init; }
     public string? BatchNumber { get; init; }
     public DateTime? ExpiryDate { get; init; }
     public string? Reference { get; init; }

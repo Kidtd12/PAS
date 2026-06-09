@@ -85,6 +85,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
             UserName = request.Username,
             Email = request.Email,
             FullName = request.FullName,
+            PhoneNumber = request.PhoneNumber,
             IsActive = true,
             EmailConfirmed = true
         };

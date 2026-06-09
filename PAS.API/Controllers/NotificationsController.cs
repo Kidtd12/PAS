@@ -1,4 +1,5 @@
-﻿using Application.Features.Common.Notifications.Commands.MarkAllAsRead;
+﻿using Application.Features.Common.Notifications.Commands.CreateNotification;
+using Application.Features.Common.Notifications.Commands.MarkAllAsRead;
 using Application.Features.Common.Notifications.Commands.MarkAsRead;
 using Application.Features.Common.Notifications.Dtos;
 using Application.Features.Common.Notifications.Queries.GetNotifications;
@@ -52,6 +53,21 @@ public class NotificationsController : BaseApiController
     {
         var query = new GetUnreadCountQuery();
         var result = await Mediator.Send(query);
+        return HandleResult(result);
+    }
+
+    /// <summary>
+    /// Create a notification for a user (used by admins to send messages
+    /// such as password-reset instructions to a specific user).
+    /// </summary>
+    [HttpPost]
+    [SwaggerOperation(Summary = "Create a notification for a user")]
+    [ProducesResponseType(typeof(ApiResponse<Guid>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<Guid>>> CreateNotification(CreateNotificationCommand command)
+    {
+        _logger.LogInformation("Creating notification for user: {UserId}", command.UserId);
+        var result = await Mediator.Send(command);
         return HandleResult(result);
     }
 

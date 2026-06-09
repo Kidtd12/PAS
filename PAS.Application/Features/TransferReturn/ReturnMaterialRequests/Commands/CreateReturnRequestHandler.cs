@@ -39,48 +39,18 @@ public class CreateReturnRequestCommandHandler : IRequestHandler<CreateReturnReq
             return Result<Guid>.Failure($"Return type must be one of: {string.Join(", ", validReturnTypes)}");
         }
 
-        // Validate supplier if return type is TO_SUPPLIER
-        if (request.ReturnType == "TO_SUPPLIER")
-        {
-            if (!request.SupplierId.HasValue)
-            {
-                return Result<Guid>.Failure("Supplier is required for returns to supplier.");
-            }
-
-            var supplier = await _context.Suppliers
-                .FirstOrDefaultAsync(s => s.Id == request.SupplierId && !s.IsDeleted, cancellationToken);
-
-            if (supplier == null)
-            {
-                return Result<Guid>.Failure($"Supplier with ID {request.SupplierId} not found.");
-            }
-        }
-
-        // Validate source location and shelf
-        Guid? sourceLocationId = request.SourceLocationId;
+        // Validate source shelf
+        Guid? sourceLocationId = null;
         Guid? sourceShelfId = request.SourceShelfId;
 
-        if (request.Quantity <= 0)
+        if (request.Quantity < 0)
         {
-            return Result<Guid>.Failure("Quantity must be greater than zero.");
-        }
-
-        if (sourceLocationId.HasValue && !sourceShelfId.HasValue)
-        {
-            var sourceLocation = await _context.PropertyLocations
-                .FirstOrDefaultAsync(l => l.Id == sourceLocationId.Value && !l.IsDeleted, cancellationToken);
-
-            if (sourceLocation == null)
-            {
-                return Result<Guid>.Failure($"Source location with ID {sourceLocationId} not found.");
-            }
+            return Result<Guid>.Failure("Quantity cannot be negative.");
         }
 
         if (sourceShelfId.HasValue)
         {
             // If shelf is provided, source location will be derived from shelf's warehouse mapping.
-            sourceLocationId = null;
-
             var sourceShelf = await _context.ShelfLocations
                 .Include(s => s.Warehouse)
                 .FirstOrDefaultAsync(s => s.Id == sourceShelfId && !s.IsDeleted, cancellationToken);
@@ -93,7 +63,6 @@ public class CreateReturnRequestCommandHandler : IRequestHandler<CreateReturnReq
             // Map shelf's warehouse to PropertyLocation (ReturnMaterialRequest FK expects PropertyLocations.Id)
             var mappedLocation = await _context.PropertyLocations
                 .FirstOrDefaultAsync(l => !l.IsDeleted
-                                       && l.LocationType == "Warehouse"
                                        && l.Name == sourceShelf.Warehouse!.WarehouseName, cancellationToken);
 
             if (mappedLocation == null)
@@ -104,12 +73,11 @@ public class CreateReturnRequestCommandHandler : IRequestHandler<CreateReturnReq
                 _context.PropertyLocations.Add(mappedLocation);
                 await _context.SaveChangesAsync(cancellationToken);
             }
-
             sourceLocationId = mappedLocation.Id;
         }
 
         // Check if stock is available for return
-        if (sourceShelfId.HasValue)
+        if (sourceShelfId.HasValue && request.Quantity > 0)
         {
             var stock = await _context.InventoryStocks
                 .FirstOrDefaultAsync(s => s.ItemId == request.ItemId &&
@@ -138,7 +106,6 @@ public class CreateReturnRequestCommandHandler : IRequestHandler<CreateReturnReq
         typeof(Domain.TransferReturn.ReturnMaterialRequestNote).GetProperty("Status")?.SetValue(returnRequest, "Pending");
         typeof(Domain.TransferReturn.ReturnMaterialRequestNote).GetProperty("SourceLocationId")?.SetValue(returnRequest, sourceLocationId);
         typeof(Domain.TransferReturn.ReturnMaterialRequestNote).GetProperty("SourceShelfId")?.SetValue(returnRequest, sourceShelfId);
-        typeof(Domain.TransferReturn.ReturnMaterialRequestNote).GetProperty("SupplierId")?.SetValue(returnRequest, request.SupplierId);
         typeof(Domain.TransferReturn.ReturnMaterialRequestNote).GetProperty("BatchNumber")?.SetValue(returnRequest, request.BatchNumber);
         typeof(Domain.TransferReturn.ReturnMaterialRequestNote).GetProperty("ExpiryDate")?.SetValue(returnRequest, request.ExpiryDate);
         typeof(Domain.TransferReturn.ReturnMaterialRequestNote).GetProperty("Reference")?.SetValue(returnRequest, request.Reference);
@@ -147,7 +114,7 @@ public class CreateReturnRequestCommandHandler : IRequestHandler<CreateReturnReq
         _context.ReturnMaterialRequestNotes.Add(returnRequest);
 
         // Reserve stock if source shelf is specified
-        if (sourceShelfId.HasValue)
+        if (sourceShelfId.HasValue && request.Quantity > 0)
         {
             var stock = await _context.InventoryStocks
                 .FirstOrDefaultAsync(s => s.ItemId == request.ItemId &&

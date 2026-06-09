@@ -41,6 +41,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<
             IsActive = user.IsActive,
             RoleId = roleEntity != null && Guid.TryParse(roleEntity.Id, out var roleId) ? roleId : Guid.Empty,
             RoleName = primaryRoleName,
+            ProfileImageUrl = user.ProfileImageUrl,
             EmployeeId = Guid.Empty,
             EmployeeCode = string.Empty,
             EmployeeName = string.Empty

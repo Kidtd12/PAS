@@ -51,7 +51,7 @@ public class ApproveServiceRequestCommandHandler : IRequestHandler<ApproveServic
 
         if (request.IsApproved)
         {
-            serviceRequest.Approve(_currentUser.UserGuid.Value);
+            serviceRequest.Approve();
         }
 
         serviceRequest.MarkUpdated();

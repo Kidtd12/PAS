@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using PAS.API.BackgroundServices;
 using PAS.API.Configurations;
 using PAS.API.Services;
+using PAS.API.Services; // Ensure service namespace is available
 using System.Text;
 
 namespace PAS.API.Extensions;
@@ -16,12 +17,14 @@ public static class DependencyInjection
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         services.Configure<FileStorageSettings>(configuration.GetSection("FileStorageSettings"));
         services.Configure<CorsSettings>(configuration.GetSection("CorsSettings"));
+        services.Configure<ImageAnalysisSettings>(configuration.GetSection("ImageAnalysis"));
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IDateTimeService, DateTimeService>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IFileStorageService, FileStorageService>();
+        services.AddScoped<IImageAnalysisService, ImageAnalysisService>();
 
         services.AddHostedService<EmailBackgroundService>();
         services.AddHostedService<NotificationCleanupService>();

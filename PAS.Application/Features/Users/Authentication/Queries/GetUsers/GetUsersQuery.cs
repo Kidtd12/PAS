@@ -72,7 +72,8 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, Result<Pagina
                 Email = user.Email ?? string.Empty,
                 IsActive = user.IsActive,
                 RoleId = roleEntity != null && Guid.TryParse(roleEntity.Id, out var roleId) ? roleId : Guid.Empty,
-                RoleName = primaryRoleName
+                RoleName = primaryRoleName,
+                ProfileImageUrl = user.ProfileImageUrl
             });
         }
 

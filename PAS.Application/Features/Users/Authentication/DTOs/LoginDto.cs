@@ -1,4 +1,4 @@
-﻿namespace Application.Features.Users.Authentication.Dtos;
+namespace Application.Features.Users.Authentication.Dtos;
 
 public class LoginDto
 {
@@ -23,8 +23,13 @@ public class UserInfoDto
     public string Username { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public string? PhotoUrl { get; set; }
+    public string? ProfileImageUrl { get; set; }
     public string EmployeeCode { get; set; } = string.Empty;
     public string Department { get; set; } = string.Empty;
+    public string? Phone { get; set; }
+    public string? Position { get; set; }
+    public string? JoinDate { get; set; }
     public string[] Roles { get; set; } = Array.Empty<string>();
     public string[] Permissions { get; set; } = Array.Empty<string>();
 }

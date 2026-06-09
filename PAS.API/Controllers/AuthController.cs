@@ -1,5 +1,6 @@
 ﻿using Application.Features.Users.Authentication.Commands;
 using Application.Features.Users.Authentication.Dtos;
+using Application.Features.Users.Authentication.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PAS.API.Models.Requests;
@@ -150,6 +151,36 @@ public class AuthController : BaseApiController
             NewPassword = request.NewPassword
         };
 
+        var result = await Mediator.Send(command);
+        return HandleResult(result);
+    }
+
+    /// <summary>
+    /// Upload profile photo for the currently authenticated user
+    /// </summary>
+    [HttpPost("upload-profile-photo")]
+    [Authorize]
+    [Consumes("multipart/form-data")]
+    [RequestFormLimits(MultipartBodyLengthLimit = 10 * 1024 * 1024)]
+    [SwaggerOperation(Summary = "Upload profile photo")]
+    [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<string>>> UploadProfilePhoto([FromForm] UploadProfilePhotoCommand command)
+    {
+        var result = await Mediator.Send(command);
+        return HandleResult(result);
+    }
+
+    /// <summary>
+    /// Get current user profile
+    /// </summary>
+    [HttpGet("me")]
+    [Authorize]
+    [SwaggerOperation(Summary = "Get current user profile")]
+    [ProducesResponseType(typeof(ApiResponse<CurrentUserDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ApiResponse<CurrentUserDto>>> GetCurrentUser()
+    {
+        var command = new GetCurrentUserQuery();
         var result = await Mediator.Send(command);
         return HandleResult(result);
     }

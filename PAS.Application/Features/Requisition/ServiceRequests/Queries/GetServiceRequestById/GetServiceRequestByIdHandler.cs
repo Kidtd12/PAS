@@ -20,7 +20,7 @@ public class GetServiceRequestByIdQueryHandler : IRequestHandler<GetServiceReque
             .Include(s => s.Details)
                 .ThenInclude(d => d.Item)
             .Include(s => s.Details)
-                .ThenInclude(d => d.Shelf)
+                .ThenInclude(d => d.ShelfLocation)
             .Include(s => s.StoreIssueVoucher)
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == request.Id && !s.IsDeleted, cancellationToken);
