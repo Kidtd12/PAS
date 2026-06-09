@@ -59,6 +59,8 @@ public class UpdateItemMasterCommandHandler : IRequestHandler<UpdateItemMasterCo
         typeof(ItemMaster).GetProperty(nameof(ItemMaster.UnitOfMeasure))?.SetValue(item, request.UnitOfMeasure);
         typeof(ItemMaster).GetProperty(nameof(ItemMaster.RequiresInspection))?.SetValue(item, request.RequiresInspection);
         typeof(ItemMaster).GetProperty(nameof(ItemMaster.MinStockLevel))?.SetValue(item, request.MinStockLevel);
+        typeof(ItemMaster).GetProperty(nameof(ItemMaster.UnitPrice))?.SetValue(item, request.UnitPrice);
+        typeof(ItemMaster).GetProperty(nameof(ItemMaster.Status))?.SetValue(item, request.Status);
 
         item.MarkUpdated();
 

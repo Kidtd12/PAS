@@ -266,7 +266,8 @@ public static class CustomValidators
         var hasDigit = password.Any(char.IsDigit);
         var hasSpecial = password.Any(ch => !char.IsLetterOrDigit(ch));
 
-        return hasUpper && hasLower && hasDigit && hasSpecial;
+        var strengthCount = new[] { hasUpper, hasLower, hasDigit, hasSpecial }.Count(x => x);
+        return strengthCount >= 2;
     }
 
     public static System.ComponentModel.DataAnnotations.ValidationResult? IsStrongPassword(object? value, ValidationContext context)

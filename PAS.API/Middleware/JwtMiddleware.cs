@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using PAS.API.Configurations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using System.Security.Claims;
 
 namespace PAS.API.Middleware;
 
@@ -48,8 +49,13 @@ public class JwtMiddleware
             var jwtToken = (JwtSecurityToken)validatedToken;
             var userId = jwtToken.Claims.First(x => x.Type == JwtRegisteredClaimNames.Sub).Value;
 
-            // Attach user to context
+            // Attach user to context items
             context.Items["UserId"] = userId;
+
+            // Also set the HttpContext.User so ICurrentUserService and Authorize filters can read claims
+            var claims = jwtToken.Claims.ToList();
+            var identity = new ClaimsIdentity(claims, "jwt");
+            context.User = new ClaimsPrincipal(identity);
         }
         catch
         {

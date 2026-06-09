@@ -16,15 +16,14 @@ public class GetWarehousesQueryHandler : IRequestHandler<GetWarehousesQuery, Res
 
     public async Task<Result<PaginatedList<WarehouseListDto>>> Handle(GetWarehousesQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Warehouses
-            .Include(w => w.ShelfLocations)
+        var warehouses = _context.Warehouses
             .Where(w => !w.IsDeleted)
             .AsNoTracking();
 
         // Apply filters
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            query = query.Where(w =>
+            warehouses = warehouses.Where(w =>
                 w.WarehouseName.Contains(request.SearchTerm) ||
                 w.LocationCode.Contains(request.SearchTerm) ||
                 (w.City != null && w.City.Contains(request.SearchTerm)));
@@ -32,26 +31,27 @@ public class GetWarehousesQueryHandler : IRequestHandler<GetWarehousesQuery, Res
 
         if (request.IsActive.HasValue)
         {
-            query = query.Where(w => w.IsActive == request.IsActive);
+            warehouses = warehouses.Where(w => w.IsActive == request.IsActive);
         }
 
         if (!string.IsNullOrWhiteSpace(request.City))
         {
-            query = query.Where(w => w.City == request.City);
+            warehouses = warehouses.Where(w => w.City == request.City);
         }
 
-        // Project to DTO
-        var projectedQuery = query.Select(w => new WarehouseListDto
+        // Project with simple counts - use subqueries
+        var projectedQuery = warehouses.Select(w => new WarehouseListDto
         {
             Id = w.Id,
             WarehouseName = w.WarehouseName,
             LocationCode = w.LocationCode,
             City = w.City ?? string.Empty,
             IsActive = w.IsActive,
-            ShelfCount = w.ShelfLocations != null ? w.ShelfLocations.Count(s => !s.IsDeleted) : 0,
-            ItemCount = w.ShelfLocations != null ?
-                w.ShelfLocations.Where(s => !s.IsDeleted).Sum(s =>
-                    s.InventoryStocks != null ? s.InventoryStocks.Count(i => !i.IsDeleted) : 0) : 0
+            ShelfCount = _context.ShelfLocations.Count(s => s.WarehouseId == w.Id && !s.IsDeleted),
+            ItemCount = _context.ShelfLocations
+                .Where(s => s.WarehouseId == w.Id && !s.IsDeleted)
+                .SelectMany(s => s.InventoryStocks.Where(i => !i.IsDeleted))
+                .Count()
         });
 
         var paginatedWarehouses = await projectedQuery

@@ -3,7 +3,6 @@ using MediatR;
 
 namespace Application.Features.Workflow.Approvers.Commands.AssignApprover;
 
-[Authorize(Permissions = Permissions.Workflow.Assign)]
 public record AssignApproverCommand : IRequest<Result<Guid>>
 {
     public Guid WorkflowId { get; init; }

@@ -29,7 +29,7 @@ public class ExceptionHandlingMiddleware
 
     private Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        _logger.LogError(exception, "Unhandled exception occurred");
+        _logger.LogError(exception, "Unhandled exception occurred: {Message}", exception.Message);
 
         context.Response.ContentType = "application/json";
 
@@ -41,9 +41,21 @@ public class ExceptionHandlingMiddleware
             {
                 NotFoundException => StatusCodes.Status404NotFound,
                 UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
+                ValidationException => StatusCodes.Status400BadRequest,
                 _ => StatusCodes.Status500InternalServerError
             }
         };
+
+        if (exception is ValidationException validationEx)
+        {
+            response.Errors = validationEx.Errors.SelectMany(kvp => kvp.Value).ToArray();
+        }
+
+        // Include inner exception for debugging
+        if (exception.InnerException != null)
+        {
+            response.Message += $" | Inner: {exception.InnerException.Message}";
+        }
 
         context.Response.StatusCode = response.StatusCode;
 

@@ -96,24 +96,27 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
         if (user == null)
             return Result.Failure("Invalid reset token.");
 
-        var token = request.Token.Trim();
-
-        // Try token as-is first (Swagger/JSON usually sends raw token correctly).
-        var resetResult = await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
-
-        // Fallback for URL-encoded token inputs.
-        if (!resetResult.Succeeded)
+        // Accept raw, '+' normalized, and URL-decoded token inputs.
+        var candidates = new List<string>
         {
-            var decodedToken = WebUtility.UrlDecode(token);
-            if (!string.Equals(decodedToken, token, StringComparison.Ordinal))
+            request.Token.Trim(),
+            request.Token.Trim().Replace(" ", "+"),
+            WebUtility.UrlDecode(request.Token.Trim())
+        }
+        .Where(t => !string.IsNullOrWhiteSpace(t))
+        .Distinct()
+        .ToList();
+
+        IdentityResult? resetResult = null;
+        foreach (var token in candidates)
+        {
+            resetResult = await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
+            if (resetResult.Succeeded)
             {
-                resetResult = await _userManager.ResetPasswordAsync(user, decodedToken, request.NewPassword);
+                return Result.Success();
             }
         }
 
-        if (!resetResult.Succeeded)
-            return Result.Failure(string.Join("; ", resetResult.Errors.Select(e => e.Description)));
-
-        return Result.Success();
+        return Result.Failure(string.Join("; ", resetResult?.Errors.Select(e => e.Description) ?? new[] { "Invalid reset token." }));
     }
 }

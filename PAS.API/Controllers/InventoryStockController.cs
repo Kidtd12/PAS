@@ -27,6 +27,7 @@ public class InventoryStockController : BaseApiController
     public async Task<ActionResult<ApiResponse<PaginatedResponse<InventoryStockDto>>>> GetInventoryStock(
         [FromQuery] Guid? itemId = null,
         [FromQuery] Guid? shelfId = null,
+        [FromQuery] Guid? warehouseId = null,
         [FromQuery] bool? lowStockOnly = null,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
@@ -35,6 +36,7 @@ public class InventoryStockController : BaseApiController
         {
             ItemId = itemId,
             ShelfId = shelfId,
+            WarehouseId = warehouseId,
             LowStockOnly = lowStockOnly,
             PageNumber = pageNumber,
             PageSize = pageSize
