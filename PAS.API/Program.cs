@@ -6,6 +6,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PAS.API.Configurations;
@@ -42,12 +44,14 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IDateTimeService, DateTimeService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+builder.Services.AddScoped<IImageAnalysisService, ImageAnalysisService>();
 
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.Configure<FileStorageSettings>(builder.Configuration.GetSection("FileStorage"));
+builder.Services.Configure<ImageAnalysisSettings>(builder.Configuration.GetSection("ImageAnalysis"));
 
 PAS.API.Extensions.ServiceCollectionExtensions.AddCorsPolicy(builder.Services, builder.Configuration);
 
@@ -126,7 +130,26 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+var fileStorageSettings = app.Services.GetRequiredService<IOptions<FileStorageSettings>>().Value;
+if (string.Equals(fileStorageSettings.Provider, "Local", StringComparison.OrdinalIgnoreCase)
+    && !string.IsNullOrWhiteSpace(fileStorageSettings.LocalPath))
+{
+    var physicalPath = Path.GetFullPath(fileStorageSettings.LocalPath);
+    Directory.CreateDirectory(physicalPath);
+
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(physicalPath),
+        RequestPath = "/uploads"
+    });
+}
+
+if (app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
 app.UseCors("Default");
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();

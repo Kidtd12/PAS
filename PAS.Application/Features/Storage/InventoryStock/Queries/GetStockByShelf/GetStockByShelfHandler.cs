@@ -19,7 +19,7 @@ public class GetStockByShelfQueryHandler : IRequestHandler<GetStockByShelfQuery,
     {
         var stock = await _context.InventoryStocks
             .Include(i => i.Item)
-            .Include(i => i.Shelf)
+            .Include(i => i.ShelfLocation)
             .Where(i => i.ShelfId == request.ShelfId && !i.IsDeleted && i.CurrentQuantity > 0)
             .OrderBy(i => i.Item.ItemName)
             .ProjectTo<InventoryStockDto>(_mapper.ConfigurationProvider)

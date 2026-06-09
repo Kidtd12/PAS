@@ -47,6 +47,8 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
                 Username = user.UserName ?? string.Empty,
                 FullName = user.FullName,
                 Email = user.Email ?? string.Empty,
+                PhotoUrl = user.ProfileImageUrl ?? string.Empty,
+                ProfileImageUrl = user.ProfileImageUrl,
                 EmployeeCode = string.Empty,
                 Department = string.Empty,
                 Roles = roles.ToArray(),

@@ -1,5 +1,7 @@
-﻿using Application.Events;
+﻿using Application.Common.Interfaces;
+using Application.Events;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Common.DocumentAttachments.Commands.UploadDocument;
 
@@ -9,17 +11,20 @@ public class UploadDocumentCommandHandler : IRequestHandler<UploadDocumentComman
     private readonly IFileStorageService _fileStorage;
     private readonly ICurrentUserService _currentUser;
     private readonly IMediator _mediator;
+    private readonly IImageAnalysisService _imageAnalysis;
 
     public UploadDocumentCommandHandler(
         IApplicationDbContext context,
         IFileStorageService fileStorage,
         ICurrentUserService currentUser,
-        IMediator mediator)
+        IMediator mediator,
+        IImageAnalysisService imageAnalysis)
     {
         _context = context;
         _fileStorage = fileStorage;
         _currentUser = currentUser;
         _mediator = mediator;
+        _imageAnalysis = imageAnalysis;
     }
 
     public async Task<Result<Guid>> Handle(UploadDocumentCommand request, CancellationToken cancellationToken)
@@ -37,6 +42,22 @@ public class UploadDocumentCommandHandler : IRequestHandler<UploadDocumentComman
         {
             await request.File.CopyToAsync(memoryStream, cancellationToken);
             fileBytes = memoryStream.ToArray();
+        }
+
+        if (request.RelatedEntityName.Equals("employee", StringComparison.OrdinalIgnoreCase))
+        {
+            try
+            {
+                var containsPerson = await _imageAnalysis.ContainsPersonAsync(fileBytes, cancellationToken);
+                if (!containsPerson)
+                {
+                    return Result<Guid>.Failure("Employee photo must contain a person.");
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                return Result<Guid>.Failure("Person detection is not configured.");
+            }
         }
 
         var folder = $"documents/{request.RelatedEntityName}";

@@ -1,5 +1,10 @@
 namespace Application.Common.Interfaces
 {
+    public interface IImageAnalysisService
+    {
+        Task<bool> ContainsPersonAsync(byte[] imageBytes, CancellationToken cancellationToken = default);
+    }
+
     public interface IFileStorageService
     {
         Task<string> SaveFileAsync(byte[] fileBytes, string fileName, string folder, CancellationToken cancellationToken = default);

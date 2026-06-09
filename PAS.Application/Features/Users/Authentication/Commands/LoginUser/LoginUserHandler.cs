@@ -1,4 +1,4 @@
-﻿using Application.Features.Users.Authentication.Dtos;
+using Application.Features.Users.Authentication.Dtos;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -7,6 +7,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Application.Common.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Users.Authentication.Commands;
 
@@ -16,17 +18,20 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IConfiguration _configuration;
     private readonly ILogger<LoginUserCommandHandler> _logger;
+    private readonly IApplicationDbContext _context;
 
     public LoginUserCommandHandler(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         IConfiguration configuration,
-        ILogger<LoginUserCommandHandler> logger)
+        ILogger<LoginUserCommandHandler> logger,
+        IApplicationDbContext context)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _configuration = configuration;
         _logger = logger;
+        _context = context;
     }
 
     public async Task<Result<AuthResultDto>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
@@ -72,6 +77,9 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<
         var refreshToken = GenerateRefreshToken(user);
         var expiresAt = DateTime.UtcNow.AddHours(request.RememberMe ? 168 : 8);
 
+        var employee = await _context.Employees
+            .FirstOrDefaultAsync(e => (e.Email == user.Email || e.FullName == user.FullName) && !e.IsDeleted, cancellationToken);
+
         var result = new AuthResultDto
         {
             Succeeded = true,
@@ -84,8 +92,13 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<
                 Username = user.UserName ?? string.Empty,
                 FullName = user.FullName,
                 Email = user.Email ?? string.Empty,
-                EmployeeCode = string.Empty,
-                Department = string.Empty,
+                PhotoUrl = user.ProfileImageUrl ?? string.Empty,
+                ProfileImageUrl = user.ProfileImageUrl ?? string.Empty,
+                EmployeeCode = employee?.EmployeeCode ?? string.Empty,
+                Department = employee?.Department ?? string.Empty,
+                Phone = user.PhoneNumber ?? string.Empty,
+                Position = user.Position ?? employee?.Position ?? string.Empty,
+                JoinDate = employee != null ? employee.CreatedAt.ToString("yyyy-MM-dd") : DateTime.UtcNow.ToString("yyyy-MM-dd"),
                 Roles = roles.ToArray(),
                 Permissions = GetPermissionsForRole(primaryRole)
             }

@@ -34,6 +34,7 @@ namespace Persistence.Context
 
         // Property
         public DbSet<Property> Properties { get; set; }
+        public DbSet<PropertyCategory> PropertyCategories { get; set; }
 
         // Requisition
         public DbSet<ServiceRequest> ServiceRequests { get; set; }

@@ -11,8 +11,6 @@ namespace Domain.Requisition
 
         public Guid RequesterId { get; private set; }
 
-        public Guid? ApprovedById { get; private set; }
-
         public Guid? ApprovalStatusId { get; private set; }
 
         public DateTime RequestDate { get; private set; }
@@ -37,9 +35,8 @@ namespace Domain.Requisition
             Status = "Pending";
         }
 
-        public void Approve(Guid approver)
+        public void Approve()
         {
-            ApprovedById = approver;
             Status = "Approved";
         }
     }

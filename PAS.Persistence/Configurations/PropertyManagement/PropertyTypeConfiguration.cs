@@ -17,13 +17,10 @@ namespace Persistence.Configurations.PropertyManagement
             builder.Property(p => p.Description)
                 .HasMaxLength(500);
 
-            builder.HasOne(p => p.PropertyCategory)
-                .WithMany()
-                .HasForeignKey(p => p.PropertyCategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+        builder.Ignore(p => p.PropertyCategoryId);
+        builder.Ignore(p => p.PropertyCategory);
 
-            builder.HasIndex(p => p.Name).IsUnique();
-            builder.HasIndex(p => p.PropertyCategoryId);
+        builder.HasIndex(p => p.Name).IsUnique();
         }
     }
 }

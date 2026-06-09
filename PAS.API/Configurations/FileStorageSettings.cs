@@ -1,7 +1,19 @@
 ﻿namespace PAS.API.Configurations;
 public class FileStorageSettings
 {
-  public string StoragePath { get; set; }
+    public string Provider { get; set; } = "Local";
+
+    public string LocalPath { get; set; } = string.Empty;
+
+    public string BaseUrl { get; set; } = string.Empty;
+
+    // Backward compatibility
+    public string StoragePath
+    {
+        get => LocalPath;
+        set => LocalPath = value;
+    }
+
     public long MaxFileSizeBytes { get; set; } = 10 * 1024 * 1024;
     public List<string> AllowedExtensions { get; set; } = new()
     {
@@ -46,4 +58,10 @@ public class FileStorageSettings
     public string VirusScanEndpoint { get; set; }
     public string CdnEndpoint { get; set; }
     public bool RequireAuthenticationForDownload { get; set; } = true;
+}
+
+public class ImageAnalysisSettings
+{
+    public string Endpoint { get; set; } = string.Empty;
+    public string Key { get; set; } = string.Empty;
 }

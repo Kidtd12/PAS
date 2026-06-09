@@ -86,9 +86,7 @@ public class CreateReturnRequestDto
     public int Quantity { get; set; }
     public string Reason { get; set; } = string.Empty;
     public string ReturnType { get; set; } = string.Empty;
-    public Guid? SourceLocationId { get; set; }
     public Guid? SourceShelfId { get; set; }
-    public Guid? SupplierId { get; set; }
     public string? BatchNumber { get; set; }
     public DateTime? ExpiryDate { get; set; }
     public string? Reference { get; set; }
