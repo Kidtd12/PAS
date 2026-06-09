@@ -1,7 +1,9 @@
 ﻿using Application.Events;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Persistence.Context;
 using Persistence.Identity;
+using System.Data;
 
 namespace Application.Features.Workflow.Approvers.Commands.AssignApprover;
 
@@ -11,17 +13,20 @@ public class AssignApproverCommandHandler : IRequestHandler<AssignApproverComman
     private readonly ICurrentUserService _currentUser;
     private readonly IMediator _mediator;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ApplicationDbContext _db;
 
     public AssignApproverCommandHandler(
         IApplicationDbContext context,
         ICurrentUserService currentUser,
         IMediator mediator,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager,
+        ApplicationDbContext db)
     {
         _context = context;
         _currentUser = currentUser;
         _mediator = mediator;
         _userManager = userManager;
+        _db = db;
     }
 
     public async Task<Result<Guid>> Handle(AssignApproverCommand request, CancellationToken cancellationToken)
@@ -79,5 +84,58 @@ public class AssignApproverCommandHandler : IRequestHandler<AssignApproverComman
         await _mediator.Publish(new EntityCreatedEvent<Approver>(approver, _currentUser.UserGuid), cancellationToken);
 
         return Result<Guid>.Success(approver.Id);
+    }
+
+    private Guid? ResolveLegacyUserLoginId(string subject, string? username)
+    {
+        try
+        {
+            var conn = _db.Database.GetDbConnection();
+            var shouldClose = conn.State != ConnectionState.Open;
+            if (shouldClose)
+            {
+                conn.Open();
+            }
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+SELECT TOP(1) [Id]
+FROM [UserLogins]
+WHERE [IsDeleted] = 0
+  AND [IsActive] = 1
+  AND (
+      CAST([Id] AS nvarchar(36)) = @subject
+      OR [AspNetUserId] = @subject
+      OR [Username] = @username
+  )";
+
+            var p1 = cmd.CreateParameter();
+            p1.ParameterName = "@subject";
+            p1.Value = subject;
+            cmd.Parameters.Add(p1);
+
+            var p2 = cmd.CreateParameter();
+            p2.ParameterName = "@username";
+            p2.Value = (object?)username ?? DBNull.Value;
+            cmd.Parameters.Add(p2);
+
+            var value = cmd.ExecuteScalar();
+
+            if (shouldClose)
+            {
+                conn.Close();
+            }
+
+            if (value != null && Guid.TryParse(value.ToString(), out var mappedId))
+            {
+                return mappedId;
+            }
+        }
+        catch
+        {
+            // ignore mapping failures
+        }
+
+        return null;
     }
 }

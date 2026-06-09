@@ -45,13 +45,16 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
         _context.Categories.Add(category);
         await _context.SaveChangesAsync(cancellationToken);
 
-        var auditTrail = new AuditTrail(
-            _currentUser.UserGuid ?? Guid.Empty,
-            "CREATE",
-            nameof(Category),
-            category.Id);
-        _context.AuditTrails.Add(auditTrail);
-        await _context.SaveChangesAsync(cancellationToken);
+        if (_currentUser.UserGuid.HasValue)
+        {
+            var auditTrail = new AuditTrail(
+                _currentUser.UserGuid.Value,
+                "CREATE",
+                nameof(Category),
+                category.Id);
+            _context.AuditTrails.Add(auditTrail);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
 
         await _mediator.Publish(new EntityCreatedEvent<Category>(category, _currentUser.UserGuid), cancellationToken);
 

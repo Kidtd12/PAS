@@ -15,6 +15,8 @@ public class ItemMasterDto : IMapFrom<ItemMaster>
     public int MinStockLevel { get; set; }
     public int TotalStock { get; set; }
     public int AvailableStock { get; set; }
+    public decimal UnitPrice { get; set; }
+    public string Status { get; set; } = "Active";
 
     public void Mapping(Profile profile)
     {

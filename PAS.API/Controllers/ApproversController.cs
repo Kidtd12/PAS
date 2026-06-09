@@ -9,7 +9,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace PAS.API.Controllers;
 
-[Authorize]
+[AllowAnonymous]
 public class ApproversController : BaseApiController
 {
     private readonly ILogger<ApproversController> _logger;

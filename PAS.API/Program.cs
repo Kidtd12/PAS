@@ -12,6 +12,7 @@ using PAS.API.Configurations;
 using PAS.API.Services;
 using Persistence.Context;
 using Persistence.Identity;
+using PAS.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -127,6 +128,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("Default");
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+// Ensure custom JWT middleware runs early to attach claims for legacy tokens
+app.UseMiddleware<JwtMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
