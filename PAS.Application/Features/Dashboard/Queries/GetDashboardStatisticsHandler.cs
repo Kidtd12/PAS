@@ -130,7 +130,7 @@ public class GetDashboardStatisticsHandler : IRequestHandler<GetDashboardStatist
         dashboard.TotalStockValue = inventoryStocks.Sum(i => i.CurrentQuantity * (i.Item?.UnitPrice ?? 0));
 
         dashboard.LowStockItemsCount = inventoryStocks
-            .Count(i => i.CurrentQuantity <= i.Item.MinStockLevel && i.CurrentQuantity > 0);
+            .Count(i => i.Item != null && i.CurrentQuantity <= i.Item.MinStockLevel && i.CurrentQuantity > 0);
 
         dashboard.OutOfStockItemsCount = inventoryStocks
             .Count(i => i.CurrentQuantity == 0);
@@ -205,7 +205,7 @@ public class GetDashboardStatisticsHandler : IRequestHandler<GetDashboardStatist
         var lowStockItems = await _context.InventoryStocks
             .Include(i => i.Item)
             .Include(i => i.Shelf)
-            .Where(i => i.CurrentQuantity <= i.Item.MinStockLevel && !i.IsDeleted)
+            .Where(i => i.Item != null && i.CurrentQuantity <= i.Item.MinStockLevel && !i.IsDeleted)
             .OrderBy(i => i.CurrentQuantity)
             .Take(10)
             .ToListAsync(cancellationToken);
@@ -213,13 +213,13 @@ public class GetDashboardStatisticsHandler : IRequestHandler<GetDashboardStatist
         dashboard.LowStockAlerts = lowStockItems.Select(i => new LowStockAlertDto
         {
             ItemId = i.ItemId,
-            ItemName = i.Item.ItemName,
-            SKU = i.Item.SKU,
+            ItemName = i.Item?.ItemName ?? "Unknown",
+            SKU = i.Item?.SKU ?? string.Empty,
             CurrentStock = i.CurrentQuantity,
-            MinStockLevel = i.Item.MinStockLevel,
-            Deficit = i.Item.MinStockLevel - i.CurrentQuantity,
-            Location = $"{i.Shelf.Aisle}-{i.Shelf.Rack}-{i.Shelf.ShelfNumber}",
-            Severity = GetStockSeverity(i.CurrentQuantity, i.Item.MinStockLevel)
+            MinStockLevel = i.Item?.MinStockLevel ?? 0,
+            Deficit = (i.Item?.MinStockLevel ?? 0) - i.CurrentQuantity,
+            Location = i.Shelf != null ? $"{i.Shelf.Aisle}-{i.Shelf.Rack}-{i.Shelf.ShelfNumber}" : "Unknown",
+            Severity = GetStockSeverity(i.CurrentQuantity, i.Item?.MinStockLevel ?? 0)
         }).ToList();
 
         dashboard.LowStockItemsCount = lowStockItems.Count;

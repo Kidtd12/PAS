@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
+using Persistence.Identity;
 
 namespace Persistence.Seed
 {
@@ -8,16 +9,19 @@ namespace Persistence.Seed
     {
         public static async Task SeedAsync(
             ApplicationDbContext context,
-            RoleManager<IdentityRole> roleManager,
-            UserManager<IdentityUser> userManager)
+            RoleManager<ApplicationRole> roleManager,
+            UserManager<ApplicationUser> userManager)
         {
-            await context.Database.MigrateAsync();
+            if (context.Database.IsRelational())
+                await context.Database.MigrateAsync();
 
             await CategorySeed.SeedAsync(context);
 
             await RoleSeed.SeedAsync(roleManager);
 
             await DefaultUserSeed.SeedAsync(userManager);
+
+            await BusinessDataSeed.SeedAsync(context);
         }
     }
 }

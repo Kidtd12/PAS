@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Persistence.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace Persistence.Seed
 {
     public static class DefaultUserSeed
     {
-        public static async Task SeedAsync(UserManager<IdentityUser> userManager)
+        public static async Task SeedAsync(UserManager<ApplicationUser> userManager)
         {
             var adminEmail = "admin@pms.com";
 
@@ -12,11 +13,13 @@ namespace Persistence.Seed
 
             if (user == null)
             {
-                var admin = new IdentityUser
+                var admin = new ApplicationUser
                 {
                     UserName = "admin",
                     Email = adminEmail,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    FullName = "System Administrator",
+                    IsActive = true
                 };
 
                 var result = await userManager.CreateAsync(admin, "Admin@123");
