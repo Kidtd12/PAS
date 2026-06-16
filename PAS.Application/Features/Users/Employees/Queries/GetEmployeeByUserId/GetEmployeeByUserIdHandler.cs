@@ -1,4 +1,5 @@
-﻿using Application.Features.Users.Employees.Dtos;
+﻿using Application.Common.Models;
+using Application.Features.Users.Employees.Dtos;
 
 namespace Application.Features.Users.Employees.Queries;
 
@@ -21,7 +22,7 @@ public class GetEmployeeByUserIdQueryHandler : IRequestHandler<GetEmployeeByUser
 
         if (employee == null)
         {
-            throw new NotFoundException(nameof(Domain.Users.Employee), $"User ID {request.UserId}");
+            return Result<EmployeeDetailDto>.Failure($"Employee not found for User ID {request.UserId}");
         }
 
         var employeeDto = _mapper.Map<EmployeeDetailDto>(employee);

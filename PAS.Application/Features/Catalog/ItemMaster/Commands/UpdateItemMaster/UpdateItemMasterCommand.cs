@@ -13,4 +13,6 @@ public record UpdateItemMasterCommand : IRequest<Result>
     public string UnitOfMeasure { get; init; } = string.Empty;
     public bool RequiresInspection { get; init; }
     public int MinStockLevel { get; init; }
+    public decimal UnitPrice { get; init; }
+    public string Status { get; init; } = "Active";
 }

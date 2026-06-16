@@ -43,7 +43,9 @@ public class CreateItemMasterCommandHandler : IRequestHandler<CreateItemMasterCo
             request.CategoryId,
             request.UnitOfMeasure,
             request.RequiresInspection,
-            request.MinStockLevel);
+            request.MinStockLevel,
+            request.UnitPrice,
+            request.Status);
 
         _context.ItemMasters.Add(item);
         await _context.SaveChangesAsync(cancellationToken);

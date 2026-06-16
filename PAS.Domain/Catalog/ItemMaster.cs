@@ -22,6 +22,8 @@ namespace Domain.Catalog
 
         public decimal UnitPrice { get; private set; }
 
+        public string Status { get; private set; } = "Active";
+
         public Category Category { get; private set; }
 
         public ICollection<InventoryStock> InventoryStocks { get; private set; } = new List<InventoryStock>();
@@ -32,7 +34,7 @@ namespace Domain.Catalog
         {
         }
 
-        public ItemMaster(string sku, string itemName, Guid categoryId, string uom, bool inspection, int minStock)
+        public ItemMaster(string sku, string itemName, Guid categoryId, string uom, bool inspection, int minStock, decimal unitPrice = 0m, string status = "Active")
         {
             SKU = sku;
             ItemName = itemName;
@@ -40,7 +42,8 @@ namespace Domain.Catalog
             UnitOfMeasure = uom;
             RequiresInspection = inspection;
             MinStockLevel = minStock;
-            UnitPrice = 0m;
+            UnitPrice = unitPrice;
+            Status = status;
         }
     }
 }

@@ -19,7 +19,16 @@ public class GetShelfLocationsQueryHandler : IRequestHandler<GetShelfLocationsQu
 
     public async Task<Result<PaginatedList<ShelfLocationListDto>>> Handle(GetShelfLocationsQuery request, CancellationToken cancellationToken)
     {
+
         try
+
+        var query = _context.ShelfLocations
+            .Where(s => !s.IsDeleted)
+            .AsNoTracking();
+
+        // Apply filters
+        if (request.WarehouseId.HasValue)
+
         {
             var query = _context.ShelfLocations
                 .Include(s => s.Warehouse)
@@ -43,10 +52,20 @@ public class GetShelfLocationsQueryHandler : IRequestHandler<GetShelfLocationsQu
                 query = query.Where(s => s.BinType == request.BinType);
             }
 
+
             if (request.IsActive.HasValue)
             {
                 query = query.Where(s => s.IsActive == request.IsActive);
             }
+
+        if (request.HasInventory.HasValue)
+        {
+            if (request.HasInventory.Value)
+                query = query.Where(s => _context.InventoryStocks.Any(i => i.ShelfId == s.Id && i.CurrentQuantity > 0));
+            else
+                query = query.Where(s => !_context.InventoryStocks.Any(i => i.ShelfId == s.Id && i.CurrentQuantity > 0));
+        }
+
 
             if (request.HasInventory.HasValue)
             {
@@ -55,6 +74,7 @@ public class GetShelfLocationsQueryHandler : IRequestHandler<GetShelfLocationsQu
                 else
                     query = query.Where(s => !s.InventoryStocks.Any(i => i.CurrentQuantity > 0));
             }
+
 
             if (!string.IsNullOrWhiteSpace(request.SearchTerm))
             {
@@ -65,6 +85,20 @@ public class GetShelfLocationsQueryHandler : IRequestHandler<GetShelfLocationsQu
                     s.QRCodeValue.Contains(request.SearchTerm) ||
                     (s.Zone != null && s.Zone.Contains(request.SearchTerm)));
             }
+
+        // Project to DTO using subqueries - use string concatenation with + for EF Core translation
+        var projectedQuery = query.Select(s => new ShelfLocationListDto
+        {
+            Id = s.Id,
+            WarehouseName = _context.Warehouses.Where(w => w.Id == s.WarehouseId).Select(w => w.WarehouseName).FirstOrDefault() ?? string.Empty,
+            FullAddress = s.Aisle + "-" + s.Rack + "-" + s.ShelfNumber,
+            QRCodeValue = s.QRCodeValue,
+            IsActive = s.IsActive,
+            ItemCount = _context.InventoryStocks.Count(i => i.ShelfId == s.Id && i.CurrentQuantity > 0),
+            TotalQuantity = _context.InventoryStocks.Where(i => i.ShelfId == s.Id).Sum(i => (int?)i.CurrentQuantity) ?? 0,
+            Capacity = s.Capacity
+        });
+
 
             // Project to DTO
             var projectedQuery = query.Select(s => new ShelfLocationListDto
