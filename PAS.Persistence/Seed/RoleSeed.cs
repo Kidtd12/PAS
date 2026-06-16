@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Persistence.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace Persistence.Seed
 {
     public static class RoleSeed
     {
-        public static async Task SeedAsync(RoleManager<IdentityRole> roleManager)
+        public static async Task SeedAsync(RoleManager<ApplicationRole> roleManager)
         {
             string[] roles =
             {
@@ -18,7 +19,7 @@ namespace Persistence.Seed
             {
                 if (!await roleManager.RoleExistsAsync(role))
                 {
-                    await roleManager.CreateAsync(new IdentityRole(role));
+                    await roleManager.CreateAsync(new ApplicationRole { Name = role });
                 }
             }
         }

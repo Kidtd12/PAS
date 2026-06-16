@@ -117,10 +117,14 @@ if (runMigrationsOnStartup)
     try
     {
         db.Database.Migrate();
+
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        await Persistence.Seed.DataSeed.SeedAsync(db, roleManager, userManager);
     }
     catch (Exception ex)
     {
-        app.Logger.LogError(ex, "Database migration failed during startup.");
+        app.Logger.LogError(ex, "Database migration or seeding failed during startup.");
     }
 }
 
