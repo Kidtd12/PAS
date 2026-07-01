@@ -21,7 +21,6 @@ namespace Persistence.Seed
 
             await DefaultUserSeed.SeedAsync(userManager);
 
-            await BusinessDataSeed.SeedAsync(context);
         }
     }
 }
